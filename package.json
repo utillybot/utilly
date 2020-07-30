@@ -1,0 +1,45 @@
+{
+    "name": "utilly",
+    "version": "1.0.0",
+    "description": "A discord bot",
+    "main": "dist/bot.js",
+    "dependencies": {
+        "chalk": "^4.1.0",
+        "dotenv": "^8.2.0",
+        "eris": "^0.13.3",
+        "pg": "^8.3.0",
+        "pg-hstore": "^2.3.3",
+        "sequelize": "^6.3.3"
+    },
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^3.7.0",
+        "@typescript-eslint/parser": "^3.7.0",
+        "eslint": "^7.5.0",
+        "eslint-config-prettier": "^6.11.0",
+        "eslint-plugin-tsdoc": "^0.2.6",
+        "husky": "^4.2.5",
+        "lint-staged": "^10.2.11",
+        "prettier": "2.0.5",
+        "typescript": "^3.9.7"
+    },
+    "scripts": {
+        "start": "npm run compile && npm run run ",
+        "heavystart": "npm run lint && npm run prettier && npm run compile && npm run run ",
+        "compile": "npx tsc",
+        "lint": "npx eslint src/**/*.ts --fix",
+        "prettier": "npx prettier src/**/*.ts --write",
+        "run": "node dist/bot.js",
+        "debug": "npm run compile && npm run run",
+        "postinstall": "npx tsc"
+    },
+    "author": "jtsshieh",
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.ts": "npm run lint",
+        "*.{ts,css,md}": "npm run prettier"
+    }
+}
