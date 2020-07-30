@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { Client } from 'eris';
+import path from 'path';
 import { initGuildModel } from './database/models/Guild';
 import Database from './database/Sequelize';
 import CommandHandler from './handlers/CommandHandler/CommandHandler';
@@ -34,10 +35,12 @@ export default class UtillyClient extends Client {
     }
 
     async load(): Promise<void> {
-        await this.ModuleHandler.loadModules(__dirname + '\\modules');
+        await this.ModuleHandler.loadModules(path.join(__dirname, 'modules'));
         this.ModuleHandler.attachModules();
 
-        await this.CommandHandler.loadCommands(__dirname + '\\commands');
+        await this.CommandHandler.loadCommands(
+            path.join(__dirname, 'commands')
+        );
         this.CommandHandler.attach();
         console.log('');
 
