@@ -38,6 +38,9 @@
             "pre-commit": "lint-staged"
         }
     },
+    "engines": {
+        "node": ">=14.4.0"
+    },
     "lint-staged": {
         "*.ts": "npm run lint",
         "*.{ts,css,md}": "npm run prettier"
