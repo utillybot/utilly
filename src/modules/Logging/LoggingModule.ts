@@ -60,7 +60,14 @@ export default class LoggingModule extends DatabaseModule {
                 where: { guildID: guild.id },
             });
         }
-        const logChannel = guildRow.get(`logging_${type}LogChannel`);
+        const logChannelID: number = <number>(
+            guildRow.get(`logging_${type}LogChannel`)
+        );
+
+        if (logChannelID == null) return null;
+
+        const logChannel = guild.channels.get(logChannelID);
+
         if (
             logChannel != null &&
             logChannel != undefined &&

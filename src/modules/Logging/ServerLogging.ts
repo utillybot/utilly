@@ -298,14 +298,16 @@ export default class ServerLogging extends AttachableModule {
                 newChannel.guild,
                 guildRow
             ))
-        )
+        ) {
             return;
+        }
 
         const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
             'server',
             newChannel.guild,
             guildRow
         );
+
         if (logChannel == null) return;
 
         let embed = new EmbedBuilder();
