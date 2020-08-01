@@ -9,6 +9,14 @@ export type Subcommand = (
     args: string[],
     guildRow?: Guild
 ) => void;
+
+export type GuildSubcommand = (
+    bot: UtillyClient,
+    message: Message,
+    args: string[],
+    guildRow: Guild
+) => void;
+
 export type Precheck = (
     bot: UtillyClient,
     message: Message,
@@ -16,13 +24,20 @@ export type Precheck = (
     guildRow?: Guild
 ) => Promise<boolean>;
 
+export type GuildPrecheck = (
+    bot: UtillyClient,
+    message: Message,
+    args: string[],
+    guildRow: Guild
+) => Promise<boolean>;
+
 /**
  * Handles Subcommands on request from a Command
  */
 export class SubcommandHandler {
-    private subCommandMap: Map<string, Subcommand>;
-    private preChecks: Precheck[];
-    private logger: Logger;
+    protected subCommandMap: Map<string, Subcommand>;
+    protected preChecks: Precheck[];
+    protected logger: Logger;
 
     constructor(logger: Logger) {
         this.subCommandMap = new Map();
@@ -59,39 +74,28 @@ export class SubcommandHandler {
     async handle(
         bot: UtillyClient,
         message: Message,
-        args: string[]
+        args: string[],
+        guildRow?: Guild
     ): Promise<boolean> {
         const command = args[0];
-        if (this.subCommandMap.has(command)) {
-            const newArgs = [...args];
-            newArgs.shift();
-            for (let i = 0; i < this.preChecks.length; i++) {
+        const subCommand = this.subCommandMap.get(command);
+        if (subCommand == undefined) return false;
+        const newArgs = [...args];
+        newArgs.shift();
+        for (let i = 0; i < this.preChecks.length; i++) {
+            if (guildRow) {
+                if (!(await this.preChecks[i](bot, message, newArgs, guildRow)))
+                    return true;
+            } else {
                 if (!(await this.preChecks[i](bot, message, newArgs)))
                     return true;
             }
-            this.subCommandMap.get(command)(bot, message, newArgs);
-            return true;
         }
-        return false;
-    }
-
-    async handleGuild(
-        bot: UtillyClient,
-        message: Message,
-        args: string[],
-        guildRow: Guild
-    ): Promise<boolean> {
-        const command = args[0];
-        if (this.subCommandMap.has(command)) {
-            const newArgs = [...args];
-            newArgs.shift();
-            for (let i = 0; i < this.preChecks.length; i++) {
-                if (!(await this.preChecks[i](bot, message, newArgs, guildRow)))
-                    return true;
-            }
-            this.subCommandMap.get(command)(bot, message, newArgs, guildRow);
-            return true;
+        if (guildRow) {
+            subCommand(bot, message, newArgs, guildRow);
+        } else {
+            subCommand(bot, message, newArgs);
         }
-        return false;
+        return true;
     }
 }

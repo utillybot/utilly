@@ -13,7 +13,7 @@ export default abstract class Command {
     help: ICommandHelp;
     bot: UtillyClient;
     settings: ICommandSettings;
-    parent: CommandModule;
+    parent?: CommandModule;
 
     constructor(bot: UtillyClient) {
         this.bot = bot;

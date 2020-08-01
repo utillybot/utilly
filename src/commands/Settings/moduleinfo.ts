@@ -15,7 +15,11 @@ export default class SettingsCommandModule extends CommandModule {
     ): Promise<boolean> {
         if (message.channel instanceof GuildChannel) {
             if (message.author.id == message.channel.guild.ownerID) return true;
-            if (message.member.permission.has('administrator')) return true;
+            if (
+                message.member &&
+                message.member.permission.has('administrator')
+            )
+                return true;
         }
         return false;
     }

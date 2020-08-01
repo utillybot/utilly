@@ -2,7 +2,8 @@ import CommandModule from '../../handlers/CommandHandler/CommandModule/CommandMo
 import LoggingModule from '../../modules/Logging/LoggingModule';
 
 export default class LoggingCommandModule extends CommandModule {
-    parent: LoggingModule;
+    parent?: LoggingModule;
+
     constructor() {
         super();
         this.info.name = 'Logging';

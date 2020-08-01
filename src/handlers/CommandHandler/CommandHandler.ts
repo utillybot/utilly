@@ -39,23 +39,22 @@ export default class CommandHandler {
      * @param directory - the directory to load commands from
      */
     async loadCommands(directory: string): Promise<void> {
-        this.logger.handler(
-            `Started Loading Commands in Directory ${directory}.`
-        );
+        this.logger.handler(`Loading Commands in Directory ${directory}.`);
         const modules = await fs.readdir(directory);
+
         for (const module of modules) {
-            const commands = await fs.readdir(path.join(directory, module));
+            let commands = await fs.readdir(path.join(directory, module));
+            commands = commands.filter(value => value.endsWith('.js'));
+
             const moduleObj: CommandModule = new (
                 await import(path.join(directory, module, 'moduleinfo'))
             ).default();
             this.logger.handler(
-                `  Started Loading Command Module "${moduleObj.info.name}".`
+                `  Loading Command Module "${moduleObj.info.name}".`
             );
             for (const command of commands) {
                 if (command == 'moduleinfo.js') continue;
-                this.logger.handler(
-                    `    Started Loading Command "${command}".`
-                );
+                this.logger.handler(`    Loading Command "${command}".`);
                 const commandObj: Command = new (
                     await import(path.join(directory, module, command))
                 ).default(this.bot);
@@ -84,6 +83,10 @@ export default class CommandHandler {
     linkModules(modules: Map<string, Module>): void {
         for (const [commandModuleName, commandModule] of this.commandModules) {
             commandModule.parent = modules.get(commandModuleName);
+            if (commandModule.parent == undefined)
+                throw new Error(
+                    `Linking error for module ${commandModuleName}`
+                );
             this.logger.handler(
                 `Linking Command Module "${commandModuleName}" with module "${commandModule.parent.constructor.name}"`
             );
@@ -112,8 +115,8 @@ export default class CommandHandler {
     private async messageCreate(message: Message): Promise<void> {
         if (message.author.bot) return;
 
-        let prefix: string = null;
-        let prefixes: string[];
+        let prefix: string | undefined;
+        let prefixes: string[] = [];
 
         let guildRow = null;
 
@@ -130,7 +133,7 @@ export default class CommandHandler {
             prefix = 'u!';
         }
 
-        if (prefix != null) {
+        if (prefix != undefined) {
             if (!message.content.startsWith(prefix)) return;
         } else {
             for (let i = 0; i < prefixes.length; i++) {
@@ -145,22 +148,56 @@ export default class CommandHandler {
 
         const args = message.content.slice(prefix.length).trim().split(/ +/g);
         const command = args.shift();
+        if (!command) return;
 
-        let commandObj: Command = null;
+        let commandObj: Command | undefined;
         if (this.commands.has(command)) {
             commandObj = this.commands.get(command);
+            if (!commandObj)
+                throw new Error(
+                    `Command object ${command} exists in the map but is not getable...`
+                );
+            if (!commandObj.parent)
+                throw new Error(
+                    `Command object ${commandObj.help.name} doesn't have a parent.`
+                );
 
-            if (!(await commandObj.parent.checkPermission(this.bot, message)))
+            if (!(await commandObj.parent.checkPermission(this.bot, message))) {
+                message.channel.createMessage(
+                    "Uh oh, it looks like you don't have permission to run this command"
+                );
                 return;
-
-            if (!(await commandObj.checkPermission(this.bot, message))) return;
+            }
+            if (!(await commandObj.checkPermission(this.bot, message))) {
+                message.channel.createMessage(
+                    "Uh oh, it looks like you don't have permission to run this command"
+                );
+                return;
+            }
         } else if (this.aliases.has(command)) {
             commandObj = this.aliases.get(command);
+            if (!commandObj)
+                throw new Error(
+                    `Command object ${command} exists in the map but is not getable...`
+                );
+            if (!commandObj.parent)
+                throw new Error(
+                    `Command object ${commandObj.help.name} doesn't have a parent.`
+                );
 
-            if (!(await commandObj.parent.checkPermission(this.bot, message)))
+            if (!(await commandObj.parent.checkPermission(this.bot, message))) {
+                message.channel.createMessage(
+                    "Uh oh, it looks like you don't have permission to run this command"
+                );
                 return;
+            }
 
-            if (!(await commandObj.checkPermission(this.bot, message))) return;
+            if (!(await commandObj.checkPermission(this.bot, message))) {
+                message.channel.createMessage(
+                    "Uh oh, it looks like you don't have permission to run this command"
+                );
+                return;
+            }
         } else {
             return;
         }

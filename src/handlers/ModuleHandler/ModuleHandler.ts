@@ -22,23 +22,25 @@ export default class ModuleHandler {
      * @param directory - the directory to load modules from
      */
     async loadModules(directory: string): Promise<void> {
-        this.logger.handler(
-            `Started Loading Modules in Directory ${directory}.`
-        );
+        this.logger.handler(`Loading Modules in Directory ${directory}.`);
         const modules = await fs.readdir(directory);
         for (let i = 0; i < modules.length; i++) {
             const module = modules[i];
-            const subModules = await fs.readdir(path.join(directory, module));
+
+            let subModules = await fs.readdir(path.join(directory, module));
+            subModules = subModules.filter(value => value.endsWith('.js'));
+
             const moduleObj: Module = new (
                 await import(path.join(directory, module, `${module}Module`))
             ).default(this.bot);
-            this.logger.handler(`  Started Loading Module "${module}".`);
+            this.logger.handler(`  Loading Module "${module}".`);
+
             for (let j = 0; j < subModules.length; j++) {
                 const subModule = subModules[j];
+
                 if (subModule == `${module}Module.js`) continue;
-                this.logger.handler(
-                    `    Started Loading Submodule "${subModule}".`
-                );
+
+                this.logger.handler(`    Loading Submodule "${subModule}".`);
                 const submoduleObj: Submodule = new (
                     await import(path.join(directory, module, subModule))
                 ).default(this.bot);
@@ -47,6 +49,7 @@ export default class ModuleHandler {
                     submoduleObj.constructor.name,
                     submoduleObj
                 );
+
                 this.logger.handler(
                     `    Finished Loading Submodule "${submoduleObj.constructor.name}".`
                 );

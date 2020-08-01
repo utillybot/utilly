@@ -7,7 +7,7 @@ import LoggingModule from './LoggingModule';
  * Logging Module for Messages
  */
 export default class MessageLogging extends AttachableModule {
-    parentModule: LoggingModule;
+    parentModule?: LoggingModule;
 
     attach(): void {
         this.bot.on('messageDelete', this.messageDelete.bind(this));
@@ -34,7 +34,7 @@ export default class MessageLogging extends AttachableModule {
             message.author
                 ? `${message.author.username}#${message.author.discriminator}`
                 : '',
-            null,
+            undefined,
             message.author ? message.author.avatarURL : ''
         );
         embed.setFooter(`Message ID: ${message.id}`);
@@ -78,6 +78,10 @@ export default class MessageLogging extends AttachableModule {
     private async messageDeleteBulk(
         messages: Message<TextChannel>[]
     ): Promise<void> {
+        if (this.parentModule == undefined)
+            throw new Error(
+                'Injection error: parent module not injected into module.'
+            );
         const guildRow = await this.parentModule.getGuildRow(
             messages[0].channel.guild
         );
@@ -89,7 +93,7 @@ export default class MessageLogging extends AttachableModule {
             ))
         )
             return;
-        const logChannel: TextChannel = await this.parentModule.getLogChannel(
+        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
             'message',
             messages[0].channel.guild,
             guildRow
@@ -110,6 +114,10 @@ export default class MessageLogging extends AttachableModule {
      * @param message - the message deleted
      */
     private async messageDelete(message: Message<TextChannel>): Promise<void> {
+        if (this.parentModule == undefined)
+            throw new Error(
+                'Injection error: parent module not injected into module.'
+            );
         const guildRow = await this.parentModule.getGuildRow(
             message.channel.guild
         );
@@ -121,7 +129,7 @@ export default class MessageLogging extends AttachableModule {
             ))
         )
             return;
-        const logChannel: TextChannel = await this.parentModule.getLogChannel(
+        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
             'message',
             message.channel.guild,
             guildRow
@@ -153,6 +161,10 @@ export default class MessageLogging extends AttachableModule {
     ): Promise<void> {
         if (oldMessage == null) return;
         if (oldMessage.content == message.content) return;
+        if (this.parentModule == undefined)
+            throw new Error(
+                'Injection error: parent module not injected into module.'
+            );
 
         const guildRow = await this.parentModule.getGuildRow(
             message.channel.guild
@@ -165,7 +177,7 @@ export default class MessageLogging extends AttachableModule {
             ))
         )
             return;
-        const logChannel: TextChannel = await this.parentModule.getLogChannel(
+        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
             'message',
             message.channel.guild,
             guildRow

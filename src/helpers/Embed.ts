@@ -38,6 +38,7 @@ export default class EmbedBuilder implements Embed {
      * @param inline - if the field will be inline
      */
     addField(name: string, value: string, inline = false): EmbedBuilder {
+        if (this.fields == undefined) this.fields = [];
         this.fields.push({ name, value, inline });
         return this;
     }

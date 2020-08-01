@@ -5,7 +5,7 @@ import EmbedBuilder from '../../helpers/Embed';
 import GeneralCommandModule from './moduleinfo';
 
 export default class Ping extends Command {
-    parent: GeneralCommandModule;
+    parent?: GeneralCommandModule;
 
     constructor(bot: UtillyClient) {
         super(bot);
@@ -31,11 +31,13 @@ export default class Ping extends Command {
                 `${m.timestamp - message.timestamp}ms`,
                 true
             );
-            embed.addField(
-                'Shard Id',
-                message.member.guild.shard.id.toString(),
-                true
-            );
+            if (message.member != undefined) {
+                embed.addField(
+                    'Shard Id',
+                    message.member.guild.shard.id.toString(),
+                    true
+                );
+            }
             embed.setTimestamp();
             embed.setFooter(
                 `Requested by ${message.author.username}#${message.author.discriminator}`,

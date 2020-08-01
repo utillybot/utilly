@@ -8,7 +8,7 @@ import { ModuleInfo } from '../../helpers/Modules';
 import GeneralCommandModule from './moduleinfo';
 
 export default class Help extends Command {
-    parent: GeneralCommandModule;
+    parent?: GeneralCommandModule;
 
     constructor(bot: UtillyClient) {
         super(bot);
@@ -89,6 +89,8 @@ export default class Help extends Command {
                     );
                     embed.setDescription(ModuleInfo[item]);
                     for (const command of bot.CommandHandler.commandsObjects) {
+                        if (command.parent == undefined)
+                            throw new Error('Injection failure');
                         if (command.parent.info.name.toLowerCase() != item)
                             continue;
                         embed.addField(
@@ -119,6 +121,11 @@ export default class Help extends Command {
                     let command = bot.CommandHandler.commands.get(item);
                     if (!command)
                         command = bot.CommandHandler.aliases.get(item);
+                    if (!command) return;
+
+                    if (command.parent == undefined)
+                        throw new Error('Injection failure');
+
                     embed.setTitle(`Help for \`${command.help.name}\` command`);
 
                     embed.setDescription(command.help.description);

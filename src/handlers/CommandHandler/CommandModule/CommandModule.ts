@@ -12,7 +12,7 @@ export default abstract class CommandModule {
     info: ICommandModuleInfo;
     commands: Map<string, Command>;
     aliases: Map<string, Command>;
-    parent: Module;
+    parent?: Module;
 
     constructor() {
         this.info = {

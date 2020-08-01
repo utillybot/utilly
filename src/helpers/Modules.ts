@@ -1,6 +1,6 @@
-export const ModuleInfo = {
+export const ModuleInfo: Record<string, string> = {
     logging:
-        'The logging module allows you to set up channels where server events can be logged. For example, when a message is deleted or a channel is created and those events are enabled, the bot will log the event in your specified channel. This is useful for moderating actions or keeping track or deleted/edited messages.',
+        'The logging module allows you to setup channels where events of the server such as message editing or role creating can be logged.',
 };
 
 export const Modules = [...Object.keys(ModuleInfo)];

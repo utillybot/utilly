@@ -1,7 +1,6 @@
 import {
     AnyGuildChannel,
     CategoryChannel,
-    Constants,
     Guild,
     GuildChannel,
     OldGuildChannel,
@@ -15,6 +14,7 @@ import EmbedBuilder from '../../helpers/Embed';
 import {
     HumanPermissions,
     PermissionList,
+    Permissions,
 } from '../../helpers/PermissionConstants';
 import LoggingModule from './LoggingModule';
 
@@ -24,7 +24,7 @@ import LoggingModule from './LoggingModule';
  * Logging Module for Server Events
  */
 export default class ServerLogging extends AttachableModule {
-    parentModule: LoggingModule;
+    parentModule?: LoggingModule;
 
     attach(): void {
         this.bot.on('channelCreate', this.channelCreate.bind(this));
@@ -51,7 +51,7 @@ export default class ServerLogging extends AttachableModule {
 
         if (partial) return embed;
 
-        embed.setAuthor(guild.name, null, guild.iconURL);
+        embed.setAuthor(guild.name, undefined, guild.iconURL);
         embed.setFooter(`Server ID: ${guild.id}`);
 
         return embed;
@@ -68,6 +68,9 @@ export default class ServerLogging extends AttachableModule {
         role: Role,
         oldRole: Role
     ): Promise<void> {
+        if (this.parentModule == undefined)
+            throw new Error('Parent Module of Server Logging not injected');
+
         const guildRow = await this.parentModule.getGuildRow(guild);
         if (
             !(await this.parentModule.preChecks(
@@ -77,7 +80,8 @@ export default class ServerLogging extends AttachableModule {
             ))
         )
             return;
-        const logChannel: TextChannel = await this.parentModule.getLogChannel(
+
+        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
             'server',
             guild,
             guildRow
@@ -102,44 +106,43 @@ export default class ServerLogging extends AttachableModule {
         const updatedRoleInfo =
             `${
                 role.color != oldRole.color
-                    ? `**Color**: #${oldRole.color.toString(
-                          16
-                      )} ➜ #${role.color.toString(16)}\n`
+                    ? `**Color**: #${oldRole.color.toString(16)}` +
+                      ` ➜ #${role.color.toString(16)}\n`
                     : ''
             }` +
             `${
                 role.hoist != oldRole.hoist
                     ? `**Displayed Seperately**: ${
                           oldRole.hoist ? 'Yes' : 'No'
-                      } ➜ ${role.hoist ? 'Yes' : 'No'}\n`
+                      } ` + `➜ ${role.hoist ? 'Yes' : 'No'}\n`
                     : ''
             }` +
             `${
                 role.mentionable != oldRole.mentionable
                     ? `**Mentionable**: ${
                           oldRole.mentionable ? 'Yes' : 'No'
-                      } ➜ ${role.mentionable ? 'Yes' : 'No'}\n`
+                      } ` + `➜ ${role.mentionable ? 'Yes' : 'No'}\n`
                     : ''
             }` +
             `${
                 role.managed != oldRole.managed
-                    ? `**Managed**: ${oldRole.managed ? 'Yes' : 'No'} ➜ ${
-                          role.managed ? 'Yes' : 'No'
-                      }`
+                    ? `**Managed**: ${oldRole.managed ? 'Yes' : 'No'} ` +
+                      `➜ ${role.managed ? 'Yes' : 'No'}`
                     : ''
             }`;
         if (updatedRoleInfo != '') embed.addField('Info', updatedRoleInfo);
 
         // Prepare updates to the permissions
         let permissionField = '';
-        for (const permission of PermissionList) {
+        for (let i = 0; i < PermissionList.length; i++) {
+            const permission = PermissionList[i];
             if (
                 oldRole.permissions.has(permission) &&
                 !role.permissions.has(permission)
             ) {
                 //Permissions go from allow to deny
                 permissionField += `${
-                    HumanPermissions[Constants.Permissions[permission]]
+                    HumanPermissions[Permissions[permission]]
                 } : ✅ ➜ ❎\n`;
             } else if (
                 !oldRole.permissions.has(permission) &&
@@ -147,7 +150,7 @@ export default class ServerLogging extends AttachableModule {
             ) {
                 //Permissiongs go from deny to allow
                 permissionField += `${
-                    HumanPermissions[Constants.Permissions[permission]]
+                    HumanPermissions[Permissions[permission]]
                 } : ❎ ➜ ✅\n`;
             }
         }
@@ -155,7 +158,7 @@ export default class ServerLogging extends AttachableModule {
             embed.addField('Permissions', permissionField, true);
 
         // Final additions and send
-        if (embed.fields.length == 0) return;
+        if (embed.fields == undefined || embed.fields.length == 0) return;
         embed = this.buildEmbed(embed, guild);
         logChannel.createMessage({ embed });
     }
@@ -166,6 +169,9 @@ export default class ServerLogging extends AttachableModule {
      * @param role - the deleted role
      */
     private async guildRoleDelete(guild: Guild, role: Role): Promise<void> {
+        if (this.parentModule == undefined)
+            throw new Error('Parent Module of Server Logging not injected');
+
         const guildRow = await this.parentModule.getGuildRow(guild);
         if (
             !(await this.parentModule.preChecks(
@@ -175,7 +181,8 @@ export default class ServerLogging extends AttachableModule {
             ))
         )
             return;
-        const logChannel: TextChannel = await this.parentModule.getLogChannel(
+
+        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
             'server',
             guild,
             guildRow
@@ -199,9 +206,10 @@ export default class ServerLogging extends AttachableModule {
 
         // Prepare permission info
         let permissionField = '';
-        for (const permission of PermissionList) {
+        for (let i = 0; i < PermissionList.length; i++) {
+            const permission = PermissionList[i];
             permissionField += `${
-                HumanPermissions[Constants.Permissions[permission]]
+                HumanPermissions[Permissions[permission]]
             } : ${role.permissions.has(permission) ? '✅' : '❎'}\n`;
         }
         if (permissionField != '')
@@ -218,6 +226,9 @@ export default class ServerLogging extends AttachableModule {
      * @param role - the created role
      */
     private async guildRoleCreate(guild: Guild, role: Role): Promise<void> {
+        if (this.parentModule == undefined)
+            throw new Error('Parent Module of Server Logging not injected');
+
         const guildRow = await this.parentModule.getGuildRow(guild);
         if (
             !(await this.parentModule.preChecks(
@@ -227,7 +238,8 @@ export default class ServerLogging extends AttachableModule {
             ))
         )
             return;
-        const logChannel: TextChannel = await this.parentModule.getLogChannel(
+
+        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
             'server',
             guild,
             guildRow
@@ -253,9 +265,10 @@ export default class ServerLogging extends AttachableModule {
 
         // Prepare permission info
         let permissionField = '';
-        for (const permission of PermissionList) {
+        for (let i = 0; i < PermissionList.length; i++) {
+            const permission = PermissionList[i];
             permissionField += `${
-                HumanPermissions[Constants.Permissions[permission]]
+                HumanPermissions[Permissions[permission]]
             } : ${role.permissions.has(permission) ? '✅' : '❎'}\n`;
         }
         if (permissionField != '')
@@ -275,6 +288,9 @@ export default class ServerLogging extends AttachableModule {
         newChannel: GuildChannel,
         oldChannel: OldGuildChannel
     ): Promise<void> {
+        if (this.parentModule == undefined)
+            throw new Error('Parent Module of Server Logging not injected');
+
         const guildRow = await this.parentModule.getGuildRow(newChannel.guild);
         if (
             !(await this.parentModule.preChecks(
@@ -284,7 +300,8 @@ export default class ServerLogging extends AttachableModule {
             ))
         )
             return;
-        const logChannel: TextChannel = await this.parentModule.getLogChannel(
+
+        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
             'server',
             newChannel.guild,
             guildRow
@@ -292,159 +309,110 @@ export default class ServerLogging extends AttachableModule {
         if (logChannel == null) return;
 
         let embed = new EmbedBuilder();
+        let overview = '';
+
+        if (newChannel.name != oldChannel.name) {
+            overview += `**Name**: ${oldChannel.name} ➜ ${newChannel.name}\n`;
+        }
 
         // Prepare Embed Header and Overview changes
         if (newChannel instanceof TextChannel) {
             embed.setTitle('Text Channel Updated');
             embed.setDescription(
-                `Target Channel: <#${newChannel.id}>\nChannel ID: ${newChannel.id}`
+                `Channel: <#${newChannel.id}>\nChannel ID: ${newChannel.id}`
             );
 
             if (
-                newChannel.name != oldChannel.name ||
-                newChannel.parentID != oldChannel.parentID ||
-                newChannel.nsfw != oldChannel.nsfw ||
-                newChannel.topic != oldChannel.topic ||
-                newChannel.rateLimitPerUser != oldChannel.rateLimitPerUser
-            ) {
-                embed.addField(
-                    'Overview',
-                    `${
-                        newChannel.name != oldChannel.name
-                            ? `**Name**: ${oldChannel.name} ➜ ${newChannel.name}\n`
-                            : ''
+                newChannel.topic != oldChannel.topic &&
+                oldChannel.topic != undefined &&
+                newChannel.topic != undefined
+            )
+                overview +=
+                    `**Topic**: ${oldChannel.topic ?? '(cleared)'}` +
+                    ` ➜ ${newChannel.topic ?? '(cleared)'}\n`;
+
+            if (newChannel.rateLimitPerUser != oldChannel.rateLimitPerUser)
+                overview +=
+                    `**Slowmode**: ${
+                        oldChannel.rateLimitPerUser != undefined
+                            ? secondsToString(oldChannel.rateLimitPerUser)
+                            : 'Off'
                     }` +
-                        `${
-                            newChannel.topic != oldChannel.topic
-                                ? `**Topic**: ${
-                                      oldChannel.topic
-                                          ? oldChannel.topic
-                                          : '(cleared)'
-                                  } ➜ ${
-                                      newChannel.topic
-                                          ? newChannel.topic
-                                          : '(cleared)'
-                                  }\n`
-                                : ''
-                        }` +
-                        `${
-                            newChannel.rateLimitPerUser !=
-                            oldChannel.rateLimitPerUser
-                                ? `**Slowmode**: ${
-                                      secondsToString(
-                                          oldChannel.rateLimitPerUser
-                                      )
-                                          ? secondsToString(
-                                                oldChannel.rateLimitPerUser
-                                            )
-                                          : 'Off'
-                                  }` +
-                                  ` ➜ ${
-                                      secondsToString(
-                                          newChannel.rateLimitPerUser
-                                      )
-                                          ? secondsToString(
-                                                newChannel.rateLimitPerUser
-                                            )
-                                          : 'Off'
-                                  }\n`
-                                : ''
-                        }` +
-                        `${
-                            newChannel.nsfw != oldChannel.nsfw
-                                ? `**NSFW**: ${
-                                      oldChannel.nsfw ? '✅' : '❎'
-                                  } ➜ ${newChannel.nsfw ? '✅' : '❎'}\n`
-                                : ''
-                        }` +
-                        `${
-                            newChannel.parentID != oldChannel.parentID
-                                ? `**Category**: ${
-                                      newChannel.guild.channels.get(
-                                          oldChannel.parentID
-                                      )
-                                          ? newChannel.guild.channels.get(
-                                                oldChannel.parentID
-                                            ).name
-                                          : '(none)'
-                                  }` +
-                                  ` ➜ ${
-                                      newChannel.guild.channels.get(
-                                          newChannel.parentID
-                                      )
-                                          ? newChannel.guild.channels.get(
-                                                newChannel.parentID
-                                            ).name
-                                          : '(none)'
-                                  }\n`
-                                : ''
-                        }`
-                );
+                    ` ➜ ${
+                        newChannel.rateLimitPerUser != undefined
+                            ? secondsToString(newChannel.rateLimitPerUser)
+                            : 'Off'
+                    }\n`;
+
+            if (newChannel.nsfw != oldChannel.nsfw)
+                overview +=
+                    `**NSFW**: ${oldChannel.nsfw ? '✅' : '❎'} ` +
+                    `➜ ${newChannel.nsfw ? '✅' : '❎'}\n`;
+
+            if (newChannel.parentID != oldChannel.parentID) {
+                overview +=
+                    `**Category**: ${
+                        (oldChannel.parentID &&
+                            newChannel.guild.channels.get(oldChannel.parentID)
+                                ?.name) ??
+                        '(none)'
+                    }` +
+                    ` ➜ ${
+                        (newChannel.parentID &&
+                            newChannel.guild.channels.get(newChannel.parentID)
+                                ?.name) ??
+                        '(none)'
+                    }\n`;
             }
+
+            if (overview != '') embed.addField('Overview', overview);
         } else if (newChannel instanceof VoiceChannel) {
             embed.setTitle('Voice Channel Updated');
             embed.setDescription(
-                `Target Channel: ${newChannel.name}\nChannel ID: ${newChannel.id}`
+                `Channel: ${newChannel.name}\nChannel ID: ${newChannel.id}`
             );
-
+            console.log(newChannel.userLimit, oldChannel.userLimit);
             if (
-                newChannel.name != oldChannel.name ||
-                newChannel.parentID != oldChannel.parentID ||
-                newChannel.bitrate != oldChannel.bitrate ||
-                newChannel.userLimit != oldChannel.userLimit
+                newChannel.bitrate != oldChannel.bitrate &&
+                newChannel.bitrate != undefined &&
+                oldChannel.bitrate != undefined
             ) {
-                embed.addField(
-                    'Overview',
-                    `${
-                        newChannel.name != oldChannel.name
-                            ? `**Name**: ${oldChannel.name} ➜ ${newChannel.name}\n`
-                            : ''
-                    }` +
-                        `${
-                            newChannel.bitrate != oldChannel.bitrate
-                                ? `**Bitrate**: ${
-                                      oldChannel.bitrate / 1000
-                                  }kbps ➜ ${newChannel.bitrate / 1000}kbps\n`
-                                : ''
-                        }` +
-                        `${
-                            newChannel.userLimit != oldChannel.userLimit
-                                ? `**User Limit**: ${
-                                      oldChannel.userLimit == 0
-                                          ? 'No Limit'
-                                          : `${oldChannel.userLimit} users`
-                                  } ➜ ` +
-                                  `${
-                                      newChannel.userLimit == 0
-                                          ? 'No Limit'
-                                          : `${newChannel.userLimit} users`
-                                  }\n`
-                                : ''
-                        }` +
-                        `${
-                            newChannel.parentID != oldChannel.parentID
-                                ? `**Category**: ${
-                                      newChannel.guild.channels.get(
-                                          oldChannel.parentID
-                                      )
-                                          ? newChannel.guild.channels.get(
-                                                oldChannel.parentID
-                                            ).name
-                                          : '(none)'
-                                  }` +
-                                  ` ➜ ${
-                                      newChannel.guild.channels.get(
-                                          newChannel.parentID
-                                      )
-                                          ? newChannel.guild.channels.get(
-                                                newChannel.parentID
-                                            ).name
-                                          : '(none)'
-                                  }\n`
-                                : ''
-                        }`
-                );
+                overview += `**Bitrate**: ${oldChannel.bitrate / 1000}kbps ➜ ${
+                    newChannel.bitrate / 1000
+                }kbps\n`;
             }
+
+            if (newChannel.userLimit != oldChannel.userLimit) {
+                overview +=
+                    `**User Limit**: ${
+                        oldChannel.userLimit == 0 ||
+                        oldChannel.userLimit == undefined
+                            ? 'No Limit'
+                            : `${oldChannel.userLimit} users`
+                    } ➜ ` +
+                    `${
+                        newChannel.userLimit == 0 ||
+                        newChannel.userLimit == undefined
+                            ? 'No Limit'
+                            : `${newChannel.userLimit} users`
+                    }\n`;
+            }
+            if (newChannel.parentID != oldChannel.parentID) {
+                overview +=
+                    `**Category**: ${
+                        (oldChannel.parentID &&
+                            newChannel.guild.channels.get(oldChannel.parentID)
+                                ?.name) ??
+                        '(none)'
+                    }` +
+                    ` ➜ ${
+                        (newChannel.parentID &&
+                            newChannel.guild.channels.get(newChannel.parentID)
+                                ?.name) ??
+                        '(none)'
+                    }\n`;
+            }
+            if (overview != '') embed.addField('Overview', overview);
         } else if (newChannel instanceof CategoryChannel) {
             embed.setTitle('Category Updated');
             embed.setDescription(
@@ -501,12 +469,12 @@ export default class ServerLogging extends AttachableModule {
                         newOverwrite.json[permission] == null
                     ) {
                         changedText += `${
-                            HumanPermissions[Constants.Permissions[permission]]
+                            HumanPermissions[Permissions[permission]]
                         } : ✅ ➜ ⬜\n`;
                         // If the new overwrite doesn't have this permission in allow, the permision has been denied
                     } else if (!newOverwrite.has(permission)) {
                         changedText += `${
-                            HumanPermissions[Constants.Permissions[permission]]
+                            HumanPermissions[Permissions[permission]]
                         } : ✅ ➜ ❎\n`;
                     }
                     // Check if the overwrite doesn't have the permission allowed
@@ -517,17 +485,17 @@ export default class ServerLogging extends AttachableModule {
                         newOverwrite.json[permission] == null
                     ) {
                         changedText += `${
-                            HumanPermissions[Constants.Permissions[permission]]
+                            HumanPermissions[Permissions[permission]]
                         } : ❎ ➜ ⬜\n`;
                         // If the new overwrite has this permission in allow, the permission has been allowed
                     } else if (newOverwrite.has(permission)) {
                         changedText += `${
-                            HumanPermissions[Constants.Permissions[permission]]
+                            HumanPermissions[Permissions[permission]]
                         } : ❎ ➜ ✅\n`;
                     }
                 }
                 // Add the updated text into the map
-                permissions.set(key, changedText);
+                if (changedText != null) permissions.set(key, changedText);
             }
 
             // If there is a new overwrite, loop through it
@@ -542,17 +510,17 @@ export default class ServerLogging extends AttachableModule {
                     // If the new overwrite doesn't have this permission in allow, an overwrite has been created, denying the permission
                     if (!newOverwrite.has(permission)) {
                         changedText += `${
-                            HumanPermissions[Constants.Permissions[permission]]
+                            HumanPermissions[Permissions[permission]]
                         } : ⬜ ➜ ❎\n`;
                         // If the new overwrite has this permission in allow, an overwrite has been created, allowing the permission
                     } else if (newOverwrite.has(permission)) {
                         changedText += `${
-                            HumanPermissions[Constants.Permissions[permission]]
+                            HumanPermissions[Permissions[permission]]
                         } : ⬜ ➜ ✅\n`;
                     }
 
                     // Add the updated text into the map
-                    permissions.set(key, changedText);
+                    if (changedText != null) permissions.set(key, changedText);
                 }
             }
         }
@@ -603,6 +571,10 @@ export default class ServerLogging extends AttachableModule {
      * @param channel - the deleted channel
      */
     private async channelDelete(channel: AnyGuildChannel): Promise<void> {
+        if (this.parentModule == undefined)
+            throw new Error(
+                'Injection error: parent module not injected into module.'
+            );
         const guildRow = await this.parentModule.getGuildRow(channel.guild);
 
         if (
@@ -613,7 +585,7 @@ export default class ServerLogging extends AttachableModule {
             ))
         )
             return;
-        const logChannel: TextChannel = await this.parentModule.getLogChannel(
+        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
             'server',
             channel.guild,
             guildRow
@@ -622,53 +594,40 @@ export default class ServerLogging extends AttachableModule {
 
         // Prepare embed
         let embed = new EmbedBuilder();
+        let info = '';
 
+        info += `**Name**: ${channel.name}\n`;
         // Add embed header and info
         if (channel instanceof TextChannel) {
             embed.setTitle('Text Channel Deleted');
-            embed.addField(
-                'Info',
-                `**Name**: ${channel.name}\n` +
-                    `${
-                        channel.parentID
-                            ? `**Category**: ${
-                                  channel.guild.channels.get(channel.parentID)
-                                      .name
-                              }`
-                            : ''
-                    }`
-            );
+            if (channel.parentID) {
+                info += `**Category**: ${
+                    channel.guild.channels.get(channel.parentID)?.name
+                }`;
+            }
+
+            if (info != '') embed.addField('Info', info);
         } else if (channel instanceof VoiceChannel) {
             embed.setTitle('Voice Channel Deleted');
-            embed.addField(
-                'Info',
-                `**Name**: ${channel.name}\n` +
-                    `${
-                        channel.parentID
-                            ? `**Category**: ${
-                                  channel.guild.channels.get(channel.parentID)
-                                      .name
-                              }`
-                            : ''
-                    }`
-            );
+            if (channel.parentID) {
+                info += `**Category**: ${
+                    channel.guild.channels.get(channel.parentID)?.name
+                }`;
+            }
+
+            if (info != '') embed.addField('Info', info);
         } else if (channel instanceof CategoryChannel) {
             embed.setTitle('Category Deleted');
-            embed.addField('Info', `**Name**: ${channel.name}\n`);
+            if (info != '') embed.addField('Info', info);
         } else {
             embed.setTitle('Channel Deleted');
-            embed.addField(
-                'Info',
-                `**Name**: ${channel.name}\n` +
-                    `${
-                        channel.parentID
-                            ? `**Category**: ${
-                                  channel.guild.channels.get(channel.parentID)
-                                      .name
-                              }`
-                            : ''
-                    }`
-            );
+            if (channel.parentID) {
+                info += `**Category**: ${
+                    channel.guild.channels.get(channel.parentID)?.name
+                }`;
+            }
+
+            if (info != '') embed.addField('Info', info);
         }
 
         // Setup permission map
@@ -696,7 +655,7 @@ export default class ServerLogging extends AttachableModule {
                 } else if (!value.json[permission]) {
                     changedText += `${HumanPermissions[value.deny]} : ❎\n`;
                 }
-                permissions.set(key, changedText);
+                if (changedText != null) permissions.set(key, changedText);
             }
         }
         // If any permission has been updated, the map size will be greater than 0
@@ -719,6 +678,10 @@ export default class ServerLogging extends AttachableModule {
      * @param channel - the created channel
      */
     private async channelCreate(channel: GuildChannel): Promise<void> {
+        if (this.parentModule == undefined)
+            throw new Error(
+                'Injection error: parent module not injected into module.'
+            );
         const guildRow = await this.parentModule.getGuildRow(channel.guild);
 
         if (
@@ -729,7 +692,7 @@ export default class ServerLogging extends AttachableModule {
             ))
         )
             return;
-        const logChannel: TextChannel = await this.parentModule.getLogChannel(
+        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
             'server',
             channel.guild,
             guildRow
@@ -738,53 +701,40 @@ export default class ServerLogging extends AttachableModule {
 
         // Prepare embed
         let embed = new EmbedBuilder();
+        let info = '';
 
-        // Add header and info
+        info += `**Name**: ${channel.name}\n`;
+        // Add embed header and info
         if (channel instanceof TextChannel) {
             embed.setTitle('Text Channel Created');
-            embed.addField(
-                'Info',
-                `**Name**: ${channel.name}\n` +
-                    `${
-                        channel.parentID
-                            ? `**Category**: ${
-                                  channel.guild.channels.get(channel.parentID)
-                                      .name
-                              }`
-                            : ''
-                    }`
-            );
+            if (channel.parentID) {
+                info += `**Category**: ${
+                    channel.guild.channels.get(channel.parentID)?.name
+                }`;
+            }
+
+            if (info != '') embed.addField('Info', info);
         } else if (channel instanceof VoiceChannel) {
             embed.setTitle('Voice Channel Created');
-            embed.addField(
-                'Info',
-                `**Name**: ${channel.name}\n` +
-                    `${
-                        channel.parentID
-                            ? `**Category**: ${
-                                  channel.guild.channels.get(channel.parentID)
-                                      .name
-                              }`
-                            : ''
-                    }`
-            );
+            if (channel.parentID) {
+                info += `**Category**: ${
+                    channel.guild.channels.get(channel.parentID)?.name
+                }`;
+            }
+
+            if (info != '') embed.addField('Info', info);
         } else if (channel instanceof CategoryChannel) {
             embed.setTitle('Category Created');
-            embed.addField('Info', `**Name**: ${channel.name}\n`);
+            if (info != '') embed.addField('Info', info);
         } else {
             embed.setTitle('Channel Created');
-            embed.addField(
-                'Info',
-                `**Name**: ${channel.name}\n` +
-                    `${
-                        channel.parentID
-                            ? `**Category**: ${
-                                  channel.guild.channels.get(channel.parentID)
-                                      .name
-                              }`
-                            : ''
-                    }`
-            );
+            if (channel.parentID) {
+                info += `**Category**: ${
+                    channel.guild.channels.get(channel.parentID)?.name
+                }`;
+            }
+
+            if (info != '') embed.addField('Info', info);
         }
 
         // Setup permission map
@@ -806,13 +756,15 @@ export default class ServerLogging extends AttachableModule {
 
             // Loop through the permissions and add a check or x depending on if the permission is allowed or denied
             for (const permission in value.json) {
+                console.log(permission);
+
                 let changedText = permissions.get(key);
                 if (value.json[permission]) {
                     changedText += `${HumanPermissions[value.allow]} : ✅\n`;
                 } else if (!value.json[permission]) {
                     changedText += `${HumanPermissions[value.deny]} : ❎\n`;
                 }
-                permissions.set(key, changedText);
+                if (changedText != null) permissions.set(key, changedText);
             }
         }
         // If any permission has been updated, the map size will be greater than 0

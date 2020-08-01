@@ -2,25 +2,25 @@ import { DataTypes, Model } from 'sequelize';
 import UtillyClient from '../../bot';
 
 export class Guild extends Model {
-    guildID: number;
+    public guildID!: number;
 
-    prefix: string[];
+    public prefix!: string[];
 
     // Logging Module
-    logging: boolean;
+    public logging!: boolean;
 
-    logging_messageLogChannel?: number;
-    logging_messageDelete: boolean;
-    logging_messageUpdate: boolean;
-    logging_messageDeleteBulk: boolean;
+    public logging_messageLogChannel!: number | null;
+    public logging_messageDelete!: boolean;
+    public logging_messageUpdate!: boolean;
+    public logging_messageDeleteBulk!: boolean;
 
-    logging_serverLogChannel?: number;
-    logging_channelCreate: boolean;
-    logging_channelDelete: boolean;
-    logging_channelUpdate: boolean;
-    logging_guildRoleCreate: boolean;
-    logging_guildRoleDelete: boolean;
-    logging_guildRoleUpdate: boolean;
+    public logging_serverLogChannel!: number | null;
+    public logging_channelCreate!: boolean;
+    public logging_channelDelete!: boolean;
+    public logging_channelUpdate!: boolean;
+    public logging_guildRoleCreate!: boolean;
+    public logging_guildRoleDelete!: boolean;
+    public logging_guildRoleUpdate!: boolean;
 
     toggleModule(module: string): void {
         if (this.get(module)) {

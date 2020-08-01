@@ -2,7 +2,8 @@ import CommandModule from '../../handlers/CommandHandler/CommandModule/CommandMo
 import GeneralModule from '../../modules/General/GeneralModule';
 
 export default class GeneralCommandModule extends CommandModule {
-    parent: GeneralModule;
+    parent?: GeneralModule;
+
     constructor() {
         super();
         this.info.name = 'General';

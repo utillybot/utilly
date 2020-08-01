@@ -1,4 +1,5 @@
 import Eris from 'eris';
+import UtillyClient from '../../../bot';
 import { Guild } from '../../../database/models/Guild';
 import Module from './Module';
 
@@ -7,6 +8,11 @@ import Module from './Module';
  */
 export default abstract class DatabaseModule extends Module {
     databaseEntry: string;
+
+    constructor(bot: UtillyClient) {
+        super(bot);
+        this.databaseEntry = 'none';
+    }
 
     async isEnabled(guild: Eris.Guild): Promise<boolean> {
         const [guildRow] = await Guild.findOrCreate({
@@ -21,6 +27,7 @@ export default abstract class DatabaseModule extends Module {
         } else if (!enabled) {
             return false;
         }
+        return false;
     }
 
     async isEnabledGuild(guild: Eris.Guild, guildRow: Guild): Promise<boolean> {
@@ -32,5 +39,6 @@ export default abstract class DatabaseModule extends Module {
         } else if (!enabled) {
             return false;
         }
+        return false;
     }
 }

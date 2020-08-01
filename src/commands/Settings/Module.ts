@@ -1,4 +1,4 @@
-import { GuildTextableChannel, Message } from 'eris';
+import { GuildTextableChannel, Message, TextableChannel } from 'eris';
 import UtillyClient from '../../bot';
 import { Guild } from '../../database/models/Guild';
 import GuildOnlyCommand from '../../handlers/CommandHandler/Command/GuildOnlyCommand';
@@ -32,12 +32,7 @@ export default class Module extends GuildOnlyCommand {
         guildRow: Guild
     ): Promise<void> {
         if (
-            !(await this.subCommandHandler.handleGuild(
-                bot,
-                message,
-                args,
-                guildRow
-            ))
+            !(await this.subCommandHandler.handle(bot, message, args, guildRow))
         ) {
             if (args.length == 0) {
                 const embed = new EmbedBuilder();
@@ -52,10 +47,11 @@ export default class Module extends GuildOnlyCommand {
 
     async enable(
         bot: UtillyClient,
-        message: Message<GuildTextableChannel>,
+        message: Message<TextableChannel>,
         args: string[],
-        guildRow: Guild
+        guildRow?: Guild
     ): Promise<void> {
+        if (guildRow == undefined) throw new Error('GuildRow undefined');
         const embed = new EmbedBuilder();
         embed.setTimestamp();
         embed.setFooter(
@@ -83,10 +79,11 @@ export default class Module extends GuildOnlyCommand {
 
     async disable(
         bot: UtillyClient,
-        message: Message<GuildTextableChannel>,
+        message: Message<TextableChannel>,
         args: string[],
-        guildRow: Guild
+        guildRow?: Guild
     ): Promise<void> {
+        if (guildRow == undefined) throw new Error('GuildRow undefined');
         const embed = new EmbedBuilder();
         embed.setTimestamp();
         embed.setFooter(
@@ -115,10 +112,11 @@ export default class Module extends GuildOnlyCommand {
 
     async toggle(
         bot: UtillyClient,
-        message: Message<GuildTextableChannel>,
+        message: Message<TextableChannel>,
         args: string[],
-        guildRow: Guild
+        guildRow?: Guild
     ): Promise<void> {
+        if (guildRow == undefined) throw new Error('GuildRow undefined');
         const embed = new EmbedBuilder();
         embed.setTimestamp();
         embed.setFooter(
@@ -156,10 +154,11 @@ export default class Module extends GuildOnlyCommand {
 
     async info(
         bot: UtillyClient,
-        message: Message<GuildTextableChannel>,
+        message: Message<TextableChannel>,
         args: string[],
-        guildRow: Guild
+        guildRow?: Guild
     ): Promise<void> {
+        if (guildRow == undefined) throw new Error('GuildRow undefined');
         const embed = new EmbedBuilder();
         embed.setTimestamp();
         embed.setFooter(
@@ -172,14 +171,16 @@ export default class Module extends GuildOnlyCommand {
         embed.setDescription(ModuleInfo[module]);
         embed.addField(
             'Status',
-            `This module is **${guildRow[module] ? 'enabled' : 'disabled'}**.`
+            `This module is **${
+                guildRow.get(module) ? 'enabled' : 'disabled'
+            }**.`
         );
         message.channel.createMessage({ embed });
     }
 
     async precheck(
         bot: UtillyClient,
-        message: Message<GuildTextableChannel>,
+        message: Message<TextableChannel>,
         args: string[]
     ): Promise<boolean> {
         const module = args[0] ? args[0].toLowerCase() : args[0];

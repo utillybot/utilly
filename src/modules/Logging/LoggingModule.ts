@@ -30,8 +30,6 @@ export default class LoggingModule extends DatabaseModule {
         guild: Eris.Guild,
         guildRow?: Guild
     ): Promise<boolean> {
-        if (guild == null) return false;
-
         if (guildRow == null) {
             [guildRow] = await Guild.findOrCreate({
                 where: { guildID: guild.id },
@@ -56,18 +54,19 @@ export default class LoggingModule extends DatabaseModule {
         type: string,
         guild: Eris.Guild,
         guildRow?: Guild
-    ): Promise<Eris.TextChannel> {
+    ): Promise<Eris.TextChannel | null> {
         if (guildRow == null) {
             [guildRow] = await Guild.findOrCreate({
                 where: { guildID: guild.id },
             });
         }
-        if (guildRow.get(`logging_${type}LogChannel`) != null) {
-            return <Eris.TextChannel>(
-                guild.channels.get(
-                    <string>guildRow.get(`logging_${type}LogChannel`)
-                )
-            );
+        const logChannel = guildRow.get(`logging_${type}LogChannel`);
+        if (
+            logChannel != null &&
+            logChannel != undefined &&
+            logChannel instanceof Eris.TextChannel
+        ) {
+            return logChannel;
         } else {
             return null;
         }
