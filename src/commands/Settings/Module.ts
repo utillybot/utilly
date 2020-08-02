@@ -1,6 +1,8 @@
 import { GuildTextableChannel, Message, TextableChannel } from 'eris';
+import { getCustomRepository } from 'typeorm';
 import UtillyClient from '../../bot';
-import { Guild } from '../../database/models/Guild';
+import { Guild } from '../../database/entity/Guild';
+import GuildRepository from '../../database/repository/GuildRepository';
 import GuildOnlyCommand from '../../handlers/CommandHandler/Command/GuildOnlyCommand';
 import { SubcommandHandler } from '../../handlers/CommandHandler/SubcommandHandler';
 import EmbedBuilder from '../../helpers/Embed';
@@ -60,15 +62,15 @@ export default class Module extends GuildOnlyCommand {
         );
         const module = args[0].toLowerCase();
 
-        if (guildRow.get(module)) {
+        if (guildRow[module]) {
             embed.setTitle('Module already enabled');
             embed.setDescription(
                 `The module \`${module}\` is already enabled.`
             );
             embed.setColor(0xff0000);
         } else {
-            guildRow.set(module, true);
-            guildRow.save();
+            guildRow[module] = true;
+            getCustomRepository(GuildRepository).save(guildRow);
 
             embed.setTitle('Module Enabled');
             embed.setDescription(`The module \`${module}\` has been enabled.`);
@@ -93,15 +95,15 @@ export default class Module extends GuildOnlyCommand {
 
         const module = args[0].toLowerCase();
 
-        if (!guildRow.get(module)) {
+        if (!guildRow[module]) {
             embed.setTitle('Module already disabled');
             embed.setDescription(
                 `The module \`${module}\` is already disabled.`
             );
             embed.setColor(0xff0000);
         } else {
-            guildRow.set(module, false);
-            guildRow.save();
+            guildRow[module] = false;
+            getCustomRepository(GuildRepository).save(guildRow);
 
             embed.setTitle('Module Disabled');
             embed.setDescription(`The module \`${module}\` has been disabled.`);
@@ -126,9 +128,13 @@ export default class Module extends GuildOnlyCommand {
 
         const module = args[0].toLowerCase();
 
-        const originalModuleSetting = guildRow.get(module);
-        guildRow.toggleModule(module);
-        const newModuleSetting = guildRow.get(module);
+        const originalModuleSetting = guildRow[module];
+        if (originalModuleSetting == true) {
+            guildRow[module] = false;
+        } else {
+            guildRow[module] = true;
+        }
+        const newModuleSetting = guildRow[module];
         if (originalModuleSetting == newModuleSetting) {
             embed.setTitle('Something went wrong');
             embed.setDescription(
@@ -138,7 +144,7 @@ export default class Module extends GuildOnlyCommand {
             );
             embed.setColor(0xff0000);
         } else {
-            guildRow.save();
+            getCustomRepository(GuildRepository).save(guildRow);
             embed.setTitle(
                 `Module ${newModuleSetting ? 'Enabled' : 'Disabled'}`
             );
@@ -171,9 +177,7 @@ export default class Module extends GuildOnlyCommand {
         embed.setDescription(ModuleInfo[module]);
         embed.addField(
             'Status',
-            `This module is **${
-                guildRow.get(module) ? 'enabled' : 'disabled'
-            }**.`
+            `This module is **${guildRow[module] ? 'enabled' : 'disabled'}**.`
         );
         message.channel.createMessage({ embed });
     }

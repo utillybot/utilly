@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 import { Client } from 'eris';
 import path from 'path';
-import { initGuildModel } from './database/models/Guild';
-import SequelizeDatabase from './database/Sequelize';
+import 'reflect-metadata';
+import Database from './database/Database';
 import CommandHandler from './handlers/CommandHandler/CommandHandler';
 import ModuleHandler from './handlers/ModuleHandler/ModuleHandler';
 import Logger from './helpers/Logger';
@@ -11,7 +11,7 @@ export default class UtillyClient extends Client {
     CommandHandler: CommandHandler;
     ModuleHandler: ModuleHandler;
     logger: Logger;
-    database: SequelizeDatabase;
+    database: Database;
 
     constructor() {
         dotenv.config();
@@ -21,15 +21,13 @@ export default class UtillyClient extends Client {
         this.logger = new Logger();
         this.ModuleHandler = new ModuleHandler(this, this.logger);
         this.CommandHandler = new CommandHandler(this, this.logger);
-        this.database = new SequelizeDatabase(this.logger);
+        this.database = new Database(this.logger);
 
         this.on('ready', this.readyEvent.bind(this));
     }
 
     async connectDatabase(): Promise<void> {
         await this.database.connect();
-        initGuildModel(this);
-        await this.database.alterSyncModels();
     }
 
     readyEvent(): void {

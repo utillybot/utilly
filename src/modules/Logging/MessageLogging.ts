@@ -7,7 +7,7 @@ import LoggingModule from './LoggingModule';
  * Logging Module for Messages
  */
 export default class MessageLogging extends AttachableModule {
-    parentModule?: LoggingModule;
+    parentModule!: LoggingModule;
 
     attach(): void {
         this.bot.on('messageDelete', this.messageDelete.bind(this));
@@ -16,28 +16,18 @@ export default class MessageLogging extends AttachableModule {
     }
 
     /**
-     * Adds a timestamp for partial builds and a message id and author info for full builds
+     * Adds a message id, author info, and a timestamp to an embed
      * @param embed - the embed builder
      * @param message - the message
-     * @param partial - if the embed build will be partial
      */
-    private buildEmbed(
-        embed: EmbedBuilder,
-        message: Message,
-        partial = false
-    ): EmbedBuilder {
-        embed.setTimestamp();
-
-        if (partial) return embed;
-
+    private buildEmbed(embed: EmbedBuilder, message: Message): EmbedBuilder {
         embed.setAuthor(
-            message.author
-                ? `${message.author.username}#${message.author.discriminator}`
-                : '',
+            `${message.author.username}#${message.author.discriminator}`,
             undefined,
-            message.author ? message.author.avatarURL : ''
+            message.author.avatarURL
         );
         embed.setFooter(`Message ID: ${message.id}`);
+        embed.setTimestamp();
 
         return embed;
     }
@@ -78,34 +68,26 @@ export default class MessageLogging extends AttachableModule {
     private async messageDeleteBulk(
         messages: Message<TextChannel>[]
     ): Promise<void> {
-        if (this.parentModule == undefined)
-            throw new Error(
-                'Injection error: parent module not injected into module.'
-            );
-        const guildRow = await this.parentModule.getGuildRow(
-            messages[0].channel.guild
-        );
-        if (
-            !(await this.parentModule.preChecks(
-                'messageDeleteBulk',
-                messages[0].channel.guild,
-                guildRow
-            ))
-        )
-            return;
-        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
-            'message',
+        const guildRow = await this.parentModule.selectGuildRow(
             messages[0].channel.guild,
-            guildRow
+            'messageDeleteBulk'
+        );
+
+        if (!guildRow.logging || !guildRow.logging_messageDeleteBulkEvent)
+            return;
+
+        const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+            messages[0].channel.guild,
+            guildRow.logging_messageDeleteBulkChannel
         );
         if (logChannel == null) return;
 
-        let embed: EmbedBuilder = new EmbedBuilder();
+        const embed: EmbedBuilder = new EmbedBuilder();
         embed.setColor(0xff0000);
         embed.setTitle(`${messages.length} Messages Bulk Deleted (Purged)`);
         embed.setDescription(`In channel <#${messages[0].channel.id}>`);
+        embed.setTimestamp();
 
-        embed = this.buildEmbed(embed, messages[0], true);
         logChannel.createMessage({ embed });
     }
 
@@ -114,25 +96,16 @@ export default class MessageLogging extends AttachableModule {
      * @param message - the message deleted
      */
     private async messageDelete(message: Message<TextChannel>): Promise<void> {
-        if (this.parentModule == undefined)
-            throw new Error(
-                'Injection error: parent module not injected into module.'
-            );
-        const guildRow = await this.parentModule.getGuildRow(
-            message.channel.guild
-        );
-        if (
-            !(await this.parentModule.preChecks(
-                'messageDelete',
-                message.channel.guild,
-                guildRow
-            ))
-        )
-            return;
-        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
-            'message',
+        const guildRow = await this.parentModule.selectGuildRow(
             message.channel.guild,
-            guildRow
+            'messageDelete'
+        );
+
+        if (!guildRow.logging || !guildRow.logging_messageDeleteEvent) return;
+
+        const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+            message.channel.guild,
+            guildRow.logging_messageDeleteChannel
         );
         if (logChannel == null) return;
 
@@ -161,26 +134,16 @@ export default class MessageLogging extends AttachableModule {
     ): Promise<void> {
         if (oldMessage == null) return;
         if (oldMessage.content == message.content) return;
-        if (this.parentModule == undefined)
-            throw new Error(
-                'Injection error: parent module not injected into module.'
-            );
-
-        const guildRow = await this.parentModule.getGuildRow(
-            message.channel.guild
-        );
-        if (
-            !(await this.parentModule.preChecks(
-                'messageUpdate',
-                message.channel.guild,
-                guildRow
-            ))
-        )
-            return;
-        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
-            'message',
+        const guildRow = await this.parentModule.selectGuildRow(
             message.channel.guild,
-            guildRow
+            'messageUpdate'
+        );
+
+        if (!guildRow.logging || !guildRow.logging_messageUpdateEvent) return;
+
+        const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+            message.channel.guild,
+            guildRow.logging_messageUpdateChannel
         );
         if (logChannel == null) return;
 

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Message } from 'eris';
 import UtillyClient from '../../../bot';
-import { Guild } from '../../../database/models/Guild';
+import { Guild } from '../../../database/entity/Guild';
 import Command from './Command';
 
 /**

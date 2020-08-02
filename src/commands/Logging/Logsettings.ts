@@ -1,6 +1,6 @@
 import { GuildTextableChannel, Message } from 'eris';
 import UtillyClient from '../../bot';
-import { Guild } from '../../database/models/Guild';
+import { Guild } from '../../database/entity/Guild';
 import GuildOnlyCommand from '../../handlers/CommandHandler/Command/GuildOnlyCommand';
 import EmbedBuilder from '../../helpers/Embed';
 import LoggingCommandModule from './moduleinfo';

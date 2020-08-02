@@ -1,6 +1,8 @@
 import Eris from 'eris';
+import { getCustomRepository, getRepository } from 'typeorm';
 import UtillyClient from '../../bot';
-import { Guild } from '../../database/models/Guild';
+import { Guild } from '../../database/entity/Guild';
+import GuildRepository from '../../database/repository/GuildRepository';
 import DatabaseModule from '../../handlers/ModuleHandler/Module/DatabaseModule';
 
 /**
@@ -13,57 +15,39 @@ export default class LoggingModule extends DatabaseModule {
     }
 
     async getGuildRow(guild: Eris.Guild): Promise<Guild> {
-        return (
-            await Guild.findOrCreate({
-                where: { guildID: guild.id },
-            })
-        )[0];
+        return await getCustomRepository(GuildRepository).findOrCreate(
+            guild.id
+        );
     }
 
-    /**
-     * Checks if an event and the logging module is enabled for a guild
-     * @param event - the event name
-     * @param guild - the guild object
-     */
-    async preChecks(
-        event: string,
-        guild: Eris.Guild,
-        guildRow?: Guild
-    ): Promise<boolean> {
-        if (guildRow == null) {
-            [guildRow] = await Guild.findOrCreate({
-                where: { guildID: guild.id },
-            });
+    async selectGuildRow(guild: Eris.Guild, type: string): Promise<Guild> {
+        const guildRepository = getRepository(Guild);
+        let guildRow = await guildRepository
+            .createQueryBuilder('user')
+            .where('user.guildID = :id', { id: guild.id })
+            .select([
+                'user.logging',
+                `user.logging_${type}Channel`,
+                `user.logging_${type}Event`,
+            ])
+            .getOne();
+        if (guildRow == undefined) {
+            guildRow = guildRepository.create();
+            guildRow.guildID = guild.id;
+            guildRepository.save(guildRow);
         }
-
-        if (guildRow == null) {
-            return false;
-        }
-        if (!guildRow.logging || !guildRow.get(`logging_${event}`)) {
-            return false;
-        }
-        return true;
+        return guildRow;
     }
 
     /**
      * Gets the log channel for a specific event in a guild
-     * @param type - the type of the log channel
-     * @param guild - the guild object
+     * @param guild - the guild to get the channel from
+     * @param logChannelID - the id of the channel
      */
-    async getLogChannel(
-        type: string,
+    getLogChannel(
         guild: Eris.Guild,
-        guildRow?: Guild
-    ): Promise<Eris.TextChannel | null> {
-        if (guildRow == null) {
-            [guildRow] = await Guild.findOrCreate({
-                where: { guildID: guild.id },
-            });
-        }
-        const logChannelID: number = <number>(
-            guildRow.get(`logging_${type}LogChannel`)
-        );
-
+        logChannelID: string | null
+    ): Eris.TextChannel | null {
         if (logChannelID == null) return null;
 
         const logChannel = guild.channels.get(logChannelID);
@@ -77,21 +61,5 @@ export default class LoggingModule extends DatabaseModule {
         } else {
             return null;
         }
-    }
-
-    async setLogChannel(
-        type: string,
-        guild: Eris.Guild,
-        channelID: string,
-        guildRow?: Guild
-    ): Promise<void> {
-        if (guildRow == null) {
-            [guildRow] = await Guild.findOrCreate({
-                where: { guildID: guild.id },
-            });
-        }
-
-        guildRow.set(`logging_${type}LogChannel`, channelID);
-        guildRow.save();
     }
 }

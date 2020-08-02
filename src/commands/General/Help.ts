@@ -1,6 +1,6 @@
 import { GuildChannel, Message } from 'eris';
 import UtillyClient from '../../bot';
-import { Guild } from '../../database/models/Guild';
+import { Guild } from '../../database/entity/Guild';
 import Command from '../../handlers/CommandHandler/Command/Command';
 import DatabaseModule from '../../handlers/ModuleHandler/Module/DatabaseModule';
 import EmbedBuilder from '../../helpers/Embed';
@@ -35,7 +35,7 @@ export default class Help extends Command {
 
                 for (const module of bot.CommandHandler.modulesObjects) {
                     if (module.parent instanceof DatabaseModule) {
-                        if (!guildRow.get(module.parent.databaseEntry)) {
+                        if (!guildRow[module.parent.databaseEntry]) {
                             disabledModules += module.info.name + '\n';
                         } else {
                             enabledModules += module.info.name + '\n';
@@ -81,11 +81,11 @@ export default class Help extends Command {
                 ) {
                     embed.setTitle(
                         `Help for \`${item}\` module : ${
-                            guildRow.get(item) == false ? 'Disabled' : 'Enabled'
+                            guildRow[item] == false ? 'Disabled' : 'Enabled'
                         }`
                     );
                     embed.setColor(
-                        guildRow.get(item) == false ? 0xff0000 : 0x00ff00
+                        guildRow[item] == false ? 0xff0000 : 0x00ff00
                     );
                     embed.setDescription(ModuleInfo[item]);
                     for (const command of bot.CommandHandler.commandsObjects) {
@@ -154,7 +154,7 @@ export default class Help extends Command {
                     embed.addField(
                         'Parent Module',
                         `${command.parent.info.name} : ${
-                            guildRow.get(item) == false ? 'Disabled' : 'Enabled'
+                            guildRow[item] == false ? 'Disabled' : 'Enabled'
                         }`
                     );
                     embed.setTimestamp();

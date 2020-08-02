@@ -1,8 +1,9 @@
 import { GuildChannel, Message } from 'eris';
 import fs from 'fs/promises';
 import path from 'path';
+import { getCustomRepository } from 'typeorm';
 import UtillyClient from '../../bot';
-import { Guild } from '../../database/models/Guild';
+import GuildRepository from '../../database/repository/GuildRepository';
 import Logger from '../../helpers/Logger';
 import DatabaseModule from '../ModuleHandler/Module/DatabaseModule';
 import Module from '../ModuleHandler/Module/Module';
@@ -121,9 +122,9 @@ export default class CommandHandler {
         let guildRow = null;
 
         if (message.channel instanceof GuildChannel) {
-            [guildRow] = await Guild.findOrCreate({
-                where: { guildID: message.channel.guild.id },
-            });
+            guildRow = await getCustomRepository(GuildRepository).findOrCreate(
+                message.channel.guild.id
+            );
             if (guildRow == null) {
                 prefix = 'u!';
             } else {
@@ -217,12 +218,7 @@ export default class CommandHandler {
             message.channel instanceof GuildChannel
         ) {
             if (guildRow != null) {
-                if (
-                    !(await commandObj.parent.parent.isEnabledGuild(
-                        message.channel.guild,
-                        guildRow
-                    ))
-                )
+                if (!(await commandObj.parent.parent.isEnabledGuild(guildRow)))
                     return;
             } else {
                 if (

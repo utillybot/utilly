@@ -24,7 +24,7 @@ import LoggingModule from './LoggingModule';
  * Logging Module for Server Events
  */
 export default class ServerLogging extends AttachableModule {
-    parentModule?: LoggingModule;
+    parentModule!: LoggingModule;
 
     attach(): void {
         this.bot.on('channelCreate', this.channelCreate.bind(this));
@@ -42,15 +42,8 @@ export default class ServerLogging extends AttachableModule {
      * @param message - the message
      * @param partial - if the embed build will be partial
      */
-    private buildEmbed(
-        embed: EmbedBuilder,
-        guild: Guild,
-        partial = false
-    ): EmbedBuilder {
+    private buildEmbed(embed: EmbedBuilder, guild: Guild): EmbedBuilder {
         embed.setTimestamp();
-
-        if (partial) return embed;
-
         embed.setAuthor(guild.name, undefined, guild.iconURL);
         embed.setFooter(`Server ID: ${guild.id}`);
 
@@ -68,23 +61,16 @@ export default class ServerLogging extends AttachableModule {
         role: Role,
         oldRole: Role
     ): Promise<void> {
-        if (this.parentModule == undefined)
-            throw new Error('Parent Module of Server Logging not injected');
-
-        const guildRow = await this.parentModule.getGuildRow(guild);
-        if (
-            !(await this.parentModule.preChecks(
-                'guildRoleUpdate',
-                guild,
-                guildRow
-            ))
-        )
-            return;
-
-        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
-            'server',
+        const guildRow = await this.parentModule.selectGuildRow(
             guild,
-            guildRow
+            'guildRoleUpdate'
+        );
+
+        if (!guildRow.logging || !guildRow.logging_guildRoleUpdateEvent) return;
+
+        const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+            guild,
+            guildRow.logging_guildRoleUpdateChannel
         );
         if (logChannel == null) return;
 
@@ -169,23 +155,16 @@ export default class ServerLogging extends AttachableModule {
      * @param role - the deleted role
      */
     private async guildRoleDelete(guild: Guild, role: Role): Promise<void> {
-        if (this.parentModule == undefined)
-            throw new Error('Parent Module of Server Logging not injected');
-
-        const guildRow = await this.parentModule.getGuildRow(guild);
-        if (
-            !(await this.parentModule.preChecks(
-                'guildRoleDelete',
-                guild,
-                guildRow
-            ))
-        )
-            return;
-
-        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
-            'server',
+        const guildRow = await this.parentModule.selectGuildRow(
             guild,
-            guildRow
+            'guildRoleDelete'
+        );
+
+        if (!guildRow.logging || !guildRow.logging_guildRoleDeleteEvent) return;
+
+        const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+            guild,
+            guildRow.logging_guildRoleDeleteChannel
         );
         if (logChannel == null) return;
 
@@ -226,23 +205,16 @@ export default class ServerLogging extends AttachableModule {
      * @param role - the created role
      */
     private async guildRoleCreate(guild: Guild, role: Role): Promise<void> {
-        if (this.parentModule == undefined)
-            throw new Error('Parent Module of Server Logging not injected');
-
-        const guildRow = await this.parentModule.getGuildRow(guild);
-        if (
-            !(await this.parentModule.preChecks(
-                'guildRoleCreate',
-                guild,
-                guildRow
-            ))
-        )
-            return;
-
-        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
-            'server',
+        const guildRow = await this.parentModule.selectGuildRow(
             guild,
-            guildRow
+            'guildRoleCreate'
+        );
+
+        if (!guildRow.logging || !guildRow.logging_guildRoleCreateEvent) return;
+
+        const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+            guild,
+            guildRow.logging_guildRoleCreateChannel
         );
         if (logChannel == null) return;
 
@@ -288,26 +260,17 @@ export default class ServerLogging extends AttachableModule {
         newChannel: GuildChannel,
         oldChannel: OldGuildChannel
     ): Promise<void> {
-        if (this.parentModule == undefined)
-            throw new Error('Parent Module of Server Logging not injected');
-
-        const guildRow = await this.parentModule.getGuildRow(newChannel.guild);
-        if (
-            !(await this.parentModule.preChecks(
-                'channelUpdate',
-                newChannel.guild,
-                guildRow
-            ))
-        ) {
-            return;
-        }
-
-        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
-            'server',
+        const guildRow = await this.parentModule.selectGuildRow(
             newChannel.guild,
-            guildRow
+            'channelUpdate'
         );
 
+        if (!guildRow.logging || !guildRow.logging_channelUpdateEvent) return;
+
+        const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+            newChannel.guild,
+            guildRow.logging_channelUpdateChannel
+        );
         if (logChannel == null) return;
 
         let embed = new EmbedBuilder();
@@ -573,24 +536,16 @@ export default class ServerLogging extends AttachableModule {
      * @param channel - the deleted channel
      */
     private async channelDelete(channel: AnyGuildChannel): Promise<void> {
-        if (this.parentModule == undefined)
-            throw new Error(
-                'Injection error: parent module not injected into module.'
-            );
-        const guildRow = await this.parentModule.getGuildRow(channel.guild);
-
-        if (
-            !(await this.parentModule.preChecks(
-                'channelDelete',
-                channel.guild,
-                guildRow
-            ))
-        )
-            return;
-        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
-            'server',
+        const guildRow = await this.parentModule.selectGuildRow(
             channel.guild,
-            guildRow
+            'channelDelete'
+        );
+
+        if (!guildRow.logging || !guildRow.logging_channelDeleteEvent) return;
+
+        const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+            channel.guild,
+            guildRow.logging_channelDeleteChannel
         );
         if (logChannel == null) return;
 
@@ -680,24 +635,16 @@ export default class ServerLogging extends AttachableModule {
      * @param channel - the created channel
      */
     private async channelCreate(channel: GuildChannel): Promise<void> {
-        if (this.parentModule == undefined)
-            throw new Error(
-                'Injection error: parent module not injected into module.'
-            );
-        const guildRow = await this.parentModule.getGuildRow(channel.guild);
-
-        if (
-            !(await this.parentModule.preChecks(
-                'channelCreate',
-                channel.guild,
-                guildRow
-            ))
-        )
-            return;
-        const logChannel: TextChannel | null = await this.parentModule.getLogChannel(
-            'server',
+        const guildRow = await this.parentModule.selectGuildRow(
             channel.guild,
-            guildRow
+            'channelCreate'
+        );
+
+        if (!guildRow.logging || !guildRow.logging_channelCreateEvent) return;
+
+        const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+            channel.guild,
+            guildRow.logging_channelCreateChannel
         );
         if (logChannel == null) return;
 
