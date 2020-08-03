@@ -19,6 +19,7 @@ export default class GuildRepository extends Repository<Guild> {
         let guildRow = await this.createQueryBuilder('guild')
             .where('guild.guildID = :guildID', { guildID })
             .select(selectItems)
+            .cache(true)
             .getOne();
 
         if (guildRow == undefined) {
