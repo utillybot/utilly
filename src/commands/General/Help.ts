@@ -1,10 +1,11 @@
 import { GuildChannel, Message } from 'eris';
+import { getCustomRepository } from 'typeorm';
 import UtillyClient from '../../bot';
-import { Guild } from '../../database/entity/Guild';
+import GuildRepository from '../../database/repository/GuildRepository';
 import Command from '../../handlers/CommandHandler/Command/Command';
 import DatabaseModule from '../../handlers/ModuleHandler/Module/DatabaseModule';
 import EmbedBuilder from '../../helpers/Embed';
-import { ModuleInfo } from '../../helpers/Modules';
+import { ModuleInfo, Modules } from '../../helpers/Modules';
 import GeneralCommandModule from './moduleinfo';
 
 export default class Help extends Command {
@@ -23,12 +24,15 @@ export default class Help extends Command {
     async execute(
         bot: UtillyClient,
         message: Message,
-        args: string[],
-        guildRow: Guild
+        args: string[]
     ): Promise<void> {
         const embed = new EmbedBuilder();
         embed.setTitle('Help');
         if (message.channel instanceof GuildChannel) {
+            const guildRow = await getCustomRepository(
+                GuildRepository
+            ).selectOrCreate(message.channel.guild.id, Modules);
+
             if (args.length == 0) {
                 let enabledModules = '';
                 let disabledModules = '';

@@ -1,7 +1,5 @@
-import Eris from 'eris';
 import { getCustomRepository } from 'typeorm';
 import UtillyClient from '../../../bot';
-import { Guild } from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
 import Module from './Module';
 
@@ -16,23 +14,10 @@ export default abstract class DatabaseModule extends Module {
         this.databaseEntry = 'none';
     }
 
-    async isEnabled(guild: Eris.Guild): Promise<boolean> {
+    async isEnabled(guildID: string): Promise<boolean> {
         const guildRow = await getCustomRepository(
             GuildRepository
-        ).findOrCreate(guild.id);
-
-        const enabled = guildRow[this.databaseEntry];
-        if (enabled == null) {
-            return false;
-        } else if (enabled) {
-            return true;
-        } else if (!enabled) {
-            return false;
-        }
-        return false;
-    }
-
-    async isEnabledGuild(guildRow: Guild): Promise<boolean> {
+        ).selectOrCreate(guildID, [this.databaseEntry]);
         const enabled = guildRow[this.databaseEntry];
         if (enabled == null) {
             return false;

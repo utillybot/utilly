@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Message } from 'eris';
 import UtillyClient from '../../../bot';
-import { Guild } from '../../../database/entity/Guild';
 import CommandModule from '../CommandModule/CommandModule';
 import ICommandHelp from './ICommandHelp';
 import ICommandSettings from './ICommandSettings';
@@ -50,7 +49,6 @@ export default abstract class Command {
     abstract async execute(
         bot: UtillyClient,
         message: Message,
-        args: string[],
-        guildRow?: Guild
+        args: string[]
     ): Promise<void>;
 }

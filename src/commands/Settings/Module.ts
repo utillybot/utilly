@@ -1,14 +1,19 @@
-import { GuildTextableChannel, Message, TextableChannel } from 'eris';
-import { getCustomRepository } from 'typeorm';
+import {
+    GuildChannel,
+    GuildTextableChannel,
+    Message,
+    TextableChannel,
+} from 'eris';
+import { getCustomRepository, getRepository } from 'typeorm';
 import UtillyClient from '../../bot';
 import { Guild } from '../../database/entity/Guild';
 import GuildRepository from '../../database/repository/GuildRepository';
-import GuildOnlyCommand from '../../handlers/CommandHandler/Command/GuildOnlyCommand';
+import Command from '../../handlers/CommandHandler/Command/Command';
 import { SubcommandHandler } from '../../handlers/CommandHandler/SubcommandHandler';
 import EmbedBuilder from '../../helpers/Embed';
 import { ModuleInfo, Modules } from '../../helpers/Modules';
 
-export default class Module extends GuildOnlyCommand {
+export default class Module extends Command {
     subCommandHandler: SubcommandHandler;
 
     constructor(bot: UtillyClient) {
@@ -16,6 +21,8 @@ export default class Module extends GuildOnlyCommand {
         this.help.name = 'module';
         this.help.description = 'Enable, disable, or view info about a module.';
         this.help.usage = '(enable, disable, toggle, info) (module name)';
+
+        this.settings.guildOnly = true;
 
         this.subCommandHandler = new SubcommandHandler(bot.logger);
 
@@ -30,19 +37,16 @@ export default class Module extends GuildOnlyCommand {
     async execute(
         bot: UtillyClient,
         message: Message<GuildTextableChannel>,
-        args: string[],
-        guildRow: Guild
+        args: string[]
     ): Promise<void> {
-        if (
-            !(await this.subCommandHandler.handle(bot, message, args, guildRow))
-        ) {
+        if (!(await this.subCommandHandler.handle(bot, message, args))) {
             if (args.length == 0) {
                 const embed = new EmbedBuilder();
                 embed.setTitle('Enable, disable, or view info about a module');
                 return;
             } else if (args.length == 1) {
                 if (!(await this.precheck(bot, message, args))) return;
-                this.toggle(bot, message, args, guildRow);
+                this.toggle(bot, message, args);
             }
         }
     }
@@ -50,17 +54,20 @@ export default class Module extends GuildOnlyCommand {
     async enable(
         bot: UtillyClient,
         message: Message<TextableChannel>,
-        args: string[],
-        guildRow?: Guild
+        args: string[]
     ): Promise<void> {
-        if (guildRow == undefined) throw new Error('GuildRow undefined');
+        const module = args[0].toLowerCase();
+        if (!(message.channel instanceof GuildChannel)) return;
+        const guildRow = await getCustomRepository(
+            GuildRepository
+        ).selectOrCreate(message.channel.guild.id, [module]);
+
         const embed = new EmbedBuilder();
         embed.setTimestamp();
         embed.setFooter(
             `Requested by ${message.author.username}#${message.author.discriminator}`,
             message.author.avatarURL
         );
-        const module = args[0].toLowerCase();
 
         if (guildRow[module]) {
             embed.setTitle('Module already enabled');
@@ -70,7 +77,7 @@ export default class Module extends GuildOnlyCommand {
             embed.setColor(0xff0000);
         } else {
             guildRow[module] = true;
-            getCustomRepository(GuildRepository).save(guildRow);
+            getRepository(Guild).update(message.channel.guild.id, guildRow);
 
             embed.setTitle('Module Enabled');
             embed.setDescription(`The module \`${module}\` has been enabled.`);
@@ -82,18 +89,20 @@ export default class Module extends GuildOnlyCommand {
     async disable(
         bot: UtillyClient,
         message: Message<TextableChannel>,
-        args: string[],
-        guildRow?: Guild
+        args: string[]
     ): Promise<void> {
-        if (guildRow == undefined) throw new Error('GuildRow undefined');
+        const module = args[0].toLowerCase();
+        if (!(message.channel instanceof GuildChannel)) return;
+        const guildRow = await getCustomRepository(
+            GuildRepository
+        ).selectOrCreate(message.channel.guild.id, [module]);
+
         const embed = new EmbedBuilder();
         embed.setTimestamp();
         embed.setFooter(
             `Requested by ${message.author.username}#${message.author.discriminator}`,
             message.author.avatarURL
         );
-
-        const module = args[0].toLowerCase();
 
         if (!guildRow[module]) {
             embed.setTitle('Module already disabled');
@@ -103,7 +112,7 @@ export default class Module extends GuildOnlyCommand {
             embed.setColor(0xff0000);
         } else {
             guildRow[module] = false;
-            getCustomRepository(GuildRepository).save(guildRow);
+            getRepository(Guild).update(message.channel.guild.id, guildRow);
 
             embed.setTitle('Module Disabled');
             embed.setDescription(`The module \`${module}\` has been disabled.`);
@@ -115,18 +124,20 @@ export default class Module extends GuildOnlyCommand {
     async toggle(
         bot: UtillyClient,
         message: Message<TextableChannel>,
-        args: string[],
-        guildRow?: Guild
+        args: string[]
     ): Promise<void> {
-        if (guildRow == undefined) throw new Error('GuildRow undefined');
+        const module = args[0].toLowerCase();
+        if (!(message.channel instanceof GuildChannel)) return;
+        const guildRow = await getCustomRepository(
+            GuildRepository
+        ).selectOrCreate(message.channel.guild.id, [module]);
+
         const embed = new EmbedBuilder();
         embed.setTimestamp();
         embed.setFooter(
             `Requested by ${message.author.username}#${message.author.discriminator}`,
             message.author.avatarURL
         );
-
-        const module = args[0].toLowerCase();
 
         const originalModuleSetting = guildRow[module];
         if (originalModuleSetting == true) {
@@ -144,7 +155,7 @@ export default class Module extends GuildOnlyCommand {
             );
             embed.setColor(0xff0000);
         } else {
-            getCustomRepository(GuildRepository).save(guildRow);
+            getRepository(Guild).update(message.channel.guild.id, guildRow);
             embed.setTitle(
                 `Module ${newModuleSetting ? 'Enabled' : 'Disabled'}`
             );
@@ -161,17 +172,20 @@ export default class Module extends GuildOnlyCommand {
     async info(
         bot: UtillyClient,
         message: Message<TextableChannel>,
-        args: string[],
-        guildRow?: Guild
+        args: string[]
     ): Promise<void> {
-        if (guildRow == undefined) throw new Error('GuildRow undefined');
+        const module = args[0].toLowerCase();
+        if (!(message.channel instanceof GuildChannel)) return;
+        const guildRow = await getCustomRepository(
+            GuildRepository
+        ).selectOrCreate(message.channel.guild.id, [module]);
+
         const embed = new EmbedBuilder();
         embed.setTimestamp();
         embed.setFooter(
             `Requested by ${message.author.username}#${message.author.discriminator}`,
             message.author.avatarURL
         );
-        const module = args[0];
 
         embed.setTitle('Module Info');
         embed.setDescription(ModuleInfo[module]);

@@ -69,7 +69,7 @@ export default class MessageLogging extends AttachableModule {
         messages: Message<TextChannel>[]
     ): Promise<void> {
         const guildRow = await this.parentModule.selectGuildRow(
-            messages[0].channel.guild,
+            messages[0].channel.guild.id,
             'messageDeleteBulk'
         );
 
@@ -97,7 +97,7 @@ export default class MessageLogging extends AttachableModule {
      */
     private async messageDelete(message: Message<TextChannel>): Promise<void> {
         const guildRow = await this.parentModule.selectGuildRow(
-            message.channel.guild,
+            message.channel.guild.id,
             'messageDelete'
         );
 
@@ -135,7 +135,7 @@ export default class MessageLogging extends AttachableModule {
         if (oldMessage == null) return;
         if (oldMessage.content == message.content) return;
         const guildRow = await this.parentModule.selectGuildRow(
-            message.channel.guild,
+            message.channel.guild.id,
             'messageUpdate'
         );
 

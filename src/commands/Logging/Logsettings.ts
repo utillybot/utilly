@@ -1,11 +1,10 @@
 import { GuildTextableChannel, Message } from 'eris';
 import UtillyClient from '../../bot';
-import { Guild } from '../../database/entity/Guild';
-import GuildOnlyCommand from '../../handlers/CommandHandler/Command/GuildOnlyCommand';
+import Command from '../../handlers/CommandHandler/Command/Command';
 import EmbedBuilder from '../../helpers/Embed';
 import LoggingCommandModule from './moduleinfo';
 
-export default class Logsettings extends GuildOnlyCommand {
+export default class Logsettings extends Command {
     parent?: LoggingCommandModule;
 
     constructor(bot: UtillyClient) {
@@ -18,8 +17,7 @@ export default class Logsettings extends GuildOnlyCommand {
     async execute(
         bot: UtillyClient,
         message: Message<GuildTextableChannel>,
-        args: string[],
-        guildRow: Guild
+        args: string[]
     ): Promise<void> {
         const embed = new EmbedBuilder();
         embed.setTitle('Logging Settings');

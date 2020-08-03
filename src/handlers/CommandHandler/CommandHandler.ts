@@ -119,17 +119,11 @@ export default class CommandHandler {
         let prefix: string | undefined;
         let prefixes: string[] = [];
 
-        let guildRow = null;
-
         if (message.channel instanceof GuildChannel) {
-            guildRow = await getCustomRepository(GuildRepository).findOrCreate(
-                message.channel.guild.id
-            );
-            if (guildRow == null) {
-                prefix = 'u!';
-            } else {
-                prefixes = guildRow.prefix;
-            }
+            const guildRow = await getCustomRepository(
+                GuildRepository
+            ).selectOrCreate(message.channel.guild.id, ['prefix']);
+            prefixes = guildRow.prefix;
         } else {
             prefix = 'u!';
         }
@@ -217,25 +211,16 @@ export default class CommandHandler {
             commandObj.parent.parent instanceof DatabaseModule &&
             message.channel instanceof GuildChannel
         ) {
-            if (guildRow != null) {
-                if (!(await commandObj.parent.parent.isEnabledGuild(guildRow)))
-                    return;
-            } else {
-                if (
-                    !(await commandObj.parent.parent.isEnabled(
-                        message.channel.guild
-                    ))
-                )
-                    return;
-            }
+            if (
+                !(await commandObj.parent.parent.isEnabled(
+                    message.channel.guild.id
+                ))
+            )
+                return;
         }
 
         try {
-            if (guildRow != null) {
-                await commandObj.execute(this.bot, message, args, guildRow);
-            } else {
-                await commandObj.execute(this.bot, message, args);
-            }
+            await commandObj.execute(this.bot, message, args);
         } catch (e) {
             console.error('Bot command error', e.stack);
         }

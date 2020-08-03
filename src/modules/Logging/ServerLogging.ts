@@ -62,7 +62,7 @@ export default class ServerLogging extends AttachableModule {
         oldRole: Role
     ): Promise<void> {
         const guildRow = await this.parentModule.selectGuildRow(
-            guild,
+            guild.id,
             'guildRoleUpdate'
         );
 
@@ -156,7 +156,7 @@ export default class ServerLogging extends AttachableModule {
      */
     private async guildRoleDelete(guild: Guild, role: Role): Promise<void> {
         const guildRow = await this.parentModule.selectGuildRow(
-            guild,
+            guild.id,
             'guildRoleDelete'
         );
 
@@ -206,7 +206,7 @@ export default class ServerLogging extends AttachableModule {
      */
     private async guildRoleCreate(guild: Guild, role: Role): Promise<void> {
         const guildRow = await this.parentModule.selectGuildRow(
-            guild,
+            guild.id,
             'guildRoleCreate'
         );
 
@@ -261,7 +261,7 @@ export default class ServerLogging extends AttachableModule {
         oldChannel: OldGuildChannel
     ): Promise<void> {
         const guildRow = await this.parentModule.selectGuildRow(
-            newChannel.guild,
+            newChannel.guild.id,
             'channelUpdate'
         );
 
@@ -537,7 +537,7 @@ export default class ServerLogging extends AttachableModule {
      */
     private async channelDelete(channel: AnyGuildChannel): Promise<void> {
         const guildRow = await this.parentModule.selectGuildRow(
-            channel.guild,
+            channel.guild.id,
             'channelDelete'
         );
 
@@ -636,7 +636,7 @@ export default class ServerLogging extends AttachableModule {
      */
     private async channelCreate(channel: GuildChannel): Promise<void> {
         const guildRow = await this.parentModule.selectGuildRow(
-            channel.guild,
+            channel.guild.id,
             'channelCreate'
         );
 

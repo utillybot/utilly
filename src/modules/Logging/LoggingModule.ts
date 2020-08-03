@@ -1,5 +1,5 @@
 import Eris from 'eris';
-import { getCustomRepository, getRepository } from 'typeorm';
+import { getCustomRepository } from 'typeorm';
 import UtillyClient from '../../bot';
 import { Guild } from '../../database/entity/Guild';
 import GuildRepository from '../../database/repository/GuildRepository';
@@ -14,29 +14,14 @@ export default class LoggingModule extends DatabaseModule {
         this.databaseEntry = 'logging';
     }
 
-    async getGuildRow(guild: Eris.Guild): Promise<Guild> {
-        return await getCustomRepository(GuildRepository).findOrCreate(
-            guild.id
-        );
-    }
-
-    async selectGuildRow(guild: Eris.Guild, type: string): Promise<Guild> {
-        const guildRepository = getRepository(Guild);
-        let guildRow = await guildRepository
-            .createQueryBuilder('user')
-            .where('user.guildID = :id', { id: guild.id })
-            .select([
-                'user.logging',
-                `user.logging_${type}Channel`,
-                `user.logging_${type}Event`,
-            ])
-            .getOne();
-        if (guildRow == undefined) {
-            guildRow = guildRepository.create();
-            guildRow.guildID = guild.id;
-            guildRepository.save(guildRow);
-        }
-        return guildRow;
+    async selectGuildRow(guildID: string, type: string): Promise<Guild> {
+        return await getCustomRepository(
+            GuildRepository
+        ).selectOrCreate(guildID, [
+            'logging',
+            `logging_${type}Channel`,
+            `logging_${type}Event`,
+        ]);
     }
 
     /**

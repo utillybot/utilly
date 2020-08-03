@@ -1,34 +1,17 @@
 import { Message } from 'eris';
 import UtillyClient from '../../bot';
-import { Guild } from '../../database/entity/Guild';
 import Logger from '../../helpers/Logger';
 
 export type Subcommand = (
     bot: UtillyClient,
     message: Message,
-    args: string[],
-    guildRow?: Guild
-) => void;
-
-export type GuildSubcommand = (
-    bot: UtillyClient,
-    message: Message,
-    args: string[],
-    guildRow: Guild
+    args: string[]
 ) => void;
 
 export type Precheck = (
     bot: UtillyClient,
     message: Message,
-    args: string[],
-    guildRow?: Guild
-) => Promise<boolean>;
-
-export type GuildPrecheck = (
-    bot: UtillyClient,
-    message: Message,
-    args: string[],
-    guildRow: Guild
+    args: string[]
 ) => Promise<boolean>;
 
 /**
@@ -74,8 +57,7 @@ export class SubcommandHandler {
     async handle(
         bot: UtillyClient,
         message: Message,
-        args: string[],
-        guildRow?: Guild
+        args: string[]
     ): Promise<boolean> {
         const command = args[0];
         const subCommand = this.subCommandMap.get(command);
@@ -83,19 +65,9 @@ export class SubcommandHandler {
         const newArgs = [...args];
         newArgs.shift();
         for (let i = 0; i < this.preChecks.length; i++) {
-            if (guildRow) {
-                if (!(await this.preChecks[i](bot, message, newArgs, guildRow)))
-                    return true;
-            } else {
-                if (!(await this.preChecks[i](bot, message, newArgs)))
-                    return true;
-            }
+            if (!(await this.preChecks[i](bot, message, newArgs))) return true;
         }
-        if (guildRow) {
-            subCommand(bot, message, newArgs, guildRow);
-        } else {
-            subCommand(bot, message, newArgs);
-        }
+        subCommand(bot, message, newArgs);
         return true;
     }
 }
