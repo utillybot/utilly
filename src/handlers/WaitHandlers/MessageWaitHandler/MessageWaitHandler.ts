@@ -44,7 +44,7 @@ export class MessageWaitHandler {
         }
     }
 
-    async messageCreate(message: Message) {
+    async messageCreate(message: Message): Promise<void> {
         if (message.author.bot) return;
         const options = this.handlers.get(message.author.id);
         if (options == undefined) return;
