@@ -14,9 +14,8 @@
         "ecmaVersion": 2020,
         "sourceType": "module"
     },
-    "plugins": ["@typescript-eslint", "eslint-plugin-tsdoc"],
+    "plugins": ["@typescript-eslint"],
     "rules": {
-        "prefer-const": ["error"],
-        "tsdoc/syntax": "warn"
+        "prefer-const": ["error"]
     }
 }

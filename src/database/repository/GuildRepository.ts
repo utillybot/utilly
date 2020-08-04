@@ -3,6 +3,10 @@ import { Guild } from '../entity/Guild';
 
 @EntityRepository(Guild)
 export default class GuildRepository extends Repository<Guild> {
+    /**
+     * Finds or create a guild row
+     * @param guildID - the guild id
+     */
     async findOrCreate(guildID: string): Promise<Guild> {
         let guild = await this.findOne(guildID);
         if (guild == undefined) {
@@ -13,6 +17,11 @@ export default class GuildRepository extends Repository<Guild> {
         return guild;
     }
 
+    /**
+     * Selects or creates a guild row.
+     * @param guildID - the guild id
+     * @param select - an array of columns to select
+     */
     async selectOrCreate(guildID: string, select: string[]): Promise<Guild> {
         const selectItems = select.map(item => 'guild.' + item);
         selectItems.push('guild.guildID');
@@ -23,8 +32,6 @@ export default class GuildRepository extends Repository<Guild> {
             .getOne();
 
         if (guildRow == undefined) {
-            guildRow = new Guild();
-            guildRow.guildID = guildID;
             await this.createQueryBuilder()
                 .insert()
                 .into(Guild)

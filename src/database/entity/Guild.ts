@@ -75,5 +75,9 @@ export class Guild {
     @Column({ nullable: false, default: false })
     public logging_guildRoleUpdateEvent!: boolean;
 
+    // Notifications Module
+    @Column({ nullable: false, default: false })
+    public notifications!: boolean;
+
     [key: string]: string | boolean | null | string[];
 }

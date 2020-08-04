@@ -14,6 +14,11 @@ export default class LoggingModule extends DatabaseModule {
         this.databaseEntry = 'logging';
     }
 
+    /**
+     * Selects a guild row for a specific guild with a few columns selected
+     * @param guildID - the guild id
+     * @param type - the type of the event
+     */
     async selectGuildRow(guildID: string, type: string): Promise<Guild> {
         return await getCustomRepository(
             GuildRepository

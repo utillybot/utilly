@@ -109,8 +109,9 @@ export default class CommandHandler {
     get commandNames(): string[] {
         return Array.from(this.commands.keys());
     }
+
     /**
-     * Processes a message when it reaches the bot
+     * Processes a message when it reaches the botou
      * @param message - the message
      */
     private async messageCreate(message: Message): Promise<void> {
