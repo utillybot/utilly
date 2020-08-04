@@ -173,16 +173,15 @@ export default class Logsettings extends Command {
         const embed = new EmbedBuilder();
         embed.setTitle('Log Channel Settings');
         embed.setDescription(
-            'Type one of the event names or its category to modify its log channel.'
+            'Type a list of event names or thier categories that you would like to change the log channel of.\n' +
+                'eg: `message edited, message deleted, channel`'
         );
 
         // Populate options with all the event names and categories
-        let options = Object.getOwnPropertyNames(EventNames);
         for (const [categoryName, categoryValue] of Object.entries(
             EventNames
         )) {
             const eventNames = Object.getOwnPropertyNames(categoryValue);
-            options = options.concat(eventNames);
             embed.addField(
                 categoryName,
                 eventNames.map(item => `\`${item}\``).join('\n'),
@@ -201,7 +200,7 @@ export default class Logsettings extends Command {
             menu.channel.id,
             message.author.id,
             this.handleChannelName(message, menu),
-            async (m: Message) => options.includes(m.content.toLowerCase()),
+            undefined,
             60,
             this.handleEventNotFound(menu)
         );
@@ -213,12 +212,14 @@ export default class Logsettings extends Command {
 
     handleChannelName(message: Message, menu: Message) {
         return async (response: Message): Promise<void> => {
-            // Prepare embed
+            menu.removeReactions();
+            const selectedEvents = response.content
+                .toLowerCase()
+                .split(/ *, */);
+            if (selectedEvents.length == 0)
+                selectedEvents[0] = response.content;
+
             const embed = new EmbedBuilder();
-            embed.setTitle('Log Channel Settings');
-            embed.setDescription(
-                'Mention, type the name, or input the id of the channel that you would like the logs to go in.'
-            );
 
             // Populate events with the event names and humanEvents with the human equivalent
             let events: string[] = [];
@@ -228,31 +229,42 @@ export default class Logsettings extends Command {
             )) {
                 const eventNames = Object.keys(categoryValue);
                 // Check if the response is a category
-                if (response.content.toLowerCase() == categoryName) {
+                if (selectedEvents.includes(categoryName)) {
                     events = events.concat(Object.values(categoryValue));
                     humanEvents = humanEvents.concat(eventNames);
-                    break;
+                    continue;
                 }
 
                 // Check if the response is a specific event
-                const eventName = eventNames.find(
-                    event => response.content.toLowerCase() == event
+
+                const matchedEvents = eventNames.filter(event =>
+                    selectedEvents.includes(event)
                 );
-                if (eventName != undefined) {
-                    events.push(categoryValue[eventName]);
-                    humanEvents.push(eventName);
-                    break;
+                if (matchedEvents.length != 0) {
+                    for (const eventName of matchedEvents) {
+                        events.push(categoryValue[eventName]);
+                        humanEvents.push(eventName);
+                    }
                 }
             }
-            // Uh oh, an event should be able to be found according to the precheck...
+            // An event hasn't been found, none of their specified events are valid
             if (events.length == 0) {
-                menu.channel.createMessage(
-                    'Something went wrong. Please try again later.'
+                embed.setTitle('Error');
+                embed.setDescription(
+                    'The channel(s) you provided were not valid.'
                 );
+                menu.edit({ embed });
+                setTimeout(() => menu.delete(), 30000);
                 return;
             }
 
-            // Prepare the footer of the embed
+            // Prepare embed
+            embed.setTitle('Log Channel Settings');
+            embed.setDescription(
+                `Mention, type the name, or input the id of the channel that you would like the logs for ${humanEvents
+                    .map(item => `\`${item}\``)
+                    .join(', ')} to go to.`
+            );
             embed.setTimestamp();
             embed.setFooter(
                 `Requested by ${message.author.username}#${message.author.discriminator}`,
@@ -388,17 +400,16 @@ export default class Logsettings extends Command {
         const embed = new EmbedBuilder();
         embed.setTitle('Log Event Settings');
         embed.setDescription(
-            'Type one of the event names or its category to enable/disable it.'
+            'Type a list of event names or thier categories that you would like enable, disable, or toggle.\n' +
+                'eg: `message edited, message deleted, channel`'
         );
 
         // Populate options with all the event names and categories
-        let options = Object.getOwnPropertyNames(EventNames);
         let eventOptions: string[] = [];
         for (const [categoryName, categoryValue] of Object.entries(
             EventNames
         )) {
             const eventNames = Object.getOwnPropertyNames(categoryValue);
-            options = options.concat(eventNames);
             eventOptions = eventOptions.concat(Object.values(categoryValue));
             embed.addField(
                 categoryName,
@@ -418,7 +429,7 @@ export default class Logsettings extends Command {
             menu.channel.id,
             message.author.id,
             this.handleEventName(message, menu, eventOptions),
-            async (m: Message) => options.includes(m.content.toLowerCase()),
+            undefined,
             60,
             this.handleEventNotFound(menu)
         );
@@ -430,9 +441,14 @@ export default class Logsettings extends Command {
 
     handleEventName(message: Message, menu: Message, eventOptions: string[]) {
         return async (response: Message): Promise<void> => {
-            // Prepare embed
+            menu.removeReactions();
+            const selectedEvents = response.content
+                .toLowerCase()
+                .split(/ *, */);
+            if (selectedEvents.length == 0)
+                selectedEvents[0] = response.content;
+
             const embed = new EmbedBuilder();
-            embed.setTitle('Log Event Settings');
 
             // Populate events with the event names and humanEvents with the human equivalent
             let events: string[] = [];
@@ -442,36 +458,43 @@ export default class Logsettings extends Command {
             )) {
                 const eventNames = Object.keys(categoryValue);
                 // Check if the response is a category
-                if (response.content.toLowerCase() == categoryName) {
+                if (selectedEvents.includes(categoryName)) {
                     events = events.concat(Object.values(categoryValue));
                     humanEvents = humanEvents.concat(eventNames);
-                    break;
+                    continue;
                 }
 
                 // Check if the response is a specific event
-                const eventName = eventNames.find(
-                    event => response.content.toLowerCase() == event
+
+                const matchedEvents = eventNames.filter(event =>
+                    selectedEvents.includes(event)
                 );
-                if (eventName != undefined) {
-                    events.push(categoryValue[eventName]);
-                    humanEvents.push(eventName);
-                    break;
+                if (matchedEvents.length != 0) {
+                    for (const eventName of matchedEvents) {
+                        events.push(categoryValue[eventName]);
+                        humanEvents.push(eventName);
+                    }
                 }
             }
-            // Uh oh, an event should be able to be found according to the precheck...
+            // An event hasn't been found, none of their specified events are valid
             if (events.length == 0) {
-                menu.channel.createMessage(
-                    'Something went wrong. Please try again later.'
+                embed.setTitle('Error');
+                embed.setDescription(
+                    'The channel(s) you provided were not valid.'
                 );
+                menu.edit({ embed });
+                setTimeout(() => menu.delete(), 30000);
                 return;
             }
 
             // Prepare the rest of the embed
+            embed.setTitle('Log Event Settings');
             embed.setDescription(
                 `Would you like to \`enable\`, \`disable\`, or \`toggle\` the settings for ${humanEvents
                     .map(item => `\`${item}\``)
                     .join(', ')}`
             );
+
             embed.setTimestamp();
             embed.setFooter(
                 `Requested by ${message.author.username}#${message.author.discriminator}`,
