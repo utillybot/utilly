@@ -42,6 +42,10 @@ export default class MessageLogging extends AttachableModule {
         if (message.attachments == null) return embed;
         if (message.attachments.length > 0) {
             otherNotes += `- This message had ${message.attachments.length} attachment(s)\n`;
+            for (let i = 0; i < message.attachments.length; i++) {
+                const attachment = message.attachments[i];
+                otherNotes += `- [Attachment #${i + 1}](${attachment.url})\n`;
+            }
         }
         if (message.embeds.length > 0) {
             otherNotes += `- This message had ${message.embeds.length} embed(s)\n`;
