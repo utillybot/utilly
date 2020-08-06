@@ -104,6 +104,7 @@ export default class Logsettings extends Command {
             );
         };
     }
+
     //#region info
     async handleInfo(message: Message, menu: Message): Promise<void> {
         if (!(menu.channel instanceof GuildChannel)) return;

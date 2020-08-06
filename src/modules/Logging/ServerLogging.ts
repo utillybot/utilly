@@ -43,7 +43,6 @@ export default class ServerLogging extends AttachableModule {
     private buildEmbed(embed: EmbedBuilder, guild: Guild): EmbedBuilder {
         embed.setTimestamp();
         embed.setAuthor(guild.name, undefined, guild.iconURL);
-        embed.setFooter(`Server ID: ${guild.id}`);
 
         return embed;
     }
@@ -118,6 +117,8 @@ export default class ServerLogging extends AttachableModule {
                     : ''
             }`;
         if (updatedRoleInfo != '') embed.addField('Info', updatedRoleInfo);
+        embed.setFooter(`Role ID: ${role.id}`);
+
         //#endregion
 
         //#region permissions
@@ -208,7 +209,9 @@ export default class ServerLogging extends AttachableModule {
         embed.setTitle(`Role ${request}`);
         embed.setColor(role.color);
         embed.setDescription(
-            `**Name**: ${role.name}\n**Mention**: ${role.mention}\n`
+            `**Name**: ${role.name}\n${
+                request == 'Created' ? `**Mention**: ${role.mention}` : ''
+            }\n`
         );
 
         // Prepare role info
@@ -219,6 +222,7 @@ export default class ServerLogging extends AttachableModule {
                 `**Mentionable**: ${role.mentionable ? 'Yes' : 'No'}\n` +
                 `**Managed**: ${role.managed ? 'Yes' : 'No'}`
         );
+        embed.setFooter(`Role ID: ${role.id}`);
         //#endregion
 
         //#region permissions
@@ -273,9 +277,7 @@ export default class ServerLogging extends AttachableModule {
         // Prepare Embed Header and Overview changes
         if (newChannel instanceof TextChannel) {
             embed.setTitle('Text Channel Updated');
-            embed.setDescription(
-                `Channel: <#${newChannel.id}>\nChannel ID: ${newChannel.id}`
-            );
+            embed.setDescription(`Channel: <#${newChannel.id}>`);
 
             if (newChannel.topic != oldChannel.topic)
                 overview +=
@@ -330,9 +332,7 @@ export default class ServerLogging extends AttachableModule {
             if (overview != '') embed.addField('Overview', overview);
         } else if (newChannel instanceof VoiceChannel) {
             embed.setTitle('Voice Channel Updated');
-            embed.setDescription(
-                `Channel: ${newChannel.name}\nChannel ID: ${newChannel.id}`
-            );
+            embed.setDescription(`Channel: ${newChannel.name}`);
 
             if (
                 newChannel.bitrate != oldChannel.bitrate &&
@@ -376,15 +376,12 @@ export default class ServerLogging extends AttachableModule {
             if (overview != '') embed.addField('Overview', overview);
         } else if (newChannel instanceof CategoryChannel) {
             embed.setTitle('Category Updated');
-            embed.setDescription(
-                `**Name**: ${newChannel.name}\nChannel ID: ${newChannel.id}`
-            );
+            embed.setDescription(`**Name**: ${newChannel.name}}`);
         } else {
             embed.setTitle('Channel Updated');
-            embed.setDescription(
-                `**Name**: ${newChannel.name}\nChannel ID: ${newChannel.id}`
-            );
+            embed.setDescription(`**Name**: ${newChannel.name}`);
         }
+        embed.setFooter(`Channel ID: ${newChannel.id}`);
         //#endregion
 
         //#region permissions
@@ -623,7 +620,9 @@ export default class ServerLogging extends AttachableModule {
         if (channel instanceof TextChannel) {
             embed.setTitle(`Text Channel ${request}`);
             embed.setDescription(
-                `Channel: <#${channel.id}>\nChannel ID: ${channel.id}`
+                `Channel: ${
+                    request == 'Created' ? `<#${channel.id}>` : channel.name
+                }\nChannel ID: ${channel.id}`
             );
             info += `**Topic**: ${
                 channel.topic != '' && channel.topic != null
@@ -637,7 +636,7 @@ export default class ServerLogging extends AttachableModule {
                     : 'Off'
             }\n`;
 
-            info += `**NSFW**: ${channel.nsfw ? '✅' : '❎'} `;
+            info += `**NSFW**: ${channel.nsfw ? '✅' : '❎'}\n`;
 
             if (channel.parentID) {
                 info += `**Category**: ${
@@ -648,9 +647,7 @@ export default class ServerLogging extends AttachableModule {
             if (info != '') embed.addField('Info', info);
         } else if (channel instanceof VoiceChannel) {
             embed.setTitle(`Voice Channel ${request}`);
-            embed.setDescription(
-                `Channel: ${channel.name}\nChannel ID: ${channel.id}`
-            );
+            embed.setDescription(`Channel: ${channel.name}`);
             if (channel.bitrate)
                 info += `**Bitrate**: ${channel.bitrate / 1000}kbps\n`;
 
@@ -669,15 +666,11 @@ export default class ServerLogging extends AttachableModule {
             if (info != '') embed.addField('Info', info);
         } else if (channel instanceof CategoryChannel) {
             embed.setTitle(`Category ${request}`);
-            embed.setDescription(
-                `**Name**: ${channel.name}\nChannel ID: ${channel.id}`
-            );
+            embed.setDescription(`**Name**: ${channel.name}`);
             if (info != '') embed.addField('Info', info);
         } else {
             embed.setTitle(`Channel ${request}`);
-            embed.setDescription(
-                `**Name**: ${channel.name}\nChannel ID: ${channel.id}`
-            );
+            embed.setDescription(`**Name**: ${channel.name}`);
             if (channel.parentID) {
                 info += `**Category**: ${
                     channel.guild.channels.get(channel.parentID)?.name
@@ -686,6 +679,8 @@ export default class ServerLogging extends AttachableModule {
 
             if (info != '') embed.addField('Info', info);
         }
+        embed.setFooter(`Channel ID: ${channel.id}`);
+
         //#endregion
 
         //#region permissions
