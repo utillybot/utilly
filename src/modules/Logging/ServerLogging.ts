@@ -12,9 +12,10 @@ import AttachableModule from '../../handlers/ModuleHandler/Submodule/AttachableM
 import { secondsToString } from '../../helpers/DurationParser';
 import EmbedBuilder from '../../helpers/Embed';
 import {
-    HumanPermissions,
+    ChannelPermissions,
     PermissionList,
     Permissions,
+    RolePermissions,
 } from '../../helpers/PermissionConstants';
 import LoggingModule from './LoggingModule';
 
@@ -128,7 +129,7 @@ export default class ServerLogging extends AttachableModule {
             ) {
                 //Permissions go from allow to deny
                 permissionField += `${
-                    HumanPermissions[Permissions[permission]]
+                    RolePermissions[Permissions[permission]]
                 } : ✅ ➜ ❎\n`;
             } else if (
                 !oldRole.permissions.has(permission) &&
@@ -136,7 +137,7 @@ export default class ServerLogging extends AttachableModule {
             ) {
                 //Permissiongs go from deny to allow
                 permissionField += `${
-                    HumanPermissions[Permissions[permission]]
+                    RolePermissions[Permissions[permission]]
                 } : ❎ ➜ ✅\n`;
             }
         }
@@ -187,9 +188,9 @@ export default class ServerLogging extends AttachableModule {
         let permissionField = '';
         for (let i = 0; i < PermissionList.length; i++) {
             const permission = PermissionList[i];
-            permissionField += `${
-                HumanPermissions[Permissions[permission]]
-            } : ${role.permissions.has(permission) ? '✅' : '❎'}\n`;
+            permissionField += `${RolePermissions[Permissions[permission]]} : ${
+                role.permissions.has(permission) ? '✅' : '❎'
+            }\n`;
         }
         if (permissionField != '')
             embed.addField('Permissions', permissionField, true);
@@ -239,9 +240,9 @@ export default class ServerLogging extends AttachableModule {
         let permissionField = '';
         for (let i = 0; i < PermissionList.length; i++) {
             const permission = PermissionList[i];
-            permissionField += `${
-                HumanPermissions[Permissions[permission]]
-            } : ${role.permissions.has(permission) ? '✅' : '❎'}\n`;
+            permissionField += `${RolePermissions[Permissions[permission]]} : ${
+                role.permissions.has(permission) ? '✅' : '❎'
+            }\n`;
         }
         if (permissionField != '')
             embed.addField('Permissions', permissionField, true);
@@ -260,6 +261,7 @@ export default class ServerLogging extends AttachableModule {
         newChannel: GuildChannel,
         oldChannel: OldGuildChannel
     ): Promise<void> {
+        //#region prep
         const guildRow = await this.parentModule.selectGuildRow(
             newChannel.guild.id,
             'channelUpdate'
@@ -272,7 +274,9 @@ export default class ServerLogging extends AttachableModule {
             guildRow.logging_channelUpdateChannel
         );
         if (logChannel == null) return;
+        //#endregion
 
+        //#region embed header
         let embed = new EmbedBuilder();
         let overview = '';
 
@@ -289,22 +293,34 @@ export default class ServerLogging extends AttachableModule {
 
             if (
                 newChannel.topic != oldChannel.topic &&
-                oldChannel.topic != undefined &&
-                newChannel.topic != undefined
+                newChannel.topic != undefined &&
+                oldChannel.topic != undefined
             )
                 overview +=
-                    `**Topic**: ${oldChannel.topic ?? '(cleared)'}` +
-                    ` ➜ ${newChannel.topic ?? '(cleared)'}\n`;
+                    `**Topic**: ${
+                        oldChannel.topic != '' && oldChannel.topic != null
+                            ? oldChannel.topic
+                            : '(cleared)'
+                    }` +
+                    ` ➜ ${
+                        newChannel.topic != '' && oldChannel.topic != null
+                            ? newChannel.topic
+                            : '(cleared)'
+                    }\n`;
 
-            if (newChannel.rateLimitPerUser != oldChannel.rateLimitPerUser)
+            if (
+                newChannel.rateLimitPerUser != oldChannel.rateLimitPerUser &&
+                newChannel.rateLimitPerUser != undefined &&
+                oldChannel.rateLimitPerUser != undefined
+            )
                 overview +=
                     `**Slowmode**: ${
-                        oldChannel.rateLimitPerUser != undefined
+                        oldChannel.rateLimitPerUser != 0
                             ? secondsToString(oldChannel.rateLimitPerUser)
                             : 'Off'
                     }` +
                     ` ➜ ${
-                        newChannel.rateLimitPerUser != undefined
+                        newChannel.rateLimitPerUser != 0
                             ? secondsToString(newChannel.rateLimitPerUser)
                             : 'Off'
                     }\n`;
@@ -336,7 +352,6 @@ export default class ServerLogging extends AttachableModule {
             embed.setDescription(
                 `Channel: ${newChannel.name}\nChannel ID: ${newChannel.id}`
             );
-            console.log(newChannel.userLimit, oldChannel.userLimit);
             if (
                 newChannel.bitrate != oldChannel.bitrate &&
                 newChannel.bitrate != undefined &&
@@ -389,14 +404,16 @@ export default class ServerLogging extends AttachableModule {
                 `**Name**: ${newChannel.name}\nChannel ID: ${newChannel.id}`
             );
         }
+        //#endregion
 
+        //#region permissions
         // Prepare permission changes
         const permissions: Map<string | number, string> = new Map();
-
         // Loop over old permission overwrites
-        for (const [key, oldOverwrite] of oldChannel.permissionOverwrites) {
+        for (const [entity, oldOverwrite] of oldChannel.permissionOverwrites) {
             // Get the new permission overwrite equivalent, if possible
-            const newOverwrite = newChannel.permissionOverwrites.get(key);
+            const newOverwrite = newChannel.permissionOverwrites.get(entity);
+            let header = '';
 
             // If the overwrites are the same, there is no need to record changes
             if (oldOverwrite != null && newOverwrite != null) {
@@ -409,85 +426,96 @@ export default class ServerLogging extends AttachableModule {
             }
 
             // If the permissions map doesn't have this overwrite, add the header
-            if (!permissions.has(key)) {
+            if (!permissions.has(entity)) {
                 if (oldOverwrite.type == 'role') {
-                    if (key == newChannel.guild.id) {
-                        permissions.set(key, '\n**Role @everyone\n**');
+                    if (entity == newChannel.guild.id) {
+                        permissions.set(entity, '\n**Role @everyone**\n');
+                        header = '\n**Role @everyone**\n';
                     } else {
-                        permissions.set(key, `\n**Role <@&${key}>\n**`);
+                        permissions.set(entity, `\n**Role <@&${entity}>**\n`);
+                        header = `\n**Role <@&${entity}>**\n`;
                     }
                 }
                 if (oldOverwrite.type == 'member') {
-                    permissions.set(key, `\n**Member <@${key}>\n**`);
+                    permissions.set(entity, `\n**Member <@${entity}>**\n`);
+                    header = `\n**Member <@${entity}>**\n`;
                 }
             }
 
             // Loop through the old channel's permission overwrites
-            for (const permission in oldOverwrite.json) {
+            for (const [permissionBit, permission] of ChannelPermissions) {
                 // Prepare to add to the text
-                let changedText = permissions.get(key);
-                // Check if the overwrite has the permission allowed
-                if (oldOverwrite.has(permission)) {
-                    // If there is not a new permission overwrite equivalent, the permission has been cleared
+                let changedText = permissions.get(entity);
+                // The permission is allowed in the old overwrite
+                if (oldOverwrite.allow & permissionBit) {
+                    // The permission is not allowed or denied in the new overwrite
+                    // So, it has been cleared
                     if (
                         newOverwrite == null ||
-                        newOverwrite.json[permission] == null
+                        (!(newOverwrite.allow & permissionBit) &&
+                            !(newOverwrite.deny & permissionBit))
                     ) {
-                        changedText += `${
-                            HumanPermissions[Permissions[permission]]
-                        } : ✅ ➜ ⬜\n`;
-                        // If the new overwrite doesn't have this permission in allow, the permision has been denied
-                    } else if (!newOverwrite.has(permission)) {
-                        changedText += `${
-                            HumanPermissions[Permissions[permission]]
-                        } : ✅ ➜ ❎\n`;
+                        changedText += `${permission}: ✅ ➜ ⬜\n`;
+                        // The new overwrite denies the permission
+                    } else if (newOverwrite.deny & permissionBit) {
+                        changedText += `${permission}: ✅ ➜ ❎\n`;
                     }
-                    // Check if the overwrite doesn't have the permission allowed
-                } else if (!oldOverwrite.has(permission)) {
-                    // If there is not a new permission overwrite equivalent, the permission has been cleared
+                    // The permission is denied in the old overwrite
+                } else if (oldOverwrite.deny & permissionBit) {
+                    // The permission is not allowed or denied in the new overwrite
+                    // So, it has been cleared
                     if (
                         newOverwrite == null ||
-                        newOverwrite.json[permission] == null
+                        (!(newOverwrite.allow & permissionBit) &&
+                            !(newOverwrite.deny & permissionBit))
                     ) {
-                        changedText += `${
-                            HumanPermissions[Permissions[permission]]
-                        } : ❎ ➜ ⬜\n`;
-                        // If the new overwrite has this permission in allow, the permission has been allowed
-                    } else if (newOverwrite.has(permission)) {
-                        changedText += `${
-                            HumanPermissions[Permissions[permission]]
-                        } : ❎ ➜ ✅\n`;
+                        changedText += `${permission}: ❎ ➜ ⬜\n`;
+                        // The new overwrite allows the permission
+                    } else if (newOverwrite.allow & permissionBit) {
+                        changedText += `${permission}: ❎ ➜ ✅\n`;
+                    }
+                } else if (newOverwrite != null) {
+                    if (newOverwrite.allow & permissionBit) {
+                        changedText += `${permission}: ⬜ ➜ ✅\n`;
+                    } else if (newOverwrite.deny & permissionBit) {
+                        changedText += `${permission}: ⬜ ➜ ❎\n`;
                     }
                 }
-                // Add the updated text into the map
-                if (changedText != null) permissions.set(key, changedText);
+                if (changedText != undefined)
+                    permissions.set(entity, changedText);
             }
+            if (permissions.get(entity) == header) {
+                let changedText = permissions.get(entity);
+                changedText += '**Overwrite deleted**';
+                if (changedText != undefined)
+                    permissions.set(entity, changedText);
+            }
+        }
 
-            // If there is a new overwrite, loop through it
-            if (newOverwrite != null) {
-                for (const permission in newOverwrite.json) {
-                    // If the old channel has this permission, skip it because it was covered
-                    if (oldOverwrite.json.hasOwnProperty(permission)) continue;
-
-                    // Prepare to change text
-                    let changedText = permissions.get(key);
-
-                    // If the new overwrite doesn't have this permission in allow, an overwrite has been created, denying the permission
-                    if (!newOverwrite.has(permission)) {
-                        changedText += `${
-                            HumanPermissions[Permissions[permission]]
-                        } : ⬜ ➜ ❎\n`;
-                        // If the new overwrite has this permission in allow, an overwrite has been created, allowing the permission
-                    } else if (newOverwrite.has(permission)) {
-                        changedText += `${
-                            HumanPermissions[Permissions[permission]]
-                        } : ⬜ ➜ ✅\n`;
+        const createdOverwrites = newChannel.permissionOverwrites.filter(
+            overwrite =>
+                !Array.from(oldChannel.permissionOverwrites.keys()).includes(
+                    overwrite.id
+                )
+        );
+        for (const overwrite of createdOverwrites) {
+            const entity = overwrite.id;
+            // If the permissions map doesn't have this overwrite, add the header
+            if (!permissions.has(entity)) {
+                if (overwrite.type == 'role') {
+                    if (entity == newChannel.guild.id) {
+                        permissions.set(entity, '\n**Role @everyone**\n');
+                    } else {
+                        permissions.set(entity, `\n**Role <@&${entity}>**\n`);
                     }
-
-                    // Add the updated text into the map
-                    if (changedText != null) permissions.set(key, changedText);
+                }
+                if (overwrite.type == 'member') {
+                    permissions.set(entity, `\n**Member <@${entity}>**\n`);
                 }
             }
+            let changedText = permissions.get(entity);
+            changedText += '**Overwrite created**';
+            if (changedText != undefined) permissions.set(entity, changedText);
         }
 
         // If any permission has been updated, the map size will be greater than 0
@@ -525,6 +553,8 @@ export default class ServerLogging extends AttachableModule {
                 }
             }
         }
+
+        //#endregion
 
         // Final additions and send message
         embed = this.buildEmbed(embed, newChannel.guild);
@@ -608,9 +638,13 @@ export default class ServerLogging extends AttachableModule {
             for (const permission in value.json) {
                 let changedText = permissions.get(key);
                 if (value.json[permission]) {
-                    changedText += `${HumanPermissions[value.allow]} : ✅\n`;
+                    changedText += `${ChannelPermissions.get(
+                        value.allow
+                    )} : ✅\n`;
                 } else if (!value.json[permission]) {
-                    changedText += `${HumanPermissions[value.deny]} : ❎\n`;
+                    changedText += `${ChannelPermissions.get(
+                        value.deny
+                    )} : ❎\n`;
                 }
                 if (changedText != null) permissions.set(key, changedText);
             }
@@ -709,9 +743,13 @@ export default class ServerLogging extends AttachableModule {
 
                 let changedText = permissions.get(key);
                 if (value.json[permission]) {
-                    changedText += `${HumanPermissions[value.allow]} : ✅\n`;
+                    changedText += `${ChannelPermissions.get(
+                        value.allow
+                    )} : ✅\n`;
                 } else if (!value.json[permission]) {
-                    changedText += `${HumanPermissions[value.deny]} : ❎\n`;
+                    changedText += `${ChannelPermissions.get(
+                        value.deny
+                    )} : ❎\n`;
                 }
                 if (changedText != null) permissions.set(key, changedText);
             }
