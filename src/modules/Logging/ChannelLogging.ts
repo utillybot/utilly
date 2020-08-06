@@ -106,7 +106,11 @@ export default class ChannelLogging extends AttachableModule {
                             : 'Off'
                     }\n`;
 
-            if (newChannel.nsfw != oldChannel.nsfw)
+            if (
+                newChannel.nsfw != oldChannel.nsfw &&
+                oldChannel.nsfw != undefined &&
+                newChannel.nsfw != undefined
+            )
                 overview +=
                     `**NSFW**: ${oldChannel.nsfw ? '✅' : '❎'} ` +
                     `➜ ${newChannel.nsfw ? '✅' : '❎'}\n`;
