@@ -1,5 +1,4 @@
 import {
-    AnyGuildChannel,
     CategoryChannel,
     Guild,
     GuildChannel,
@@ -13,8 +12,6 @@ import { secondsToString } from '../../helpers/DurationParser';
 import EmbedBuilder from '../../helpers/Embed';
 import {
     ChannelPermissions,
-    PermissionList,
-    Permissions,
     RolePermissions,
 } from '../../helpers/PermissionConstants';
 import LoggingModule from './LoggingModule';
@@ -62,6 +59,7 @@ export default class ServerLogging extends AttachableModule {
         role: Role,
         oldRole: Role
     ): Promise<void> {
+        //#region prep
         const guildRow = await this.parentModule.selectGuildRow(
             guild.id,
             'guildRoleUpdate'
@@ -74,7 +72,9 @@ export default class ServerLogging extends AttachableModule {
             guildRow.logging_guildRoleUpdateChannel
         );
         if (logChannel == null) return;
+        //#endregion
 
+        //#region embed header
         // Prepare Embed
         let embed = new EmbedBuilder();
         embed.setTitle('Role Updated');
@@ -118,31 +118,29 @@ export default class ServerLogging extends AttachableModule {
                     : ''
             }`;
         if (updatedRoleInfo != '') embed.addField('Info', updatedRoleInfo);
+        //#endregion
 
+        //#region permissions
         // Prepare updates to the permissions
         let permissionField = '';
-        for (let i = 0; i < PermissionList.length; i++) {
-            const permission = PermissionList[i];
+        for (const [permissionBit, permission] of RolePermissions) {
             if (
-                oldRole.permissions.has(permission) &&
-                !role.permissions.has(permission)
+                oldRole.permissions.allow & permissionBit &&
+                !(role.permissions.allow & permissionBit)
             ) {
                 //Permissions go from allow to deny
-                permissionField += `${
-                    RolePermissions[Permissions[permission]]
-                } : ✅ ➜ ❎\n`;
+                permissionField += `${permission}: ✅ ➜ ❎\n`;
             } else if (
-                !oldRole.permissions.has(permission) &&
-                role.permissions.has(permission)
+                !(oldRole.permissions.allow & permissionBit) &&
+                role.permissions.allow & permissionBit
             ) {
                 //Permissiongs go from deny to allow
-                permissionField += `${
-                    RolePermissions[Permissions[permission]]
-                } : ❎ ➜ ✅\n`;
+                permissionField += `${permission}: ❎ ➜ ✅\n`;
             }
         }
         if (permissionField != '')
             embed.addField('Permissions', permissionField, true);
+        //#endregion
 
         // Final additions and send
         if (embed.fields == undefined || embed.fields.length == 0) return;
@@ -156,6 +154,7 @@ export default class ServerLogging extends AttachableModule {
      * @param role - the deleted role
      */
     private async guildRoleDelete(guild: Guild, role: Role): Promise<void> {
+        //#region prep
         const guildRow = await this.parentModule.selectGuildRow(
             guild.id,
             'guildRoleDelete'
@@ -168,36 +167,9 @@ export default class ServerLogging extends AttachableModule {
             guildRow.logging_guildRoleDeleteChannel
         );
         if (logChannel == null) return;
+        //#endregion
 
-        // Prepare Embed
-        let embed = new EmbedBuilder();
-        embed.setTitle('Role Deleted');
-        embed.setColor(role.color);
-        embed.setDescription(`**Name**: ${role.name}`);
-
-        // Prepare role info
-        embed.addField(
-            'Info',
-            `**Color**: #${role.color.toString(16)}\n` +
-                `**Displayed Seperately**: ${role.hoist ? 'Yes' : 'No'}\n` +
-                `**Mentionable**: ${role.mentionable ? 'Yes' : 'No'}\n` +
-                `**Managed**: ${role.managed ? 'Yes' : 'No'}`
-        );
-
-        // Prepare permission info
-        let permissionField = '';
-        for (let i = 0; i < PermissionList.length; i++) {
-            const permission = PermissionList[i];
-            permissionField += `${RolePermissions[Permissions[permission]]} : ${
-                role.permissions.has(permission) ? '✅' : '❎'
-            }\n`;
-        }
-        if (permissionField != '')
-            embed.addField('Permissions', permissionField, true);
-
-        // Final additions and send
-        embed = this.buildEmbed(embed, guild);
-        logChannel.createMessage({ embed });
+        this.guildRoleCD(guild, role, logChannel, 'Deleted');
     }
 
     /**
@@ -206,6 +178,7 @@ export default class ServerLogging extends AttachableModule {
      * @param role - the created role
      */
     private async guildRoleCreate(guild: Guild, role: Role): Promise<void> {
+        //#region prep
         const guildRow = await this.parentModule.selectGuildRow(
             guild.id,
             'guildRoleCreate'
@@ -218,10 +191,21 @@ export default class ServerLogging extends AttachableModule {
             guildRow.logging_guildRoleCreateChannel
         );
         if (logChannel == null) return;
+        //#endregion
 
+        this.guildRoleCD(guild, role, logChannel, 'Created');
+    }
+
+    private async guildRoleCD(
+        guild: Guild,
+        role: Role,
+        logChannel: TextChannel,
+        request: string
+    ): Promise<void> {
+        //#region embed header
         // Prepare Embed
         let embed = new EmbedBuilder();
-        embed.setTitle('Role Created');
+        embed.setTitle(`Role ${request}`);
         embed.setColor(role.color);
         embed.setDescription(
             `**Name**: ${role.name}\n**Mention**: ${role.mention}\n`
@@ -235,17 +219,19 @@ export default class ServerLogging extends AttachableModule {
                 `**Mentionable**: ${role.mentionable ? 'Yes' : 'No'}\n` +
                 `**Managed**: ${role.managed ? 'Yes' : 'No'}`
         );
+        //#endregion
 
+        //#region permissions
         // Prepare permission info
         let permissionField = '';
-        for (let i = 0; i < PermissionList.length; i++) {
-            const permission = PermissionList[i];
-            permissionField += `${RolePermissions[Permissions[permission]]} : ${
-                role.permissions.has(permission) ? '✅' : '❎'
+        for (const [permissionBit, permission] of RolePermissions) {
+            permissionField += `${permission}: ${
+                role.permissions.allow & permissionBit ? '✅' : '❎'
             }\n`;
         }
         if (permissionField != '')
             embed.addField('Permissions', permissionField, true);
+        //#endregion
 
         // Final additions and send
         embed = this.buildEmbed(embed, guild);
@@ -291,11 +277,7 @@ export default class ServerLogging extends AttachableModule {
                 `Channel: <#${newChannel.id}>\nChannel ID: ${newChannel.id}`
             );
 
-            if (
-                newChannel.topic != oldChannel.topic &&
-                newChannel.topic != undefined &&
-                oldChannel.topic != undefined
-            )
+            if (newChannel.topic != oldChannel.topic)
                 overview +=
                     `**Topic**: ${
                         oldChannel.topic != '' && oldChannel.topic != null
@@ -303,7 +285,7 @@ export default class ServerLogging extends AttachableModule {
                             : '(cleared)'
                     }` +
                     ` ➜ ${
-                        newChannel.topic != '' && oldChannel.topic != null
+                        newChannel.topic != '' && newChannel.topic != null
                             ? newChannel.topic
                             : '(cleared)'
                     }\n`;
@@ -330,7 +312,7 @@ export default class ServerLogging extends AttachableModule {
                     `**NSFW**: ${oldChannel.nsfw ? '✅' : '❎'} ` +
                     `➜ ${newChannel.nsfw ? '✅' : '❎'}\n`;
 
-            if (newChannel.parentID != oldChannel.parentID) {
+            if (newChannel.parentID != oldChannel.parentID)
                 overview +=
                     `**Category**: ${
                         (oldChannel.parentID &&
@@ -344,7 +326,6 @@ export default class ServerLogging extends AttachableModule {
                                 ?.name) ??
                         '(none)'
                     }\n`;
-            }
 
             if (overview != '') embed.addField('Overview', overview);
         } else if (newChannel instanceof VoiceChannel) {
@@ -352,17 +333,17 @@ export default class ServerLogging extends AttachableModule {
             embed.setDescription(
                 `Channel: ${newChannel.name}\nChannel ID: ${newChannel.id}`
             );
+
             if (
                 newChannel.bitrate != oldChannel.bitrate &&
                 newChannel.bitrate != undefined &&
                 oldChannel.bitrate != undefined
-            ) {
+            )
                 overview += `**Bitrate**: ${oldChannel.bitrate / 1000}kbps ➜ ${
                     newChannel.bitrate / 1000
                 }kbps\n`;
-            }
 
-            if (newChannel.userLimit != oldChannel.userLimit) {
+            if (newChannel.userLimit != oldChannel.userLimit)
                 overview +=
                     `**User Limit**: ${
                         oldChannel.userLimit == 0 ||
@@ -376,8 +357,8 @@ export default class ServerLogging extends AttachableModule {
                             ? 'No Limit'
                             : `${newChannel.userLimit} users`
                     }\n`;
-            }
-            if (newChannel.parentID != oldChannel.parentID) {
+
+            if (newChannel.parentID != oldChannel.parentID)
                 overview +=
                     `**Category**: ${
                         (oldChannel.parentID &&
@@ -391,7 +372,7 @@ export default class ServerLogging extends AttachableModule {
                                 ?.name) ??
                         '(none)'
                     }\n`;
-            }
+
             if (overview != '') embed.addField('Overview', overview);
         } else if (newChannel instanceof CategoryChannel) {
             embed.setTitle('Category Updated');
@@ -501,21 +482,41 @@ export default class ServerLogging extends AttachableModule {
         for (const overwrite of createdOverwrites) {
             const entity = overwrite.id;
             // If the permissions map doesn't have this overwrite, add the header
+            let header = '';
             if (!permissions.has(entity)) {
                 if (overwrite.type == 'role') {
                     if (entity == newChannel.guild.id) {
                         permissions.set(entity, '\n**Role @everyone**\n');
+                        header = '\n**Role @everyone**\n';
                     } else {
                         permissions.set(entity, `\n**Role <@&${entity}>**\n`);
+                        header = `\n**Role <@&${entity}>**\n`;
                     }
                 }
                 if (overwrite.type == 'member') {
                     permissions.set(entity, `\n**Member <@${entity}>**\n`);
+                    header = `\n**Member <@${entity}>**\n`;
                 }
             }
-            let changedText = permissions.get(entity);
-            changedText += '**Overwrite created**';
-            if (changedText != undefined) permissions.set(entity, changedText);
+
+            for (const [permissionBit, permission] of ChannelPermissions) {
+                let changedText = permissions.get(entity);
+
+                if (overwrite.allow & permissionBit) {
+                    changedText += `${permission}: ⬜ ➜ ✅\n`;
+                } else if (overwrite.deny & permissionBit) {
+                    changedText += `${permission}: ⬜ ➜ ❎\n`;
+                }
+                if (changedText != undefined)
+                    permissions.set(entity, changedText);
+            }
+
+            if (permissions.get(entity) == header) {
+                let changedText = permissions.get(entity);
+                changedText += '**Overwrite created**';
+                if (changedText != undefined)
+                    permissions.set(entity, changedText);
+            }
         }
 
         // If any permission has been updated, the map size will be greater than 0
@@ -526,14 +527,14 @@ export default class ServerLogging extends AttachableModule {
 
             // Loop through the permissions map
             for (const [, value] of permissions) {
-                // If the current page is null, add the page in
-                if (embedPages[current] == null) {
-                    embedPages.push('');
-                }
                 // If current page's length plus the next overwrite's length is greater than 1024 (embed field maximum)
                 // increase the page number
                 if (embedPages[current].length + value.length > 1024) {
                     current++;
+                }
+                // If the current page is null, add the page in
+                if (embedPages[current] == null) {
+                    embedPages.push('');
                 }
                 // Add the permission overwrite data to the current page
                 embedPages[current] += value;
@@ -565,7 +566,8 @@ export default class ServerLogging extends AttachableModule {
      * Handles the event where a channel is deleted
      * @param channel - the deleted channel
      */
-    private async channelDelete(channel: AnyGuildChannel): Promise<void> {
+    private async channelDelete(channel: GuildChannel): Promise<void> {
+        //#region prep
         const guildRow = await this.parentModule.selectGuildRow(
             channel.guild.id,
             'channelDelete'
@@ -578,90 +580,9 @@ export default class ServerLogging extends AttachableModule {
             guildRow.logging_channelDeleteChannel
         );
         if (logChannel == null) return;
+        //#endregion
 
-        // Prepare embed
-        let embed = new EmbedBuilder();
-        let info = '';
-
-        info += `**Name**: ${channel.name}\n`;
-        // Add embed header and info
-        if (channel instanceof TextChannel) {
-            embed.setTitle('Text Channel Deleted');
-            if (channel.parentID) {
-                info += `**Category**: ${
-                    channel.guild.channels.get(channel.parentID)?.name
-                }`;
-            }
-
-            if (info != '') embed.addField('Info', info);
-        } else if (channel instanceof VoiceChannel) {
-            embed.setTitle('Voice Channel Deleted');
-            if (channel.parentID) {
-                info += `**Category**: ${
-                    channel.guild.channels.get(channel.parentID)?.name
-                }`;
-            }
-
-            if (info != '') embed.addField('Info', info);
-        } else if (channel instanceof CategoryChannel) {
-            embed.setTitle('Category Deleted');
-            if (info != '') embed.addField('Info', info);
-        } else {
-            embed.setTitle('Channel Deleted');
-            if (channel.parentID) {
-                info += `**Category**: ${
-                    channel.guild.channels.get(channel.parentID)?.name
-                }`;
-            }
-
-            if (info != '') embed.addField('Info', info);
-        }
-
-        // Setup permission map
-        const permissions: Map<string | number, string> = new Map();
-        // Loop through the permission overwrites
-        for (const [key, value] of channel.permissionOverwrites) {
-            // If the permission map doesn't have the overwrites, add the header
-            if (!permissions.has(key)) {
-                if (value.type == 'role') {
-                    if (key == channel.guild.id) {
-                        permissions.set(key, '\n**Role @everyone\n**');
-                    } else {
-                        permissions.set(key, `\n**Role <@&${key}>\n**`);
-                    }
-                } else if (value.type == 'member') {
-                    permissions.set(key, `\n**Member <@${key}>\n**`);
-                }
-            }
-
-            // Loop through the permissions and add a check or x depending on if the permission is allowed or denied
-            for (const permission in value.json) {
-                let changedText = permissions.get(key);
-                if (value.json[permission]) {
-                    changedText += `${ChannelPermissions.get(
-                        value.allow
-                    )} : ✅\n`;
-                } else if (!value.json[permission]) {
-                    changedText += `${ChannelPermissions.get(
-                        value.deny
-                    )} : ❎\n`;
-                }
-                if (changedText != null) permissions.set(key, changedText);
-            }
-        }
-        // If any permission has been updated, the map size will be greater than 0
-        if (permissions.size > 0) {
-            // Add the permission overwrite
-            let permissionOverwrites = '';
-            for (const [, value] of permissions) {
-                permissionOverwrites += value;
-            }
-            embed.addField('Permission Overwrites', permissionOverwrites, true);
-        }
-
-        // Final additions and send
-        embed = this.buildEmbed(embed, channel.guild);
-        logChannel.createMessage({ embed });
+        this.channelCD(channel, logChannel, 'Deleted');
     }
 
     /**
@@ -669,6 +590,7 @@ export default class ServerLogging extends AttachableModule {
      * @param channel - the created channel
      */
     private async channelCreate(channel: GuildChannel): Promise<void> {
+        //#region prep
         const guildRow = await this.parentModule.selectGuildRow(
             channel.guild.id,
             'channelCreate'
@@ -681,7 +603,17 @@ export default class ServerLogging extends AttachableModule {
             guildRow.logging_channelCreateChannel
         );
         if (logChannel == null) return;
+        //#endregion
 
+        this.channelCD(channel, logChannel, 'Created');
+    }
+
+    private async channelCD(
+        channel: GuildChannel,
+        logChannel: TextChannel,
+        request: string
+    ): Promise<void> {
+        //#region embed header
         // Prepare embed
         let embed = new EmbedBuilder();
         let info = '';
@@ -689,7 +621,24 @@ export default class ServerLogging extends AttachableModule {
         info += `**Name**: ${channel.name}\n`;
         // Add embed header and info
         if (channel instanceof TextChannel) {
-            embed.setTitle('Text Channel Created');
+            embed.setTitle(`Text Channel ${request}`);
+            embed.setDescription(
+                `Channel: <#${channel.id}>\nChannel ID: ${channel.id}`
+            );
+            info += `**Topic**: ${
+                channel.topic != '' && channel.topic != null
+                    ? channel.topic
+                    : '(cleared)'
+            }\n`;
+
+            info += `**Slowmode**: ${
+                channel.rateLimitPerUser != 0
+                    ? secondsToString(channel.rateLimitPerUser)
+                    : 'Off'
+            }\n`;
+
+            info += `**NSFW**: ${channel.nsfw ? '✅' : '❎'} `;
+
             if (channel.parentID) {
                 info += `**Category**: ${
                     channel.guild.channels.get(channel.parentID)?.name
@@ -698,7 +647,19 @@ export default class ServerLogging extends AttachableModule {
 
             if (info != '') embed.addField('Info', info);
         } else if (channel instanceof VoiceChannel) {
-            embed.setTitle('Voice Channel Created');
+            embed.setTitle(`Voice Channel ${request}`);
+            embed.setDescription(
+                `Channel: ${channel.name}\nChannel ID: ${channel.id}`
+            );
+            if (channel.bitrate)
+                info += `**Bitrate**: ${channel.bitrate / 1000}kbps\n`;
+
+            info += `**User Limit**: ${
+                channel.userLimit == 0 || channel.userLimit == undefined
+                    ? 'No Limit'
+                    : `${channel.userLimit} users`
+            }\n`;
+
             if (channel.parentID) {
                 info += `**Category**: ${
                     channel.guild.channels.get(channel.parentID)?.name
@@ -707,10 +668,16 @@ export default class ServerLogging extends AttachableModule {
 
             if (info != '') embed.addField('Info', info);
         } else if (channel instanceof CategoryChannel) {
-            embed.setTitle('Category Created');
+            embed.setTitle(`Category ${request}`);
+            embed.setDescription(
+                `**Name**: ${channel.name}\nChannel ID: ${channel.id}`
+            );
             if (info != '') embed.addField('Info', info);
         } else {
-            embed.setTitle('Channel Created');
+            embed.setTitle(`Channel ${request}`);
+            embed.setDescription(
+                `**Name**: ${channel.name}\nChannel ID: ${channel.id}`
+            );
             if (channel.parentID) {
                 info += `**Category**: ${
                     channel.guild.channels.get(channel.parentID)?.name
@@ -719,53 +686,80 @@ export default class ServerLogging extends AttachableModule {
 
             if (info != '') embed.addField('Info', info);
         }
+        //#endregion
 
+        //#region permissions
         // Setup permission map
         const permissions: Map<string | number, string> = new Map();
         // Loop through the permission overwrites
-        for (const [key, value] of channel.permissionOverwrites) {
+        for (const [entity, overwrite] of channel.permissionOverwrites) {
             // If the permission map doesn't have the overwrites, add the header
-            if (!permissions.has(key)) {
-                if (value.type == 'role') {
-                    if (key == channel.guild.id) {
-                        permissions.set(key, '\n**Role @everyone\n**');
+            if (!permissions.has(entity)) {
+                if (overwrite.type == 'role') {
+                    if (entity == channel.guild.id) {
+                        permissions.set(entity, '\n**Role @everyone\n**');
                     } else {
-                        permissions.set(key, `\n**Role <@&${key}>\n**`);
+                        permissions.set(entity, `\n**Role <@&${entity}>\n**`);
                     }
-                } else if (value.type == 'member') {
-                    permissions.set(key, `\n**Member <@${key}>\n**`);
+                } else if (overwrite.type == 'member') {
+                    permissions.set(entity, `\n**Member <@${entity}>\n**`);
                 }
             }
 
             // Loop through the permissions and add a check or x depending on if the permission is allowed or denied
-            for (const permission in value.json) {
-                console.log(permission);
-
-                let changedText = permissions.get(key);
-                if (value.json[permission]) {
-                    changedText += `${ChannelPermissions.get(
-                        value.allow
-                    )} : ✅\n`;
-                } else if (!value.json[permission]) {
-                    changedText += `${ChannelPermissions.get(
-                        value.deny
-                    )} : ❎\n`;
+            for (const [permissionBit, permission] of ChannelPermissions) {
+                let changedText = permissions.get(entity);
+                if (overwrite.allow & permissionBit) {
+                    changedText += `${permission}: ✅\n`;
+                } else if (overwrite.deny & permissionBit) {
+                    changedText += `${permission}: ❎\n`;
                 }
-                if (changedText != null) permissions.set(key, changedText);
+                if (changedText != null) permissions.set(entity, changedText);
             }
         }
+
+        console.log(permissions);
         // If any permission has been updated, the map size will be greater than 0
         if (permissions.size > 0) {
-            // Add the permission overwrite
-            let permissionOverwrites = '';
+            // Prepare to have multiple pages of permissions
+            const embedPages = [''];
+            let current = 0;
+
+            // Loop through the permissions map
             for (const [, value] of permissions) {
-                permissionOverwrites += value;
+                // If current page's length plus the next overwrite's length is greater than 1024 (embed field maximum)
+                // increase the page number
+                if (embedPages[current].length + value.length > 1024) {
+                    current++;
+                }
+                // If the current page is null, add the page in
+                if (embedPages[current] == null) {
+                    embedPages.push('');
+                }
+                // Add the permission overwrite data to the current page
+                embedPages[current] += value;
             }
-            embed.addField('Permission Overwrites', permissionOverwrites, true);
+
+            // If there is only 1 page, add that page to the embed
+            if (embedPages.length == 1) {
+                embed.addField('Permission Overwrites', embedPages[0], true);
+                // Otherwise, loop through the pages and add each one to the embed
+            } else {
+                for (let i = 0; i < embedPages.length; i++) {
+                    embed.addField(
+                        `Permission Overwrites ${i + 1}`,
+                        embedPages[i],
+                        true
+                    );
+                }
+            }
         }
+        //#endregion
 
         // Final additions and send
         embed = this.buildEmbed(embed, channel.guild);
-        logChannel.createMessage({ embed });
+        logChannel.createMessage({
+            embed,
+        });
     }
 }
