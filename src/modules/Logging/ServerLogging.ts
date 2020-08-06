@@ -718,7 +718,6 @@ export default class ServerLogging extends AttachableModule {
             }
         }
 
-        console.log(permissions);
         // If any permission has been updated, the map size will be greater than 0
         if (permissions.size > 0) {
             // Prepare to have multiple pages of permissions
