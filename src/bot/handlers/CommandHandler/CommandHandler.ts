@@ -141,13 +141,13 @@ export default class CommandHandler {
                     `Command object ${commandObj.help.name} doesn't have a parent.`
                 );
 
-            if (!(await commandObj.parent.checkPermission(this.bot, message))) {
+            if (!(await commandObj.parent.checkPermission(message))) {
                 message.channel.createMessage(
                     "Uh oh, it looks like you don't have permission to run this command"
                 );
                 return;
             }
-            if (!(await commandObj.checkPermission(this.bot, message))) {
+            if (!(await commandObj.checkPermission(message))) {
                 message.channel.createMessage(
                     "Uh oh, it looks like you don't have permission to run this command"
                 );
@@ -164,14 +164,14 @@ export default class CommandHandler {
                     `Command object ${commandObj.help.name} doesn't have a parent.`
                 );
 
-            if (!(await commandObj.parent.checkPermission(this.bot, message))) {
+            if (!(await commandObj.parent.checkPermission(message))) {
                 message.channel.createMessage(
                     "Uh oh, it looks like you don't have permission to run this command"
                 );
                 return;
             }
 
-            if (!(await commandObj.checkPermission(this.bot, message))) {
+            if (!(await commandObj.checkPermission(message))) {
                 message.channel.createMessage(
                     "Uh oh, it looks like you don't have permission to run this command"
                 );
@@ -204,7 +204,7 @@ export default class CommandHandler {
         }
 
         try {
-            await commandObj.execute(this.bot, message, args);
+            await commandObj.execute(message, args);
         } catch (e) {
             console.error('Bot command error', e.stack);
         }
