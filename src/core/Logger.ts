@@ -1,6 +1,8 @@
 import chalk from 'chalk';
+
 export default class Logger {
     off: boolean;
+
     constructor(off = false) {
         this.off = off;
     }

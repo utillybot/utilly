@@ -1,5 +1,5 @@
 import { Emoji, Message } from 'eris';
-import Logger from '../../../utilities/Logger';
+import Logger from '../../../../core/Logger';
 import UtillyClient from '../../../UtillyClient';
 import { ReactionWaitFailure } from './ReactionWaitFailure';
 import ReactionWaitOptions from './ReactionWaitOptions';

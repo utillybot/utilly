@@ -1,5 +1,5 @@
 import { Message } from 'eris';
-import Logger from '../../../utilities/Logger';
+import Logger from '../../../../core/Logger';
 import UtillyClient from '../../../UtillyClient';
 import { MessageWaitFailure } from './MessageWaitFailure';
 import { MessageWaitFilter } from './MessageWaitFilter';

@@ -1,5 +1,5 @@
 import { createConnection } from 'typeorm';
-import Logger from '../bot/utilities/Logger';
+import Logger from '../core/Logger';
 import { Guild } from './entity/Guild';
 
 export default class Database {

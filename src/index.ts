@@ -1,5 +1,3 @@
-import UtillyClient from './bot/UtillyClient';
+import Utilly from './Utilly';
 
-const bot = new UtillyClient();
-bot.load();
-bot.connect();
+new Utilly().start();

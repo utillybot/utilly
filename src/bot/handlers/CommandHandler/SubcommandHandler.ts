@@ -1,5 +1,5 @@
 import { Message } from 'eris';
-import Logger from '../../utilities/Logger';
+import Logger from '../../../core/Logger';
 
 export type Subcommand = (message: Message, args: string[]) => void;
 

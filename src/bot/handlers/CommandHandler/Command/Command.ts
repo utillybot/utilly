@@ -29,8 +29,7 @@ export default abstract class Command {
     }
 
     /**
-     * Checks if a user is authorized to run a command
-     * @param bot - the client
+     * Checks if a user has permission to run a command
      * @param message - the message
      */
     async checkPermission(message: Message): Promise<boolean> {
@@ -39,7 +38,6 @@ export default abstract class Command {
 
     /**
      * Executes the command
-     * @param bot - the client
      * @param message - the message
      * @param args - the arguments
      */

@@ -10,9 +10,7 @@ export default class GuildRepository extends Repository<Guild> {
     async findOrCreate(guildID: string): Promise<Guild> {
         let guild = await this.findOne(guildID);
         if (guild == undefined) {
-            const guildObj = this.create();
-            guildObj.guildID = guildID;
-            guild = await this.save(guildObj);
+            guild = await this.save({ guildID });
         }
         return guild;
     }
@@ -23,24 +21,18 @@ export default class GuildRepository extends Repository<Guild> {
      * @param select - an array of columns to select
      */
     async selectOrCreate(guildID: string, select: string[]): Promise<Guild> {
-        const selectItems = select.map(item => 'guild.' + item);
-        selectItems.push('guild.guildID');
-        let guildRow = await this.createQueryBuilder('guild')
-            .where('guild.guildID = :guildID', { guildID })
-            .select(selectItems)
-            .cache(true)
-            .getOne();
+        select.push('guildID');
+        let guildRow = await this.findOne({
+            where: { guildID },
+            select: select,
+        });
 
         if (guildRow == undefined) {
-            await this.createQueryBuilder()
-                .insert()
-                .into(Guild)
-                .values({ guildID })
-                .execute();
-            guildRow = await this.createQueryBuilder('guild')
-                .where('guild.guildID = :id', { id: guildID })
-                .select(selectItems)
-                .getOne();
+            await this.insert({ guildID });
+            guildRow = await this.findOne({
+                where: { guildID },
+                select: select,
+            });
             if (guildRow == undefined)
                 throw new Error('Failed to create Guild Row');
         }

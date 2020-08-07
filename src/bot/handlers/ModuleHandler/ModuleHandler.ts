@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import Logger from '../../utilities/Logger';
+import Logger from '../../../core/Logger';
 import UtillyClient from '../../UtillyClient';
 import Module from './Module/Module';
 import AttachableModule from './Submodule/AttachableModule';
