@@ -29,7 +29,7 @@
         "compile": "npx tsc",
         "lint": "npx eslint src/**/*.ts --fix",
         "prettier": "npx prettier src/**/*.ts --write",
-        "run": "node dist/bot.js",
+        "run": "node dist/index.js",
         "debug": "npm run compile && npm run run",
         "postinstall": "npx tsc"
     },
