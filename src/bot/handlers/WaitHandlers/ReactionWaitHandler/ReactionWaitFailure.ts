@@ -1,1 +1,3 @@
-export type ReactionWaitFailure = () => void;
+type ReactionWaitFailure = () => void;
+
+export default ReactionWaitFailure;

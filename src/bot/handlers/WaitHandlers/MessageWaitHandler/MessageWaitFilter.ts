@@ -1,3 +1,5 @@
 import { Message } from 'eris';
 
-export type MessageWaitFilter = (message: Message) => Promise<boolean>;
+type MessageWaitFilter = (message: Message) => Promise<boolean>;
+
+export default MessageWaitFilter;

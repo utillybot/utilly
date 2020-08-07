@@ -1,3 +1,5 @@
 import { Emoji } from 'eris';
 
-export type ReactionWaitSuccess = (emote: Emoji) => Promise<void>;
+type ReactionWaitSuccess = (emote: Emoji) => Promise<void>;
+
+export default ReactionWaitSuccess;

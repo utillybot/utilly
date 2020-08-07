@@ -1,3 +1,5 @@
 import { Message } from 'eris';
 
-export type MessageWaitSuccess = (message: Message) => Promise<void>;
+type MessageWaitSuccess = (message: Message) => Promise<void>;
+
+export default MessageWaitSuccess;

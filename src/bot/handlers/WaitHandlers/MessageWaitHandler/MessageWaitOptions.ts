@@ -1,6 +1,6 @@
-import { MessageWaitFailure } from './MessageWaitFailure';
-import { MessageWaitFilter } from './MessageWaitFilter';
-import { MessageWaitSuccess } from './MessageWaitSuccess';
+import MessageWaitFailure from './MessageWaitFailure';
+import MessageWaitFilter from './MessageWaitFilter';
+import MessageWaitSuccess from './MessageWaitSuccess';
 
 export default interface MessageWaitOptions {
     channelID: string;

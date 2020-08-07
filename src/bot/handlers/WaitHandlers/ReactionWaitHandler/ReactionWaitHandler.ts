@@ -1,9 +1,9 @@
 import { Emoji, Message } from 'eris';
 import Logger from '../../../../core/Logger';
 import UtillyClient from '../../../UtillyClient';
-import { ReactionWaitFailure } from './ReactionWaitFailure';
+import ReactionWaitFailure from './ReactionWaitFailure';
 import ReactionWaitOptions from './ReactionWaitOptions';
-import { ReactionWaitSuccess } from './ReactionWaitSuccess';
+import ReactionWaitSuccess from './ReactionWaitSuccess';
 
 export default class ReactionWaitHandler {
     bot: UtillyClient;

@@ -1,6 +1,6 @@
 import { GuildChannel, Message } from 'eris';
 import { getCustomRepository } from 'typeorm';
-import { Guild } from '../../../database/entity/Guild';
+import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
 import { ModuleConstants, Modules } from '../../constants/ModuleConstants';
 import Command from '../../handlers/CommandHandler/Command/Command';

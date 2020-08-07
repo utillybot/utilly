@@ -1,1 +1,3 @@
-export type MessageWaitFailure = () => void;
+type MessageWaitFailure = () => void;
+
+export default MessageWaitFailure;

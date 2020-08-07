@@ -1,6 +1,6 @@
 import Eris from 'eris';
 import { getCustomRepository } from 'typeorm';
-import { Guild } from '../../../database/entity/Guild';
+import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
 import DatabaseModule from '../../handlers/ModuleHandler/Module/DatabaseModule';
 import UtillyClient from '../../UtillyClient';

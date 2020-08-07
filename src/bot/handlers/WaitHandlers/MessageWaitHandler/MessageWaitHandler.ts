@@ -1,12 +1,12 @@
 import { Message } from 'eris';
 import Logger from '../../../../core/Logger';
 import UtillyClient from '../../../UtillyClient';
-import { MessageWaitFailure } from './MessageWaitFailure';
-import { MessageWaitFilter } from './MessageWaitFilter';
+import MessageWaitFailure from './MessageWaitFailure';
+import MessageWaitFilter from './MessageWaitFilter';
 import MessageWaitOptions from './MessageWaitOptions';
-import { MessageWaitSuccess } from './MessageWaitSuccess';
+import MessageWaitSuccess from './MessageWaitSuccess';
 
-export class MessageWaitHandler {
+export default class MessageWaitHandler {
     bot: UtillyClient;
     logger: Logger;
     handlers: Map<string, MessageWaitOptions>;

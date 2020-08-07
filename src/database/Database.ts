@@ -1,6 +1,7 @@
 import { createConnection } from 'typeorm';
 import Logger from '../core/Logger';
-import { Guild } from './entity/Guild';
+import Guild from './entity/Guild';
+import { TypeORMLogger } from './TypeORMLogger';
 
 export default class Database {
     private logger: Logger;
@@ -29,6 +30,7 @@ export default class Database {
                     url: process.env.REDIS_URL,
                 },
             },
+            logger: new TypeORMLogger(this.logger),
         });
     }
 }

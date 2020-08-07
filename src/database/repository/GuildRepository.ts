@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { Guild } from '../entity/Guild';
+import Guild from '../entity/Guild';
 
 @EntityRepository(Guild)
 export default class GuildRepository extends Repository<Guild> {

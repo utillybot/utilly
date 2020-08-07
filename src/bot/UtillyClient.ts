@@ -6,7 +6,7 @@ import Logger from '../core/Logger';
 import Database from '../database/Database';
 import CommandHandler from './handlers/CommandHandler/CommandHandler';
 import ModuleHandler from './handlers/ModuleHandler/ModuleHandler';
-import { MessageWaitHandler } from './handlers/WaitHandlers/MessageWaitHandler/MessageWaitHandler';
+import MessageWaitHandler from './handlers/WaitHandlers/MessageWaitHandler/MessageWaitHandler';
 import ReactionWaitHandler from './handlers/WaitHandlers/ReactionWaitHandler/ReactionWaitHandler';
 
 export default class UtillyClient extends Client {
@@ -21,7 +21,22 @@ export default class UtillyClient extends Client {
         dotenv.config();
         if (!process.env.TOKEN)
             throw new Error('TOKEN env variable not present');
-        super(process.env.TOKEN);
+        super(process.env.TOKEN, {
+            intents: [
+                'guilds',
+                'guildMembers',
+                'guildBans',
+                'guildEmojis',
+                'guildIntegrations',
+                'guildWebhooks',
+                'guildInvites',
+                'guildVoiceStates',
+                'guildMessages',
+                'guildMessageReactions',
+                'directMessages',
+                'directMessageReactions',
+            ],
+        });
 
         this.logger = logger;
         this.database = database;

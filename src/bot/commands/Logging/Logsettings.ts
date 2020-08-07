@@ -6,13 +6,13 @@ import {
     TextChannel,
 } from 'eris';
 import { getCustomRepository, getRepository } from 'typeorm';
-import { Guild } from '../../../database/entity/Guild';
+import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
 import { EmoteConstants } from '../../constants/EmoteConstants';
 import { EventConstants } from '../../constants/EventConstants';
 import Command from '../../handlers/CommandHandler/Command/Command';
-import { ReactionWaitFailure } from '../../handlers/WaitHandlers/ReactionWaitHandler/ReactionWaitFailure';
-import { ReactionWaitSuccess } from '../../handlers/WaitHandlers/ReactionWaitHandler/ReactionWaitSuccess';
+import ReactionWaitFailure from '../../handlers/WaitHandlers/ReactionWaitHandler/ReactionWaitFailure';
+import ReactionWaitSuccess from '../../handlers/WaitHandlers/ReactionWaitHandler/ReactionWaitSuccess';
 import EmbedBuilder from '../../utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import LoggingCommandModule from './moduleinfo';

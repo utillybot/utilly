@@ -1,4 +1,4 @@
-import { ReactionWaitSuccess } from './ReactionWaitSuccess';
+import ReactionWaitSuccess from './ReactionWaitSuccess';
 
 export default interface ReactionWaitOptions {
     allowedEmotes: string[];

@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
-export class Guild {
+export default class Guild {
     @PrimaryColumn('numeric', { precision: 18 })
     public guildID!: string;
 
