@@ -11,7 +11,7 @@ export default class Settings extends Command {
         this.settings.guildOnly = true;
     }
 
-    async execute(_bot: UtillyClient, message: Message): Promise<void> {
+    async execute(message: Message): Promise<void> {
         message.channel.createMessage('test');
     }
 }

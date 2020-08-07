@@ -15,7 +15,7 @@ export default class Ping extends Command {
         this.settings.guildOnly = true;
     }
 
-    async execute(bot: UtillyClient, message: Message): Promise<void> {
+    async execute(message: Message): Promise<void> {
         if (message.channel instanceof GuildChannel) {
             const ZWS = '​';
             const m = await message.channel.createMessage(ZWS);
