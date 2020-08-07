@@ -10,10 +10,10 @@ import MessageWaitHandler from './handlers/WaitHandlers/MessageWaitHandler/Messa
 import ReactionWaitHandler from './handlers/WaitHandlers/ReactionWaitHandler/ReactionWaitHandler';
 
 export default class UtillyClient extends Client {
-    CommandHandler: CommandHandler;
-    ModuleHandler: ModuleHandler;
-    MessageWaitHandler: MessageWaitHandler;
-    ReactionWaitHandler: ReactionWaitHandler;
+    commandHandler: CommandHandler;
+    moduleHandler: ModuleHandler;
+    messageWaitHandler: MessageWaitHandler;
+    reactionWaitHandler: ReactionWaitHandler;
     logger: Logger;
     database: Database;
 
@@ -41,10 +41,10 @@ export default class UtillyClient extends Client {
         this.logger = logger;
         this.database = database;
 
-        this.ModuleHandler = new ModuleHandler(this, this.logger);
-        this.CommandHandler = new CommandHandler(this, this.logger);
-        this.MessageWaitHandler = new MessageWaitHandler(this, this.logger);
-        this.ReactionWaitHandler = new ReactionWaitHandler(this, this.logger);
+        this.moduleHandler = new ModuleHandler(this, this.logger);
+        this.commandHandler = new CommandHandler(this, this.logger);
+        this.messageWaitHandler = new MessageWaitHandler(this, this.logger);
+        this.reactionWaitHandler = new ReactionWaitHandler(this, this.logger);
 
         this.on('ready', this.readyEvent.bind(this));
     }
@@ -54,19 +54,19 @@ export default class UtillyClient extends Client {
     }
 
     async loadBot(): Promise<void> {
-        this.MessageWaitHandler.attach();
-        this.ReactionWaitHandler.attach();
+        this.messageWaitHandler.attach();
+        this.reactionWaitHandler.attach();
 
-        await this.ModuleHandler.loadModules(path.join(__dirname, 'modules'));
-        this.ModuleHandler.attachModules();
+        await this.moduleHandler.loadModules(path.join(__dirname, 'modules'));
+        this.moduleHandler.attachModules();
 
-        await this.CommandHandler.loadCommands(
+        await this.commandHandler.loadCommands(
             path.join(__dirname, 'commands')
         );
-        this.CommandHandler.attach();
+        this.commandHandler.attach();
         console.log('');
 
-        this.CommandHandler.linkModules(this.ModuleHandler.modules);
+        this.commandHandler.linkModules(this.moduleHandler.modules);
         console.log('');
     }
 }

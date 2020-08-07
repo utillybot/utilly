@@ -32,11 +32,11 @@ export default class Help extends Command {
                 this.handleBaseCommand(message, guildRow);
             } else {
                 const item = args[0].toLowerCase();
-                if (this.bot.CommandHandler.commandModules.has(item)) {
+                if (this.bot.commandHandler.commandModules.has(item)) {
                     this.handleModule(message, item, guildRow);
                 } else if (
-                    this.bot.CommandHandler.commands.has(item) ||
-                    this.bot.CommandHandler.aliases.has(item)
+                    this.bot.commandHandler.commands.has(item) ||
+                    this.bot.commandHandler.aliases.has(item)
                 ) {
                     this.handleCommand(message, item, guildRow);
                 }
@@ -51,7 +51,7 @@ export default class Help extends Command {
         let enabledModules = '';
         let disabledModules = '';
 
-        for (const [, module] of this.bot.CommandHandler.commandModules) {
+        for (const [, module] of this.bot.commandHandler.commandModules) {
             if (module.parent instanceof DatabaseModule) {
                 if (!guildRow[module.parent.databaseEntry]) {
                     disabledModules += module.info.name + '\n';
@@ -103,7 +103,7 @@ export default class Help extends Command {
         embed.setColor(guildRow[item] == false ? 0xff0000 : 0x00ff00);
         embed.setDescription(ModuleConstants[item]);
 
-        for (const [, command] of this.bot.CommandHandler.commands) {
+        for (const [, command] of this.bot.commandHandler.commands) {
             if (command.parent == undefined)
                 throw new Error('Injection failure');
             if (command.parent.info.name.toLowerCase() != item) continue;
@@ -125,8 +125,8 @@ export default class Help extends Command {
     handleCommand(message: Message, item: string, guildRow: Guild): void {
         const embed = new EmbedBuilder();
 
-        let command = this.bot.CommandHandler.commands.get(item);
-        if (!command) command = this.bot.CommandHandler.aliases.get(item);
+        let command = this.bot.commandHandler.commands.get(item);
+        if (!command) command = this.bot.commandHandler.aliases.get(item);
         if (!command) return;
 
         if (command.parent == undefined) throw new Error('Injection failure');

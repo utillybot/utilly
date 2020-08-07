@@ -67,7 +67,7 @@ export default class Logsettings extends Command {
         menu.addReaction(`info:${EmoteConstants.infoID}`);
         menu.addReaction(`cancel:${EmoteConstants.cancelID}`);
 
-        this.bot.ReactionWaitHandler.addListener(
+        this.bot.reactionWaitHandler.addListener(
             menu.id,
             message.author.id,
             [
@@ -207,7 +207,7 @@ export default class Logsettings extends Command {
             message.author.avatarURL
         );
 
-        this.bot.MessageWaitHandler.addListener(
+        this.bot.messageWaitHandler.addListener(
             menu.channel.id,
             message.author.id,
             this.handleChannelName(message, menu),
@@ -282,7 +282,7 @@ export default class Logsettings extends Command {
                 message.author.avatarURL
             );
 
-            this.bot.MessageWaitHandler.addListener(
+            this.bot.messageWaitHandler.addListener(
                 menu.channel.id,
                 message.author.id,
                 this.handleChannelParse(message, events, humanEvents, menu),
@@ -436,7 +436,7 @@ export default class Logsettings extends Command {
             message.author.avatarURL
         );
 
-        this.bot.MessageWaitHandler.addListener(
+        this.bot.messageWaitHandler.addListener(
             menu.channel.id,
             message.author.id,
             this.handleEventName(message, menu, eventOptions),
@@ -512,7 +512,7 @@ export default class Logsettings extends Command {
                 message.author.avatarURL
             );
 
-            this.bot.MessageWaitHandler.addListener(
+            this.bot.messageWaitHandler.addListener(
                 menu.channel.id,
                 message.author.id,
                 this.handleEventParse(events, humanEvents, menu, eventOptions),
