@@ -32,7 +32,12 @@ export default class Help extends Command {
                 this.handleBaseCommand(message, guildRow);
             } else {
                 const item = args[0].toLowerCase();
-                if (this.bot.commandHandler.commandModules.has(item)) {
+
+                if (
+                    Array.from(
+                        this.bot.commandHandler.commandModules.keys()
+                    ).find(module => module.toLowerCase() == item) != undefined
+                ) {
                     this.handleModule(message, item, guildRow);
                 } else if (
                     this.bot.commandHandler.commands.has(item) ||
