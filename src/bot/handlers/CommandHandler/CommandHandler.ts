@@ -6,7 +6,6 @@ import Logger from '../../../core/Logger';
 import GuildRepository from '../../../database/repository/GuildRepository';
 import UtillyClient from '../../UtillyClient';
 import DatabaseModule from '../ModuleHandler/Module/DatabaseModule';
-import Module from '../ModuleHandler/Module/Module';
 import Command from './Command/Command';
 import CommandModule from './CommandModule/CommandModule';
 
@@ -14,15 +13,16 @@ import CommandModule from './CommandModule/CommandModule';
  * Handles all incomming commands
  */
 export default class CommandHandler {
-    private bot: UtillyClient;
-    private logger: Logger;
     commandModules: Map<string, CommandModule>;
     commands: Map<string, Command>;
     aliases: Map<string, Command>;
 
+    private _bot: UtillyClient;
+    private _logger: Logger;
+
     constructor(bot: UtillyClient, logger: Logger) {
-        this.bot = bot;
-        this.logger = logger;
+        this._bot = bot;
+        this._logger = logger;
         this.commandModules = new Map();
         this.commands = new Map();
         this.aliases = new Map();
@@ -32,7 +32,7 @@ export default class CommandHandler {
      * Attaches to the client to start listening for events
      */
     attach(): void {
-        this.bot.on('messageCreate', this.messageCreate.bind(this));
+        this._bot.on('messageCreate', this._messageCreate.bind(this));
     }
 
     /**
@@ -40,7 +40,7 @@ export default class CommandHandler {
      * @param directory - the directory to load commands from
      */
     async loadCommands(directory: string): Promise<void> {
-        this.logger.handler(`Loading Commands in Directory ${directory}.`);
+        this._logger.handler(`Loading Commands in Directory ${directory}.`);
         const modules = await fs.readdir(directory);
 
         for (const module of modules) {
@@ -50,16 +50,17 @@ export default class CommandHandler {
             const moduleObj: CommandModule = new (
                 await import(path.join(directory, module, 'moduleinfo'))
             ).default();
-            this.logger.handler(
+            this._logger.handler(
                 `  Loading Command Module "${moduleObj.info.name}".`
             );
             for (const command of commands) {
                 if (command == 'moduleinfo.js') continue;
-                this.logger.handler(`    Loading Command "${command}".`);
+
+                this._logger.handler(`    Loading Command "${command}".`);
                 const commandObj: Command = new (
                     await import(path.join(directory, module, command))
-                ).default(this.bot);
-                commandObj.parent = moduleObj;
+                ).default(this._bot, moduleObj);
+
                 moduleObj.registerCommand(commandObj.help.name, commandObj);
                 this.commands.set(commandObj.help.name, commandObj);
                 if (commandObj.help.aliases != null) {
@@ -67,37 +68,25 @@ export default class CommandHandler {
                         this.aliases.set(alias, commandObj);
                     }
                 }
-                this.logger.handler(
+                this._logger.handler(
                     `    Finished Loading Command "${commandObj.constructor.name}".`
                 );
             }
-            this.logger.handler(
+            this._logger.handler(
                 `  Finished Loading Module "${moduleObj.info.name}".`
             );
             this.commandModules.set(moduleObj.info.name, moduleObj);
         }
-        this.logger.handler(
+        this._logger.handler(
             `Command Loading is complete. ${this.commandModules.size} command modules have been loaded.`
         );
     }
 
-    linkModules(modules: Map<string, Module>): void {
-        for (const [commandModuleName, commandModule] of this.commandModules) {
-            commandModule.parent = modules.get(commandModuleName);
-            if (commandModule.parent == undefined)
-                throw new Error(
-                    `Linking error for module ${commandModuleName}`
-                );
-            this.logger.handler(
-                `Linking Command Module "${commandModuleName}" with module "${commandModule.parent.constructor.name}"`
-            );
-        }
-    }
     /**
      * Processes a message when it reaches the botou
      * @param message - the message
      */
-    private async messageCreate(message: Message): Promise<void> {
+    private async _messageCreate(message: Message): Promise<void> {
         if (message.author.bot) return;
 
         let prefix: string | undefined;

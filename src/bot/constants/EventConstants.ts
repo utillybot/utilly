@@ -1,28 +1,28 @@
-const MessageNames: { [string: string]: string } = {
+const MESSAGE_NAMES: { [string: string]: string } = {
     'message deleted': 'messageDelete',
     'message edited': 'messageUpdate',
     'message bulk deleted': 'messageDeleteBulk',
 };
 
-const ChannelNames: { [string: string]: string } = {
+const CHANNEL_NAMES: { [string: string]: string } = {
     'channel created': 'channelCreate',
     'channel updated': 'channelUpdate',
     'channel deleted': 'channelDelete',
 };
 
-const RoleNames: { [string: string]: string } = {
+const ROLE_NAMES: { [string: string]: string } = {
     'role created': 'guildRoleCreate',
     'role deleted': 'guildRoleDelete',
     'role updated': 'guildRoleUpdate',
 };
 
-export const EventConstants: {
+export const EVENT_CONSTANTS: {
     [string: string]:
-        | typeof MessageNames
-        | typeof ChannelNames
-        | typeof RoleNames;
+        | typeof MESSAGE_NAMES
+        | typeof CHANNEL_NAMES
+        | typeof ROLE_NAMES;
 } = {
-    message: MessageNames,
-    channel: ChannelNames,
-    role: RoleNames,
+    message: MESSAGE_NAMES,
+    channel: CHANNEL_NAMES,
+    role: ROLE_NAMES,
 };

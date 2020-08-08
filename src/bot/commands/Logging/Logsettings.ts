@@ -8,8 +8,8 @@ import {
 import { getCustomRepository, getRepository } from 'typeorm';
 import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
-import { EmoteConstants } from '../../constants/EmoteConstants';
-import { EventConstants } from '../../constants/EventConstants';
+import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
+import { EVENT_CONSTANTS } from '../../constants/EventConstants';
 import Command from '../../handlers/CommandHandler/Command/Command';
 import ReactionWaitFailure from '../../handlers/WaitHandlers/ReactionWaitHandler/ReactionWaitFailure';
 import ReactionWaitSuccess from '../../handlers/WaitHandlers/ReactionWaitHandler/ReactionWaitSuccess';
@@ -20,8 +20,8 @@ import LoggingCommandModule from './moduleinfo';
 export default class Logsettings extends Command {
     parent?: LoggingCommandModule;
 
-    constructor(bot: UtillyClient) {
-        super(bot);
+    constructor(bot: UtillyClient, parent: LoggingCommandModule) {
+        super(bot, parent);
         this.help.name = 'logsettings';
         this.help.description = 'Modify settings for the logging plugin';
         this.help.usage = '';
@@ -49,32 +49,32 @@ export default class Logsettings extends Command {
             'Click on a reaction below showing which setting you want to modify.'
         );
         embed.addField(
-            `${EmoteConstants.channel} Channel`,
+            `${EMOTE_CONSTANTS.channel} Channel`,
             'Change the channel where an event is being logged in.'
         );
         embed.addField(
-            `${EmoteConstants.event} Event`,
+            `${EMOTE_CONSTANTS.event} Event`,
             'Enable or disable an event to log.'
         );
         embed.addField(
-            `${EmoteConstants.info} Info`,
+            `${EMOTE_CONSTANTS.info} Info`,
             'View the currently set log channel and status of each event'
         );
-        embed.addField(`${EmoteConstants.cancel} Cancel`, 'Close this menu');
+        embed.addField(`${EMOTE_CONSTANTS.cancel} Cancel`, 'Close this menu');
         const menu = await message.channel.createMessage({ embed });
-        menu.addReaction(`channel:${EmoteConstants.channelID}`);
-        menu.addReaction(`event:${EmoteConstants.eventID}`);
-        menu.addReaction(`info:${EmoteConstants.infoID}`);
-        menu.addReaction(`cancel:${EmoteConstants.cancelID}`);
+        menu.addReaction(`channel:${EMOTE_CONSTANTS.channelID}`);
+        menu.addReaction(`event:${EMOTE_CONSTANTS.eventID}`);
+        menu.addReaction(`info:${EMOTE_CONSTANTS.infoID}`);
+        menu.addReaction(`cancel:${EMOTE_CONSTANTS.cancelID}`);
 
         this.bot.reactionWaitHandler.addListener(
             menu.id,
             message.author.id,
             [
-                EmoteConstants.channelID,
-                EmoteConstants.eventID,
-                EmoteConstants.infoID,
-                EmoteConstants.cancelID,
+                EMOTE_CONSTANTS.channelID,
+                EMOTE_CONSTANTS.eventID,
+                EMOTE_CONSTANTS.infoID,
+                EMOTE_CONSTANTS.cancelID,
             ],
             this.handleSuccess(message, menu),
             this.handleFailure(menu),
@@ -85,16 +85,16 @@ export default class Logsettings extends Command {
     handleSuccess(message: Message, menu: Message): ReactionWaitSuccess {
         return async (emote: Emoji) => {
             switch (emote.id) {
-                case EmoteConstants.channelID:
+                case EMOTE_CONSTANTS.channelID:
                     this.handleChannelSettings(message, menu);
                     break;
-                case EmoteConstants.eventID:
+                case EMOTE_CONSTANTS.eventID:
                     this.handleEventSettings(message, menu);
                     break;
-                case EmoteConstants.infoID:
+                case EMOTE_CONSTANTS.infoID:
                     this.handleInfo(message, menu);
                     break;
-                case EmoteConstants.cancelID: {
+                case EMOTE_CONSTANTS.cancelID: {
                     const m = await message.channel.createMessage(
                         'Alright, closing the menu.'
                     );
@@ -119,7 +119,7 @@ export default class Logsettings extends Command {
     async handleInfo(message: Message, menu: Message): Promise<void> {
         if (!(menu.channel instanceof GuildChannel)) return;
         let eventOptions: string[] = [];
-        for (const categoryValue of Object.values(EventConstants)) {
+        for (const categoryValue of Object.values(EVENT_CONSTANTS)) {
             eventOptions = eventOptions.concat(Object.values(categoryValue));
         }
         const guildRow = await getCustomRepository(
@@ -135,7 +135,7 @@ export default class Logsettings extends Command {
         );
 
         for (const [categoryName, categoryValue] of Object.entries(
-            EventConstants
+            EVENT_CONSTANTS
         )) {
             const eventNames = Object.keys(categoryValue);
             embed.addField(
@@ -190,7 +190,7 @@ export default class Logsettings extends Command {
 
         // Populate options with all the event names and categories
         for (const [categoryName, categoryValue] of Object.entries(
-            EventConstants
+            EVENT_CONSTANTS
         )) {
             const eventNames = Object.getOwnPropertyNames(categoryValue);
             embed.addField(
@@ -236,7 +236,7 @@ export default class Logsettings extends Command {
             let events: string[] = [];
             let humanEvents: string[] = [];
             for (const [categoryName, categoryValue] of Object.entries(
-                EventConstants
+                EVENT_CONSTANTS
             )) {
                 const eventNames = Object.keys(categoryValue);
                 // Check if the response is a category
@@ -418,7 +418,7 @@ export default class Logsettings extends Command {
         // Populate options with all the event names and categories
         let eventOptions: string[] = [];
         for (const [categoryName, categoryValue] of Object.entries(
-            EventConstants
+            EVENT_CONSTANTS
         )) {
             const eventNames = Object.getOwnPropertyNames(categoryValue);
             eventOptions = eventOptions.concat(Object.values(categoryValue));
@@ -465,7 +465,7 @@ export default class Logsettings extends Command {
             let events: string[] = [];
             let humanEvents: string[] = [];
             for (const [categoryName, categoryValue] of Object.entries(
-                EventConstants
+                EVENT_CONSTANTS
             )) {
                 const eventNames = Object.keys(categoryValue);
                 // Check if the response is a category
@@ -578,7 +578,7 @@ export default class Logsettings extends Command {
             );
 
             for (const [categoryName, categoryValue] of Object.entries(
-                EventConstants
+                EVENT_CONSTANTS
             )) {
                 const eventNames = Object.keys(categoryValue);
                 embed.addField(

@@ -1,34 +1,34 @@
 import { Logger as TypeLogger } from 'typeorm';
 import Logger from '../core/Logger';
 
-export class TypeORMLogger implements TypeLogger {
-    logger: Logger;
+export default class TypeORMLogger implements TypeLogger {
+    private _logger: Logger;
 
     constructor(logger: Logger) {
-        this.logger = logger;
+        this._logger = logger;
     }
 
     logQuery(query: string): void {
-        this.logger.database(`Query: ${query}`);
+        this._logger.database(`Query: ${query}`);
     }
 
     logQueryError(error: string, query: string): void {
-        this.logger.database(`Error: ${error}\nOn Query: ${query}`);
+        this._logger.database(`Error: ${error}\nOn Query: ${query}`);
     }
 
     logQuerySlow(time: number, query: string): void {
-        this.logger.database(`Slow Query: ${query}\nElapsed time: ${time}`);
+        this._logger.database(`Slow Query: ${query}\nElapsed time: ${time}`);
     }
 
     logSchemaBuild(message: string): void {
-        this.logger.database(`Schema Build: ${message}`);
+        this._logger.database(`Schema Build: ${message}`);
     }
 
     logMigration(message: string): void {
-        this.logger.database(`Migration: ${message}`);
+        this._logger.database(`Migration: ${message}`);
     }
 
     log(level: 'log' | 'info' | 'warn', message: string): void {
-        this.logger.database(`Log: ${level}\nMessage: ${message}`);
+        this._logger.database(`Log: ${level}\nMessage: ${message}`);
     }
 }

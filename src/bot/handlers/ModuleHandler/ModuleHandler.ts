@@ -7,13 +7,14 @@ import AttachableModule from './Submodule/AttachableModule';
 import Submodule from './Submodule/Submodule';
 
 export default class ModuleHandler {
-    private bot: UtillyClient;
-    private logger: Logger;
     modules: Map<string, Module>;
 
+    private _bot: UtillyClient;
+    private _logger: Logger;
+
     constructor(bot: UtillyClient, logger: Logger) {
-        this.bot = bot;
-        this.logger = logger;
+        this._bot = bot;
+        this._logger = logger;
         this.modules = new Map();
     }
 
@@ -22,7 +23,7 @@ export default class ModuleHandler {
      * @param directory - the directory to load modules from
      */
     async loadModules(directory: string): Promise<void> {
-        this.logger.handler(`Loading Modules in Directory ${directory}.`);
+        this._logger.handler(`Loading Modules in Directory ${directory}.`);
         const modules = await fs.readdir(directory);
         for (let i = 0; i < modules.length; i++) {
             const module = modules[i];
@@ -32,32 +33,32 @@ export default class ModuleHandler {
 
             const moduleObj: Module = new (
                 await import(path.join(directory, module, `${module}Module`))
-            ).default(this.bot);
-            this.logger.handler(`  Loading Module "${module}".`);
+            ).default(this._bot);
+            this._logger.handler(`  Loading Module "${module}".`);
 
             for (let j = 0; j < subModules.length; j++) {
                 const subModule = subModules[j];
 
                 if (subModule == `${module}Module.js`) continue;
 
-                this.logger.handler(`    Loading Submodule "${subModule}".`);
+                this._logger.handler(`    Loading Submodule "${subModule}".`);
                 const submoduleObj: Submodule = new (
                     await import(path.join(directory, module, subModule))
-                ).default(this.bot);
+                ).default(this._bot, moduleObj);
                 submoduleObj.parentModule = moduleObj;
                 moduleObj.registerSubModule(
                     submoduleObj.constructor.name,
                     submoduleObj
                 );
 
-                this.logger.handler(
+                this._logger.handler(
                     `    Finished Loading Submodule "${submoduleObj.constructor.name}".`
                 );
             }
-            this.logger.handler(`  Finished Loading Module "${module}".`);
+            this._logger.handler(`  Finished Loading Module "${module}".`);
             this.modules.set(module, moduleObj);
         }
-        this.logger.handler(
+        this._logger.handler(
             `Module Loading is complete. ${this.modules.size} modules have been loaded.`
         );
     }
@@ -67,7 +68,7 @@ export default class ModuleHandler {
             for (const [subModuleName, subModule] of module.subModules) {
                 if (subModule instanceof AttachableModule) {
                     subModule.attach();
-                    this.logger.handler(
+                    this._logger.handler(
                         `Submodule "${subModuleName}" of module "${moduleName}" has been attached.`
                     );
                 }

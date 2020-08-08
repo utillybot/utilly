@@ -65,8 +65,5 @@ export default class UtillyClient extends Client {
         );
         this.commandHandler.attach();
         console.log('');
-
-        this.commandHandler.linkModules(this.moduleHandler.modules);
-        console.log('');
     }
 }

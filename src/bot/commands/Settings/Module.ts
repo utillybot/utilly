@@ -7,17 +7,18 @@ import {
 import { getCustomRepository, getRepository } from 'typeorm';
 import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
-import { ModuleConstants, Modules } from '../../constants/ModuleConstants';
+import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
 import Command from '../../handlers/CommandHandler/Command/Command';
 import { SubcommandHandler } from '../../handlers/CommandHandler/SubcommandHandler';
 import EmbedBuilder from '../../utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
+import SettingsCommandModule from './moduleinfo';
 
 export default class Module extends Command {
     subCommandHandler: SubcommandHandler;
 
-    constructor(bot: UtillyClient) {
-        super(bot);
+    constructor(bot: UtillyClient, parent: SettingsCommandModule) {
+        super(bot, parent);
         this.help.name = 'module';
         this.help.description = 'Enable, disable, or view info about a module.';
         this.help.usage = '(enable, disable, toggle, info) (module name)';
@@ -183,7 +184,7 @@ export default class Module extends Command {
         );
 
         embed.setTitle('Module Info');
-        embed.setDescription(ModuleConstants[module]);
+        embed.setDescription(MODULE_CONSTANTS[module]);
         embed.addField(
             'Status',
             `This module is **${guildRow[module] ? 'enabled' : 'disabled'}**.`
@@ -196,7 +197,7 @@ export default class Module extends Command {
         args: string[]
     ): Promise<boolean> {
         const module = args[0] ? args[0].toLowerCase() : args[0];
-        if (!module || !Modules.includes(module)) {
+        if (!module || !MODULES.includes(module)) {
             const embed = new EmbedBuilder();
             embed.setTimestamp();
             embed.setFooter(

@@ -2,7 +2,7 @@ import MessageWaitFailure from './MessageWaitFailure';
 import MessageWaitFilter from './MessageWaitFilter';
 import MessageWaitSuccess from './MessageWaitSuccess';
 
-export default interface MessageWaitOptions {
+export default interface IMessageWaitOptions {
     channelID: string;
     success: MessageWaitSuccess;
     filter?: MessageWaitFilter;

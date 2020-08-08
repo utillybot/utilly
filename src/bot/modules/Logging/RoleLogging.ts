@@ -1,5 +1,5 @@
 import { Guild, Role, TextChannel } from 'eris';
-import { RolePermissions } from '../../constants/PermissionConstants';
+import { ROLE_PERMISSIONS } from '../../constants/PermissionConstants';
 import AttachableModule from '../../handlers/ModuleHandler/Submodule/AttachableModule';
 import EmbedBuilder from '../../utilities/EmbedBuilder';
 import LoggingModule from './LoggingModule';
@@ -13,9 +13,9 @@ export default class RoleLogging extends AttachableModule {
     parentModule!: LoggingModule;
 
     attach(): void {
-        this.bot.on('guildRoleCreate', this.guildRoleCreate.bind(this));
-        this.bot.on('guildRoleDelete', this.guildRoleDelete.bind(this));
-        this.bot.on('guildRoleUpdate', this.guildRoleUpdate.bind(this));
+        this.bot.on('guildRoleCreate', this._guildRoleCreate.bind(this));
+        this.bot.on('guildRoleDelete', this._guildRoleDelete.bind(this));
+        this.bot.on('guildRoleUpdate', this._guildRoleUpdate.bind(this));
     }
 
     /**
@@ -24,7 +24,7 @@ export default class RoleLogging extends AttachableModule {
      * @param message - the message
      * @param partial - if the embed build will be partial
      */
-    private buildEmbed(embed: EmbedBuilder, guild: Guild): EmbedBuilder {
+    private _buildEmbed(embed: EmbedBuilder, guild: Guild): EmbedBuilder {
         embed.setTimestamp();
         embed.setAuthor(guild.name, undefined, guild.iconURL);
 
@@ -37,7 +37,7 @@ export default class RoleLogging extends AttachableModule {
      * @param role - the new role
      * @param oldRole - the old role
      */
-    private async guildRoleUpdate(
+    private async _guildRoleUpdate(
         guild: Guild,
         role: Role,
         oldRole: Role
@@ -108,7 +108,7 @@ export default class RoleLogging extends AttachableModule {
         //#region permissions
         // Prepare updates to the permissions
         let permissionField = '';
-        for (const [permissionBit, permission] of RolePermissions) {
+        for (const [permissionBit, permission] of ROLE_PERMISSIONS) {
             if (
                 oldRole.permissions.allow & permissionBit &&
                 !(role.permissions.allow & permissionBit)
@@ -129,7 +129,7 @@ export default class RoleLogging extends AttachableModule {
 
         // Final additions and send
         if (embed.fields == undefined || embed.fields.length == 0) return;
-        embed = this.buildEmbed(embed, guild);
+        embed = this._buildEmbed(embed, guild);
         logChannel.createMessage({ embed });
     }
 
@@ -138,7 +138,7 @@ export default class RoleLogging extends AttachableModule {
      * @param guild - the guild
      * @param role - the deleted role
      */
-    private async guildRoleDelete(guild: Guild, role: Role): Promise<void> {
+    private async _guildRoleDelete(guild: Guild, role: Role): Promise<void> {
         //#region prep
         const guildRow = await this.parentModule.selectGuildRow(
             guild.id,
@@ -154,7 +154,7 @@ export default class RoleLogging extends AttachableModule {
         if (logChannel == null) return;
         //#endregion
 
-        this.guildRoleCD(guild, role, logChannel, 'Deleted');
+        this._guildRoleCD(guild, role, logChannel, 'Deleted');
     }
 
     /**
@@ -162,7 +162,7 @@ export default class RoleLogging extends AttachableModule {
      * @param guild - the guild
      * @param role - the created role
      */
-    private async guildRoleCreate(guild: Guild, role: Role): Promise<void> {
+    private async _guildRoleCreate(guild: Guild, role: Role): Promise<void> {
         //#region prep
         const guildRow = await this.parentModule.selectGuildRow(
             guild.id,
@@ -178,10 +178,10 @@ export default class RoleLogging extends AttachableModule {
         if (logChannel == null) return;
         //#endregion
 
-        this.guildRoleCD(guild, role, logChannel, 'Created');
+        this._guildRoleCD(guild, role, logChannel, 'Created');
     }
 
-    private async guildRoleCD(
+    private async _guildRoleCD(
         guild: Guild,
         role: Role,
         logChannel: TextChannel,
@@ -212,7 +212,7 @@ export default class RoleLogging extends AttachableModule {
         //#region permissions
         // Prepare permission info
         let permissionField = '';
-        for (const [permissionBit, permission] of RolePermissions) {
+        for (const [permissionBit, permission] of ROLE_PERMISSIONS) {
             permissionField += `${permission}: ${
                 role.permissions.allow & permissionBit ? '✅' : '❎'
             }\n`;
@@ -222,7 +222,7 @@ export default class RoleLogging extends AttachableModule {
         //#endregion
 
         // Final additions and send
-        embed = this.buildEmbed(embed, guild);
+        embed = this._buildEmbed(embed, guild);
         logChannel.createMessage({ embed });
     }
 }

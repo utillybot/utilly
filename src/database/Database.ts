@@ -1,13 +1,13 @@
 import { createConnection } from 'typeorm';
 import Logger from '../core/Logger';
 import Guild from './entity/Guild';
-import { TypeORMLogger } from './TypeORMLogger';
+import TypeORMLogger from './TypeORMLogger';
 
 export default class Database {
-    private logger: Logger;
+    private _logger: Logger;
 
     constructor(logger: Logger) {
-        this.logger = logger;
+        this._logger = logger;
     }
 
     async connect(): Promise<void> {
@@ -30,7 +30,7 @@ export default class Database {
                     url: process.env.REDIS_URL,
                 },
             },
-            logger: new TypeORMLogger(this.logger),
+            logger: new TypeORMLogger(this._logger),
         });
     }
 }

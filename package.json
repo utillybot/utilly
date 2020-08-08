@@ -24,13 +24,17 @@
         "typescript": "^3.9.7"
     },
     "scripts": {
-        "start": "npm run compile && npm run run ",
-        "heavystart": "npm run lint && npm run prettier && npm run compile && npm run run ",
-        "compile": "npx tsc",
-        "lint": "npx eslint src/**/*.ts --fix",
-        "prettier": "npx prettier src/**/*.ts --write",
+        "start": "npm run tsc:compile && npm run run ",
+        "heavystart": "npm run eslint:check && npm run prettier:check && npm run compile && npm run run ",
         "run": "node dist/index.js",
         "debug": "npm run compile && npm run run",
+        "tsc:compile": "npx tsc",
+        "eslint:check": "npx eslint src/**/*.ts",
+        "eslint:fix": "npx eslint src/**/*.ts --fix",
+        "prettier:check": "npx prettier src/**/*.ts --check",
+        "prettier:write": "npx prettier src/**/*.ts --write",
+        "lint": "npm run eslint:fix && npm run prettier:write",
+        "check": "npm run eslint:check && npm run prettier:check",
         "postinstall": "npx tsc"
     },
     "author": "jtsshieh",
@@ -43,7 +47,7 @@
         "node": "14.7.0"
     },
     "lint-staged": {
-        "*.ts": "npm run lint",
-        "*.{ts,css,md}": "npm run prettier"
+        "*.ts": "npm run eslint:fix",
+        "*.{ts,css,md}": "npm run prettier:write"
     }
 }

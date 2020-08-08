@@ -1,6 +1,6 @@
 import ReactionWaitSuccess from './ReactionWaitSuccess';
 
-export default interface ReactionWaitOptions {
+export default interface IReactionWaitOptions {
     allowedEmotes: string[];
     userID: string;
     success: ReactionWaitSuccess;

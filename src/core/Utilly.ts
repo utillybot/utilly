@@ -3,9 +3,9 @@ import Database from '../database/Database';
 import Logger from './Logger';
 
 export default class Utilly {
-    logger: Logger;
-    database: Database;
-    bot: UtillyClient;
+    protected logger: Logger;
+    protected database: Database;
+    protected bot: UtillyClient;
 
     constructor() {
         this.logger = new Logger();

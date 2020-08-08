@@ -1,4 +1,4 @@
-export const RolePermissions: Map<number, string> = new Map([
+export const ROLE_PERMISSIONS: Map<number, string> = new Map([
     [0x00000008, 'Administrator'],
     [0x00000080, 'View Audit Log'],
     [0x00080000, 'View Server Insights'],
@@ -35,7 +35,7 @@ export const RolePermissions: Map<number, string> = new Map([
     [0x00000100, 'Priority Speaker'],
 ]);
 
-export const ChannelPermissions: Map<number, string> = new Map([
+export const CHANNEL_PERMISSIONS: Map<number, string> = new Map([
     [0x00000001, 'Create Invite'],
     [0x00000010, 'Manage Channel'],
     [0x10000000, 'Manage Permissions'],

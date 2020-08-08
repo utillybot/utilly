@@ -1,14 +1,14 @@
 import { Emoji, Message } from 'eris';
 import Logger from '../../../../core/Logger';
 import UtillyClient from '../../../UtillyClient';
+import IReactionWaitOptions from './IReactionWaitOptions';
 import ReactionWaitFailure from './ReactionWaitFailure';
-import ReactionWaitOptions from './ReactionWaitOptions';
 import ReactionWaitSuccess from './ReactionWaitSuccess';
 
 export default class ReactionWaitHandler {
     bot: UtillyClient;
     logger: Logger;
-    handlers: Map<string, ReactionWaitOptions>;
+    handlers: Map<string, IReactionWaitOptions>;
 
     constructor(bot: UtillyClient, logger: Logger) {
         this.bot = bot;
@@ -28,7 +28,11 @@ export default class ReactionWaitHandler {
         failure: ReactionWaitFailure,
         timeout?: number
     ): void {
-        const options: ReactionWaitOptions = { userID, allowedEmotes, success };
+        const options: IReactionWaitOptions = {
+            userID,
+            allowedEmotes,
+            success,
+        };
 
         this.handlers.set(messageID, options);
 

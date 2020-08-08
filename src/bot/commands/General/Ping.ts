@@ -7,8 +7,8 @@ import GeneralCommandModule from './moduleinfo';
 export default class Ping extends Command {
     parent?: GeneralCommandModule;
 
-    constructor(bot: UtillyClient) {
-        super(bot);
+    constructor(bot: UtillyClient, parent: GeneralCommandModule) {
+        super(bot, parent);
         this.help.name = 'ping';
         this.help.description = "Checks the bot's ping";
         this.help.usage = '';

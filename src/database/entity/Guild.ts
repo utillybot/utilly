@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export default class Guild {
+    [key: string]: string | boolean | null | string[];
+
     @PrimaryColumn('numeric', { precision: 18 })
     public guildID!: string;
 
@@ -78,6 +81,4 @@ export default class Guild {
     // Notifications Module
     @Column({ nullable: false, default: false })
     public notifications!: boolean;
-
-    [key: string]: string | boolean | null | string[];
 }

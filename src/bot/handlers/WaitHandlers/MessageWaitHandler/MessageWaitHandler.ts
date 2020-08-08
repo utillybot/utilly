@@ -1,15 +1,15 @@
 import { Message } from 'eris';
 import Logger from '../../../../core/Logger';
 import UtillyClient from '../../../UtillyClient';
+import IMessageWaitOptions from './IMessageWaitOptions';
 import MessageWaitFailure from './MessageWaitFailure';
 import MessageWaitFilter from './MessageWaitFilter';
-import MessageWaitOptions from './MessageWaitOptions';
 import MessageWaitSuccess from './MessageWaitSuccess';
 
 export default class MessageWaitHandler {
     bot: UtillyClient;
     logger: Logger;
-    handlers: Map<string, MessageWaitOptions>;
+    handlers: Map<string, IMessageWaitOptions>;
 
     constructor(bot: UtillyClient, logger: Logger) {
         this.bot = bot;
@@ -29,7 +29,7 @@ export default class MessageWaitHandler {
         timeout?: number,
         failure?: MessageWaitFailure
     ): void {
-        const options: MessageWaitOptions = { channelID, success };
+        const options: IMessageWaitOptions = { channelID, success };
 
         if (filter) options.filter = filter;
         if (failure) options.failure = failure;

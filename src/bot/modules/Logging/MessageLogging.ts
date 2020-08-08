@@ -10,9 +10,9 @@ export default class MessageLogging extends AttachableModule {
     parentModule!: LoggingModule;
 
     attach(): void {
-        this.bot.on('messageDelete', this.messageDelete.bind(this));
-        this.bot.on('messageUpdate', this.messageUpdate.bind(this));
-        this.bot.on('messageDeleteBulk', this.messageDeleteBulk.bind(this));
+        this.bot.on('messageDelete', this._messageDelete.bind(this));
+        this.bot.on('messageUpdate', this._messageUpdate.bind(this));
+        this.bot.on('messageDeleteBulk', this._messageDeleteBulk.bind(this));
     }
 
     /**
@@ -20,7 +20,7 @@ export default class MessageLogging extends AttachableModule {
      * @param embed - the embed builder
      * @param message - the message
      */
-    private buildEmbed(embed: EmbedBuilder, message: Message): EmbedBuilder {
+    private _buildEmbed(embed: EmbedBuilder, message: Message): EmbedBuilder {
         embed.setAuthor(
             `${message.author.username}#${message.author.discriminator}`,
             undefined,
@@ -37,7 +37,10 @@ export default class MessageLogging extends AttachableModule {
      * @param embed - the embed builder
      * @param message - the message
      */
-    private addOtherField(embed: EmbedBuilder, message: Message): EmbedBuilder {
+    private _addOtherField(
+        embed: EmbedBuilder,
+        message: Message
+    ): EmbedBuilder {
         let otherNotes = '';
         if (message.attachments == null) return embed;
         if (message.attachments.length > 0) {
@@ -69,8 +72,8 @@ export default class MessageLogging extends AttachableModule {
      * Handles the event where multiple messages are bulk deleted
      * @param messages - the messages deleted
      */
-    private async messageDeleteBulk(
-        messages: Message<TextChannel>[]
+    private async _messageDeleteBulk(
+        messages: Array<Message<TextChannel>>
     ): Promise<void> {
         const guildRow = await this.parentModule.selectGuildRow(
             messages[0].channel.guild.id,
@@ -99,7 +102,7 @@ export default class MessageLogging extends AttachableModule {
      * Handles the event where one message is deleted
      * @param message - the message deleted
      */
-    private async messageDelete(message: Message<TextChannel>): Promise<void> {
+    private async _messageDelete(message: Message<TextChannel>): Promise<void> {
         const guildRow = await this.parentModule.selectGuildRow(
             message.channel.guild.id,
             'messageDelete'
@@ -122,8 +125,8 @@ export default class MessageLogging extends AttachableModule {
             embed.addField('Message Content', message.content, true);
         }
 
-        embed = this.buildEmbed(embed, message);
-        embed = this.addOtherField(embed, message);
+        embed = this._buildEmbed(embed, message);
+        embed = this._addOtherField(embed, message);
         logChannel.createMessage({ embed });
     }
 
@@ -132,7 +135,7 @@ export default class MessageLogging extends AttachableModule {
      * @param message - the new message
      * @param oldMessage - the old message
      */
-    private async messageUpdate(
+    private async _messageUpdate(
         message: Message<TextChannel>,
         oldMessage: Message<TextChannel>
     ): Promise<void> {
@@ -163,8 +166,8 @@ export default class MessageLogging extends AttachableModule {
             embed.addField('New Message', message.content, true);
         }
 
-        embed = this.buildEmbed(embed, message);
-        embed = this.addOtherField(embed, oldMessage);
+        embed = this._buildEmbed(embed, message);
+        embed = this._addOtherField(embed, oldMessage);
         logChannel.createMessage({ embed });
     }
 }

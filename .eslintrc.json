@@ -16,6 +16,48 @@
     },
     "plugins": ["@typescript-eslint"],
     "rules": {
-        "prefer-const": ["error"]
+        "prefer-const": ["error"],
+        "@typescript-eslint/array-type": [
+            "warn",
+            { "default": "array-simple" }
+        ],
+        "@typescript-eslint/consistent-type-definitions": ["warn"],
+        "@typescript-eslint/member-ordering": ["warn"],
+        "@typescript-eslint/member-delimiter-style": ["warn"],
+        "@typescript-eslint/method-signature-style": ["warn"],
+        "@typescript-eslint/naming-convention": [
+            "warn",
+            {
+                "selector": "default",
+                "format": ["camelCase"]
+            },
+            {
+                "selector": "variable",
+                "format": ["camelCase", "UPPER_CASE"]
+            },
+            {
+                "selector": "parameter",
+                "format": ["camelCase"],
+                "leadingUnderscore": "allow"
+            },
+            {
+                "selector": "memberLike",
+                "modifiers": ["private"],
+                "format": ["camelCase"],
+                "leadingUnderscore": "require"
+            },
+            {
+                "selector": ["typeLike"],
+                "format": ["PascalCase"]
+            },
+            {
+                "selector": "interface",
+                "format": ["PascalCase"],
+                "custom": {
+                    "regex": "^I[A-Z]",
+                    "match": true
+                }
+            }
+        ]
     }
 }

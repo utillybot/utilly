@@ -6,7 +6,7 @@ import {
     TextChannel,
     VoiceChannel,
 } from 'eris';
-import { ChannelPermissions } from '../../constants/PermissionConstants';
+import { CHANNEL_PERMISSIONS } from '../../constants/PermissionConstants';
 import AttachableModule from '../../handlers/ModuleHandler/Submodule/AttachableModule';
 import { secondsToString } from '../../utilities/DurationParser';
 import EmbedBuilder from '../../utilities/EmbedBuilder';
@@ -21,9 +21,9 @@ export default class ChannelLogging extends AttachableModule {
     parentModule!: LoggingModule;
 
     attach(): void {
-        this.bot.on('channelCreate', this.channelCreate.bind(this));
-        this.bot.on('channelDelete', this.channelDelete.bind(this));
-        this.bot.on('channelUpdate', this.channelUpdate.bind(this));
+        this.bot.on('channelCreate', this._channelCreate.bind(this));
+        this.bot.on('channelDelete', this._channelDelete.bind(this));
+        this.bot.on('channelUpdate', this._channelUpdate.bind(this));
     }
 
     /**
@@ -32,7 +32,7 @@ export default class ChannelLogging extends AttachableModule {
      * @param message - the message
      * @param partial - if the embed build will be partial
      */
-    private buildEmbed(embed: EmbedBuilder, guild: Guild): EmbedBuilder {
+    private _buildEmbed(embed: EmbedBuilder, guild: Guild): EmbedBuilder {
         embed.setTimestamp();
         embed.setAuthor(guild.name, undefined, guild.iconURL);
 
@@ -44,7 +44,7 @@ export default class ChannelLogging extends AttachableModule {
      * @param newChannel - the new channel
      * @param oldChannel - the old channel
      */
-    private async channelUpdate(
+    private async _channelUpdate(
         newChannel: GuildChannel,
         oldChannel: OldGuildChannel
     ): Promise<void> {
@@ -222,7 +222,7 @@ export default class ChannelLogging extends AttachableModule {
             }
 
             // Loop through the old channel's permission overwrites
-            for (const [permissionBit, permission] of ChannelPermissions) {
+            for (const [permissionBit, permission] of CHANNEL_PERMISSIONS) {
                 // Prepare to add to the text
                 let changedText = permissions.get(entity);
                 // The permission is allowed in the old overwrite
@@ -297,7 +297,7 @@ export default class ChannelLogging extends AttachableModule {
                 }
             }
 
-            for (const [permissionBit, permission] of ChannelPermissions) {
+            for (const [permissionBit, permission] of CHANNEL_PERMISSIONS) {
                 let changedText = permissions.get(entity);
 
                 if (overwrite.allow & permissionBit) {
@@ -356,7 +356,7 @@ export default class ChannelLogging extends AttachableModule {
         //#endregion
 
         // Final additions and send message
-        embed = this.buildEmbed(embed, newChannel.guild);
+        embed = this._buildEmbed(embed, newChannel.guild);
         logChannel.createMessage({ embed });
     }
 
@@ -364,7 +364,7 @@ export default class ChannelLogging extends AttachableModule {
      * Handles the event where a channel is deleted
      * @param channel - the deleted channel
      */
-    private async channelDelete(channel: GuildChannel): Promise<void> {
+    private async _channelDelete(channel: GuildChannel): Promise<void> {
         //#region prep
         const guildRow = await this.parentModule.selectGuildRow(
             channel.guild.id,
@@ -380,14 +380,14 @@ export default class ChannelLogging extends AttachableModule {
         if (logChannel == null) return;
         //#endregion
 
-        this.channelCD(channel, logChannel, 'Deleted');
+        this._channelCD(channel, logChannel, 'Deleted');
     }
 
     /**
      * Handles the event where a channel is created
      * @param channel - the created channel
      */
-    private async channelCreate(channel: GuildChannel): Promise<void> {
+    private async _channelCreate(channel: GuildChannel): Promise<void> {
         //#region prep
         const guildRow = await this.parentModule.selectGuildRow(
             channel.guild.id,
@@ -403,10 +403,10 @@ export default class ChannelLogging extends AttachableModule {
         if (logChannel == null) return;
         //#endregion
 
-        this.channelCD(channel, logChannel, 'Created');
+        this._channelCD(channel, logChannel, 'Created');
     }
 
-    private async channelCD(
+    private async _channelCD(
         channel: GuildChannel,
         logChannel: TextChannel,
         request: string
@@ -503,7 +503,7 @@ export default class ChannelLogging extends AttachableModule {
             }
 
             // Loop through the permissions and add a check or x depending on if the permission is allowed or denied
-            for (const [permissionBit, permission] of ChannelPermissions) {
+            for (const [permissionBit, permission] of CHANNEL_PERMISSIONS) {
                 let changedText = permissions.get(entity);
                 if (overwrite.allow & permissionBit) {
                     changedText += `${permission}: ✅\n`;
@@ -552,7 +552,7 @@ export default class ChannelLogging extends AttachableModule {
         //#endregion
 
         // Final additions and send
-        embed = this.buildEmbed(embed, channel.guild);
+        embed = this._buildEmbed(embed, channel.guild);
         logChannel.createMessage({
             embed,
         });

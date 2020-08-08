@@ -2,7 +2,7 @@ import { GuildChannel, Message } from 'eris';
 import { getCustomRepository } from 'typeorm';
 import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
-import { ModuleConstants, Modules } from '../../constants/ModuleConstants';
+import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
 import Command from '../../handlers/CommandHandler/Command/Command';
 import DatabaseModule from '../../handlers/ModuleHandler/Module/DatabaseModule';
 import EmbedBuilder from '../../utilities/EmbedBuilder';
@@ -10,10 +10,10 @@ import UtillyClient from '../../UtillyClient';
 import GeneralCommandModule from './moduleinfo';
 
 export default class Help extends Command {
-    parent?: GeneralCommandModule;
+    parent!: GeneralCommandModule;
 
-    constructor(bot: UtillyClient) {
-        super(bot);
+    constructor(bot: UtillyClient, parent: GeneralCommandModule) {
+        super(bot, parent);
         this.help.name = 'help';
         this.help.description =
             'View all the modules, or commands in a specific module';
@@ -26,7 +26,7 @@ export default class Help extends Command {
         if (message.channel instanceof GuildChannel) {
             const guildRow = await getCustomRepository(
                 GuildRepository
-            ).selectOrCreate(message.channel.guild.id, Modules);
+            ).selectOrCreate(message.channel.guild.id, MODULES);
 
             if (args.length == 0) {
                 this.handleBaseCommand(message, guildRow);
@@ -101,7 +101,7 @@ export default class Help extends Command {
             }`
         );
         embed.setColor(guildRow[item] == false ? 0xff0000 : 0x00ff00);
-        embed.setDescription(ModuleConstants[item]);
+        embed.setDescription(MODULE_CONSTANTS[item]);
 
         for (const [, command] of this.bot.commandHandler.commands) {
             if (command.parent == undefined)

@@ -14,7 +14,7 @@ export default abstract class Command {
     settings: ICommandSettings;
     parent?: CommandModule;
 
-    constructor(bot: UtillyClient) {
+    constructor(bot: UtillyClient, parent: CommandModule) {
         this.bot = bot;
         this.help = {
             name: '',
@@ -26,6 +26,7 @@ export default abstract class Command {
         this.settings = {
             guildOnly: false,
         };
+        this.parent = parent;
     }
 
     /**
