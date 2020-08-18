@@ -12,6 +12,7 @@ export default class Userinfo extends Command {
         this.help.name = 'userinfo';
         this.help.description = 'View information about a user';
         this.help.usage = '(username/user id/user mention)';
+        this.help.aliases = ['uinfo'];
         this.settings.guildOnly = false;
     }
 

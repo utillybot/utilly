@@ -8,6 +8,7 @@ import UtillyClient from '../../../UtillyClient';
 import DatabaseModule from '../ModuleHandler/Module/DatabaseModule';
 import Command from './Command/Command';
 import CommandModule from './CommandModule/CommandModule';
+import Module from '../ModuleHandler/Module/Module';
 
 /**
  * Handles all incomming commands
@@ -82,6 +83,22 @@ export default class CommandHandler {
         this._logger.handler(
             `Command Loading is complete. ${this.commandModules.size} command modules have been loaded.`
         );
+    }
+    /**
+     * Link the command modules with their corrosponding backend modules
+     * @param modules the modules to link with
+     */
+    linkModules(modules: Map<string, Module>): void {
+        for (const [commandModuleName, commandModule] of this.commandModules) {
+            commandModule.parent = modules.get(commandModuleName);
+            if (commandModule.parent == undefined)
+                throw new Error(
+                    `Linking error for module ${commandModuleName}`
+                );
+            this._logger.handler(
+                `Linking Command Module "${commandModuleName}" with module "${commandModule.parent.constructor.name}"`
+            );
+        }
     }
 
     /**

@@ -64,6 +64,8 @@ export default class UtillyClient extends Client {
         await this.commandHandler.loadCommands(
             path.join(__dirname, 'commands')
         );
+
+        this.commandHandler.linkModules(this.moduleHandler.modules);
         this.commandHandler.attach();
         console.log('');
     }
