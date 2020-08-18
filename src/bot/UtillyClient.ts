@@ -21,7 +21,7 @@ export default class UtillyClient extends Client {
         dotenv.config();
         if (!process.env.TOKEN)
             throw new Error('TOKEN env variable not present');
-        super(process.env.TOKEN, {
+        super('Bot ' + process.env.TOKEN, {
             intents: [
                 'guilds',
                 'guildMembers',
@@ -36,6 +36,7 @@ export default class UtillyClient extends Client {
                 'directMessages',
                 'directMessageReactions',
             ],
+            restMode: true,
         });
 
         this.logger = logger;
