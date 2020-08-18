@@ -1,5 +1,5 @@
 import { Message } from 'eris';
-import Command from '../../handlers/CommandHandler/Command/Command';
+import Command from '../../framework/handlers/CommandHandler/Command/Command';
 import UtillyClient from '../../UtillyClient';
 import SettingsCommandModule from './moduleinfo';
 

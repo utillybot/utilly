@@ -3,9 +3,9 @@ import { getCustomRepository } from 'typeorm';
 import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
 import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
-import Command from '../../handlers/CommandHandler/Command/Command';
-import DatabaseModule from '../../handlers/ModuleHandler/Module/DatabaseModule';
-import EmbedBuilder from '../../utilities/EmbedBuilder';
+import Command from '../../framework/handlers/CommandHandler/Command/Command';
+import DatabaseModule from '../../framework/handlers/ModuleHandler/Module/DatabaseModule';
+import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import GeneralCommandModule from './moduleinfo';
 

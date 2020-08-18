@@ -1,4 +1,4 @@
-import UtillyClient from '../../../UtillyClient';
+import UtillyClient from '../../../../UtillyClient';
 import Submodule from '../Submodule/Submodule';
 
 /**

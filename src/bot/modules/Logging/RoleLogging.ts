@@ -1,7 +1,7 @@
 import { Guild, Role, TextChannel } from 'eris';
 import { ROLE_PERMISSIONS } from '../../constants/PermissionConstants';
-import AttachableModule from '../../handlers/ModuleHandler/Submodule/AttachableModule';
-import EmbedBuilder from '../../utilities/EmbedBuilder';
+import AttachableModule from '../../framework/handlers/ModuleHandler/Submodule/AttachableModule';
+import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import LoggingModule from './LoggingModule';
 
 /* eslint-disable no-prototype-builtins */

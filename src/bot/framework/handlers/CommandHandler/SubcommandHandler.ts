@@ -1,5 +1,5 @@
 import { Message } from 'eris';
-import Logger from '../../../core/Logger';
+import Logger from '../../../../core/Logger';
 
 export type Subcommand = (message: Message, args: string[]) => void;
 
@@ -50,8 +50,8 @@ export class SubcommandHandler {
         if (subCommand == undefined) return false;
         const newArgs = [...args];
         newArgs.shift();
-        for (let i = 0; i < this.preChecks.length; i++) {
-            if (!(await this.preChecks[i](message, newArgs))) return true;
+        for (const preCheck of this.preChecks) {
+            if (!(await preCheck(message, newArgs))) return true;
         }
         subCommand(message, newArgs);
         return true;

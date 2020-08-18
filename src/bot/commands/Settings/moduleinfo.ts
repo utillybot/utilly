@@ -1,5 +1,5 @@
 import { GuildChannel, Message } from 'eris';
-import CommandModule from '../../handlers/CommandHandler/CommandModule/CommandModule';
+import CommandModule from '../../framework/handlers/CommandHandler/CommandModule/CommandModule';
 import UtillyClient from '../../UtillyClient';
 
 export default class SettingsCommandModule extends CommandModule {

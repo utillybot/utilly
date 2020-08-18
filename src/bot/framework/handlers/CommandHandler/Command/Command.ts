@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Message } from 'eris';
-import UtillyClient from '../../../UtillyClient';
+import UtillyClient from '../../../../UtillyClient';
 import CommandModule from '../CommandModule/CommandModule';
 import ICommandHelp from './ICommandHelp';
 import ICommandSettings from './ICommandSettings';

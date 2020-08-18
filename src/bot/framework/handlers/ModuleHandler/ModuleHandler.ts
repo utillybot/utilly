@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
-import Logger from '../../../core/Logger';
-import UtillyClient from '../../UtillyClient';
+import Logger from '../../../../core/Logger';
+import UtillyClient from '../../../UtillyClient';
 import Module from './Module/Module';
 import AttachableModule from './Submodule/AttachableModule';
 import Submodule from './Submodule/Submodule';
@@ -25,20 +25,17 @@ export default class ModuleHandler {
     async loadModules(directory: string): Promise<void> {
         this._logger.handler(`Loading Modules in Directory ${directory}.`);
         const modules = await fs.readdir(directory);
-        for (let i = 0; i < modules.length; i++) {
-            const module = modules[i];
-
-            let subModules = await fs.readdir(path.join(directory, module));
-            subModules = subModules.filter(value => value.endsWith('.js'));
+        for (const module of modules) {
+            const subModules = (
+                await fs.readdir(path.join(directory, module))
+            ).filter(value => value.endsWith('.js'));
 
             const moduleObj: Module = new (
                 await import(path.join(directory, module, `${module}Module`))
             ).default(this._bot);
             this._logger.handler(`  Loading Module "${module}".`);
 
-            for (let j = 0; j < subModules.length; j++) {
-                const subModule = subModules[j];
-
+            for (const subModule of subModules) {
                 if (subModule == `${module}Module.js`) continue;
 
                 this._logger.handler(`    Loading Submodule "${subModule}".`);

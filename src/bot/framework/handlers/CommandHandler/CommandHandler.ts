@@ -2,9 +2,9 @@ import { GuildChannel, Message } from 'eris';
 import fs from 'fs/promises';
 import path from 'path';
 import { getCustomRepository } from 'typeorm';
-import Logger from '../../../core/Logger';
-import GuildRepository from '../../../database/repository/GuildRepository';
-import UtillyClient from '../../UtillyClient';
+import Logger from '../../../../core/Logger';
+import GuildRepository from '../../../../database/repository/GuildRepository';
+import UtillyClient from '../../../UtillyClient';
 import DatabaseModule from '../ModuleHandler/Module/DatabaseModule';
 import Command from './Command/Command';
 import CommandModule from './CommandModule/CommandModule';
@@ -44,8 +44,9 @@ export default class CommandHandler {
         const modules = await fs.readdir(directory);
 
         for (const module of modules) {
-            let commands = await fs.readdir(path.join(directory, module));
-            commands = commands.filter(value => value.endsWith('.js'));
+            const commands = (
+                await fs.readdir(path.join(directory, module))
+            ).filter(value => value.endsWith('.js'));
 
             const moduleObj: CommandModule = new (
                 await import(path.join(directory, module, 'moduleinfo'))
@@ -53,6 +54,7 @@ export default class CommandHandler {
             this._logger.handler(
                 `  Loading Command Module "${moduleObj.info.name}".`
             );
+
             for (const command of commands) {
                 if (command == 'moduleinfo.js') continue;
 

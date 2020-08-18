@@ -1,6 +1,6 @@
 import { getCustomRepository } from 'typeorm';
-import GuildRepository from '../../../../database/repository/GuildRepository';
-import UtillyClient from '../../../UtillyClient';
+import GuildRepository from '../../../../../database/repository/GuildRepository';
+import UtillyClient from '../../../../UtillyClient';
 import Module from './Module';
 
 /**

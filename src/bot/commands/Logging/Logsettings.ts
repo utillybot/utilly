@@ -10,10 +10,10 @@ import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
 import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
 import { EVENT_CONSTANTS } from '../../constants/EventConstants';
-import Command from '../../handlers/CommandHandler/Command/Command';
-import ReactionWaitFailure from '../../handlers/WaitHandlers/ReactionWaitHandler/ReactionWaitFailure';
-import ReactionWaitSuccess from '../../handlers/WaitHandlers/ReactionWaitHandler/ReactionWaitSuccess';
-import EmbedBuilder from '../../utilities/EmbedBuilder';
+import Command from '../../framework/handlers/CommandHandler/Command/Command';
+import ReactionWaitFailure from '../../framework/handlers/WaitHandlers/ReactionWaitHandler/ReactionWaitFailure';
+import ReactionWaitSuccess from '../../framework/handlers/WaitHandlers/ReactionWaitHandler/ReactionWaitSuccess';
+import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import LoggingCommandModule from './moduleinfo';
 

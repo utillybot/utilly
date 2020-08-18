@@ -1,6 +1,6 @@
 import { Message } from 'eris';
-import Logger from '../../../../core/Logger';
-import UtillyClient from '../../../UtillyClient';
+import Logger from '../../../../../core/Logger';
+import UtillyClient from '../../../../UtillyClient';
 import IMessageWaitOptions from './IMessageWaitOptions';
 import MessageWaitFailure from './MessageWaitFailure';
 import MessageWaitFilter from './MessageWaitFilter';
