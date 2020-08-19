@@ -2,16 +2,16 @@
 import { Message } from 'eris';
 import UtillyClient from '../../../../UtillyClient';
 import CommandModule from '../CommandModule/CommandModule';
-import ICommandHelp from './ICommandHelp';
-import ICommandSettings from './ICommandSettings';
+import CommandHelp from './CommandHelp';
+import CommandSettings from './CommandSettings';
 
 /**
  * A Command
  */
 export default abstract class Command {
     bot: UtillyClient;
-    help: ICommandHelp;
-    settings: ICommandSettings;
+    help: CommandHelp;
+    settings: CommandSettings;
     parent?: CommandModule;
 
     constructor(bot: UtillyClient, parent: CommandModule) {
@@ -25,6 +25,7 @@ export default abstract class Command {
 
         this.settings = {
             guildOnly: false,
+            botPerms: [],
         };
         this.parent = parent;
     }
