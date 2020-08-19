@@ -37,6 +37,7 @@ export default class UtillyClient extends Client {
                 'directMessageReactions',
             ],
             restMode: true,
+            compress: true,
         });
 
         this.logger = logger;

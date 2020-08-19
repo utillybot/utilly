@@ -19,7 +19,7 @@ export default class Userinfo extends Command {
     async execute(message: Message, args: string[]): Promise<void> {
         let user: User | undefined;
         let member: Member | undefined;
-        const regex = /<@!?(\d{18})>/;
+        const regex = /<@!?(\d+)>/;
 
         if (args.length == 0) {
             member = message.member;
