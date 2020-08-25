@@ -1,22 +1,35 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Message } from 'eris';
-import UtillyClient from '../../../../UtillyClient';
-import Module from '../../ModuleHandler/Module/Module';
-import Command from '../Command/Command';
-import CommandModuleInfo from './CommandModuleInfo';
+import UtillyClient from '../../../UtillyClient';
+import Module from '../ModuleHandler/Module/Module';
+import Command from './Command';
+
+/**
+ * Info about this command module
+ */
+export interface CommandModuleInfo {
+    /**
+     * The name of this command module
+     */
+    name: string;
+    /**
+     * A description of this command module
+     */
+    description: string;
+}
 
 /**
  * A Command Module
  */
 export default abstract class CommandModule {
-    bot: UtillyClient;
     info: CommandModuleInfo;
     commands: Map<string, Command>;
     aliases: Map<string, Command>;
     parent?: Module;
+    private _bot: UtillyClient;
 
     constructor(bot: UtillyClient) {
-        this.bot = bot;
+        this._bot = bot;
         this.info = {
             name: '',
             description: 'No description provided',

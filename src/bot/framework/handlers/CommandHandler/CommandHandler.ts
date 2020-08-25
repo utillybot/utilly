@@ -8,8 +8,8 @@ import { ROLE_PERMISSIONS } from '../../../constants/PermissionConstants';
 import UtillyClient from '../../../UtillyClient';
 import DatabaseModule from '../ModuleHandler/Module/DatabaseModule';
 import Module from '../ModuleHandler/Module/Module';
-import Command from './Command/Command';
-import CommandModule from './CommandModule/CommandModule';
+import Command from './Command';
+import CommandModule from './CommandModule';
 
 /**
  * Handles all incomming commands
@@ -25,6 +25,11 @@ export default class CommandHandler {
 
     private _logger: Logger;
 
+    /**
+     * Creates a new CommandHandler
+     * @param bot - the UtillyCLient instance
+     * @param logger - the logger
+     */
     constructor(bot: UtillyClient, logger: Logger) {
         this._bot = bot;
         this._logger = logger;

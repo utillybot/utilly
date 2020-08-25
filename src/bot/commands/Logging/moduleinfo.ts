@@ -1,4 +1,4 @@
-import CommandModule from '../../framework/handlers/CommandHandler/CommandModule/CommandModule';
+import CommandModule from '../../framework/handlers/CommandHandler/CommandModule';
 import LoggingModule from '../../modules/Logging/LoggingModule';
 import UtillyClient from '../../UtillyClient';
 

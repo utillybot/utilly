@@ -1,5 +1,5 @@
 import { Guild, GuildChannel, Message } from 'eris';
-import Command from '../../framework/handlers/CommandHandler/Command/Command';
+import Command from '../../framework/handlers/CommandHandler/Command';
 import { secondsToString } from '../../framework/utilities/DurationParser';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';

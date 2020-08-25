@@ -6,8 +6,8 @@ import Logger from '../core/Logger';
 import Database from '../database/Database';
 import CommandHandler from './framework/handlers/CommandHandler/CommandHandler';
 import ModuleHandler from './framework/handlers/ModuleHandler/ModuleHandler';
-import MessageWaitHandler from './framework/handlers/WaitHandlers/MessageWaitHandler/MessageWaitHandler';
-import ReactionWaitHandler from './framework/handlers/WaitHandlers/ReactionWaitHandler/ReactionWaitHandler';
+import { MessageWaitHandler } from './framework/handlers/WaitHandlers/MessageWaitHandler';
+import { ReactionWaitHandler } from './framework/handlers/WaitHandlers/ReactionWaitHandler';
 
 export default class UtillyClient extends Client {
     commandHandler: CommandHandler;
@@ -45,8 +45,8 @@ export default class UtillyClient extends Client {
 
         this.moduleHandler = new ModuleHandler(this, this.logger);
         this.commandHandler = new CommandHandler(this, this.logger);
-        this.messageWaitHandler = new MessageWaitHandler(this, this.logger);
-        this.reactionWaitHandler = new ReactionWaitHandler(this, this.logger);
+        this.messageWaitHandler = new MessageWaitHandler(this);
+        this.reactionWaitHandler = new ReactionWaitHandler(this);
 
         this.on('ready', this.readyEvent.bind(this));
     }

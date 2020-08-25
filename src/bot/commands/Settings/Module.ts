@@ -8,7 +8,7 @@ import { getCustomRepository, getRepository } from 'typeorm';
 import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
 import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
-import Command from '../../framework/handlers/CommandHandler/Command/Command';
+import Command from '../../framework/handlers/CommandHandler/Command';
 import { SubcommandHandler } from '../../framework/handlers/CommandHandler/SubcommandHandler';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';

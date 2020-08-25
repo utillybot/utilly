@@ -1,5 +1,5 @@
 import { GuildChannel, Member, Message, User } from 'eris';
-import Command from '../../framework/handlers/CommandHandler/Command/Command';
+import Command from '../../framework/handlers/CommandHandler/Command';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import InfoCommandModule from './moduleinfo';
