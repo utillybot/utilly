@@ -1,9 +1,9 @@
-import { GuildChannel, Message, Guild } from 'eris';
+import { Guild, GuildChannel, Message } from 'eris';
 import Command from '../../framework/handlers/CommandHandler/Command/Command';
+import { secondsToString } from '../../framework/utilities/DurationParser';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import InfoCommandModule from './moduleinfo';
-import { secondsToString } from '../../framework/utilities/DurationParser';
 
 export default class ServerInfo extends Command {
     parent?: InfoCommandModule;
@@ -15,6 +15,7 @@ export default class ServerInfo extends Command {
         this.help.usage = '(server id)';
         this.help.aliases = ['sinfo'];
         this.settings.guildOnly = false;
+        this.settings.botPerms = ['embedLinks'];
     }
 
     async execute(message: Message, args: string[]): Promise<void> {

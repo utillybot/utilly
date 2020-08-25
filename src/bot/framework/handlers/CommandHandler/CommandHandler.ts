@@ -1,32 +1,57 @@
-import { GuildChannel, Message } from 'eris';
+import Eris, { GuildChannel, Message } from 'eris';
 import fs from 'fs/promises';
 import path from 'path';
 import { getCustomRepository } from 'typeorm';
 import Logger from '../../../../core/Logger';
 import GuildRepository from '../../../../database/repository/GuildRepository';
+import { ROLE_PERMISSIONS } from '../../../constants/PermissionConstants';
 import UtillyClient from '../../../UtillyClient';
 import DatabaseModule from '../ModuleHandler/Module/DatabaseModule';
+import Module from '../ModuleHandler/Module/Module';
 import Command from './Command/Command';
 import CommandModule from './CommandModule/CommandModule';
-import Module from '../ModuleHandler/Module/Module';
 
 /**
  * Handles all incomming commands
  */
 export default class CommandHandler {
-    commandModules: Map<string, CommandModule>;
-    commands: Map<string, Command>;
-    aliases: Map<string, Command>;
+    private _aliases: Map<string, Command>;
 
     private _bot: UtillyClient;
+
+    private _commandModules: Map<string, CommandModule>;
+
+    private _commands: Map<string, Command>;
+
     private _logger: Logger;
 
     constructor(bot: UtillyClient, logger: Logger) {
         this._bot = bot;
         this._logger = logger;
-        this.commandModules = new Map();
-        this.commands = new Map();
-        this.aliases = new Map();
+        this._commandModules = new Map();
+        this._commands = new Map();
+        this._aliases = new Map();
+    }
+
+    /**
+     * A map of the registred aliases to their command
+     */
+    get aliases(): Map<string, Command> {
+        return this._aliases;
+    }
+
+    /**
+     * A map of the registered command module names to their command module
+     */
+    get commandModules(): Map<string, CommandModule> {
+        return this._commandModules;
+    }
+
+    /**
+     * A map of the registered command names to their command
+     */
+    get commands(): Map<string, Command> {
+        return this._commands;
     }
 
     /**
@@ -34,6 +59,23 @@ export default class CommandHandler {
      */
     attach(): void {
         this._bot.on('messageCreate', this._messageCreate.bind(this));
+    }
+
+    /**
+     * Link the command modules with their corrosponding backend modules
+     * @param modules the modules to link with
+     */
+    linkModules(modules: Map<string, Module>): void {
+        for (const [commandModuleName, commandModule] of this._commandModules) {
+            commandModule.parent = modules.get(commandModuleName);
+            if (commandModule.parent == undefined)
+                throw new Error(
+                    `Linking error for module ${commandModuleName}`
+                );
+            this._logger.handler(
+                `Linking Command Module "${commandModuleName}" with module "${commandModule.parent.constructor.name}"`
+            );
+        }
     }
 
     /**
@@ -65,10 +107,10 @@ export default class CommandHandler {
                 ).default(this._bot, moduleObj);
 
                 moduleObj.registerCommand(commandObj.help.name, commandObj);
-                this.commands.set(commandObj.help.name, commandObj);
+                this._commands.set(commandObj.help.name, commandObj);
                 if (commandObj.help.aliases != null) {
                     for (const alias of commandObj.help.aliases) {
-                        this.aliases.set(alias, commandObj);
+                        this._aliases.set(alias, commandObj);
                     }
                 }
                 this._logger.handler(
@@ -78,27 +120,11 @@ export default class CommandHandler {
             this._logger.handler(
                 `  Finished Loading Module "${moduleObj.info.name}".`
             );
-            this.commandModules.set(moduleObj.info.name, moduleObj);
+            this._commandModules.set(moduleObj.info.name, moduleObj);
         }
         this._logger.handler(
-            `Command Loading is complete. ${this.commandModules.size} command modules have been loaded.`
+            `Command Loading is complete. ${this._commandModules.size} command modules have been loaded.`
         );
-    }
-    /**
-     * Link the command modules with their corrosponding backend modules
-     * @param modules the modules to link with
-     */
-    linkModules(modules: Map<string, Module>): void {
-        for (const [commandModuleName, commandModule] of this.commandModules) {
-            commandModule.parent = modules.get(commandModuleName);
-            if (commandModule.parent == undefined)
-                throw new Error(
-                    `Linking error for module ${commandModuleName}`
-                );
-            this._logger.handler(
-                `Linking Command Module "${commandModuleName}" with module "${commandModule.parent.constructor.name}"`
-            );
-        }
     }
 
     /**
@@ -108,6 +134,15 @@ export default class CommandHandler {
     private async _messageCreate(message: Message): Promise<void> {
         if (message.author.bot) return;
 
+        if (
+            message.channel instanceof GuildChannel &&
+            !message.channel
+                .permissionsOf(this._bot.user.id)
+                .has('sendMessages')
+        )
+            return;
+
+        //#region prefix
         let prefix: string | undefined;
         let prefixes: string[] = [];
 
@@ -123,92 +158,78 @@ export default class CommandHandler {
         if (prefix != undefined) {
             if (!message.content.startsWith(prefix)) return;
         } else {
-            for (let i = 0; i < prefixes.length; i++) {
-                const prefixElement = prefixes[i];
+            for (const prefixElement of prefixes) {
                 if (message.content.startsWith(prefixElement)) {
                     prefix = prefixElement;
                     break;
                 }
             }
-            if (prefix == null) return;
+            if (!prefix) return;
         }
+        //#endregion
 
         const args = message.content.slice(prefix.length).trim().split(/ +/g);
         const command = args.shift();
         if (!command) return;
 
-        let commandObj: Command | undefined;
-        if (this.commands.has(command)) {
-            commandObj = this.commands.get(command);
-            if (!commandObj)
-                throw new Error(
-                    `Command object ${command} exists in the map but is not getable...`
-                );
-            if (!commandObj.parent)
-                throw new Error(
-                    `Command object ${commandObj.help.name} doesn't have a parent.`
-                );
+        const commandObj: Command | undefined =
+            this._commands.get(command) || this._aliases.get(command);
 
-            if (!(await commandObj.parent.checkPermission(message))) {
-                message.channel.createMessage(
-                    "Uh oh, it looks like you don't have permission to run this command"
-                );
-                return;
-            }
-            if (!(await commandObj.checkPermission(message))) {
-                message.channel.createMessage(
-                    "Uh oh, it looks like you don't have permission to run this command"
-                );
-                return;
-            }
-        } else if (this.aliases.has(command)) {
-            commandObj = this.aliases.get(command);
-            if (!commandObj)
-                throw new Error(
-                    `Command object ${command} exists in the map but is not getable...`
-                );
-            if (!commandObj.parent)
-                throw new Error(
-                    `Command object ${commandObj.help.name} doesn't have a parent.`
-                );
-
-            if (!(await commandObj.parent.checkPermission(message))) {
-                message.channel.createMessage(
-                    "Uh oh, it looks like you don't have permission to run this command"
-                );
-                return;
-            }
-
-            if (!(await commandObj.checkPermission(message))) {
-                message.channel.createMessage(
-                    "Uh oh, it looks like you don't have permission to run this command"
-                );
-                return;
-            }
-        } else {
-            return;
-        }
+        if (commandObj == undefined) return;
+        if (!commandObj.parent)
+            throw new Error(
+                `Command object ${commandObj.help.name} doesn't have a parent.`
+            );
 
         if (
-            commandObj.settings.guildOnly &&
-            !(message.channel instanceof GuildChannel)
+            !(await commandObj.parent.checkPermission(message)) ||
+            !(await commandObj.checkPermission(message))
         ) {
-            await message.channel.createMessage(
-                'This command can only be ran in a guild.'
+            message.channel.createMessage(
+                "Uh oh, it looks like you don't have permission to run this command"
             );
             return;
         }
 
-        if (
-            commandObj.parent.parent instanceof DatabaseModule &&
-            message.channel instanceof GuildChannel
-        ) {
-            if (
-                !(await commandObj.parent.parent.isEnabled(
-                    message.channel.guild.id
-                ))
-            )
+        if (message.channel instanceof GuildChannel) {
+            if (commandObj.parent.parent instanceof DatabaseModule) {
+                if (
+                    !(await commandObj.parent.parent.isEnabled(
+                        message.channel.guild.id
+                    ))
+                )
+                    return;
+            }
+            const missingPerms = [];
+            for (const permission of commandObj.settings.botPerms) {
+                if (
+                    !message.channel
+                        .permissionsOf(this._bot.user.id)
+                        .has(permission)
+                ) {
+                    missingPerms.push(
+                        ROLE_PERMISSIONS.get(
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            Eris.Constants.Permissions[permission]
+                        )
+                    );
+                }
+            }
+
+            if (missingPerms.length > 0) {
+                await message.channel.createMessage(
+                    `The bot is missing the permissions: ${missingPerms.join(
+                        ', '
+                    )}`
+                );
                 return;
+            }
+        } else if (commandObj.settings.guildOnly) {
+            await message.channel.createMessage(
+                'This command can only be ran in a guild.'
+            );
+            return;
         }
 
         try {

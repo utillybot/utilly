@@ -20,6 +20,7 @@ export default class Help extends Command {
         this.help.usage = '(command/module)';
         this.help.aliases = ['h'];
         this.settings.guildOnly = true;
+        this.settings.botPerms = ['embedLinks'];
     }
 
     async execute(message: Message, args: string[]): Promise<void> {
@@ -27,7 +28,6 @@ export default class Help extends Command {
             const guildRow = await getCustomRepository(
                 GuildRepository
             ).selectOrCreate(message.channel.guild.id, MODULES);
-
             if (args.length == 0) {
                 this.handleBaseCommand(message, guildRow);
             } else {
@@ -139,14 +139,13 @@ export default class Help extends Command {
         embed.setTitle(`Help for \`${command.help.name}\` command`);
 
         embed.setDescription(command.help.description);
-        if (command.help.usage != '')
-            embed.addField(
-                'Usage',
-                `${guildRow.prefix ? guildRow.prefix[0] : 'u!'}${
-                    command.help.name
-                } ${command.help.usage}`,
-                true
-            );
+        embed.addField(
+            'Usage',
+            `${guildRow.prefix ? guildRow.prefix[0] : 'u!'}${
+                command.help.name
+            } ${command.help.usage ?? ''}`,
+            true
+        );
         const aliases = [];
         for (const alias of command.help.aliases) {
             aliases.push((guildRow.prefix ? guildRow.prefix[0] : 'u!') + alias);
@@ -167,11 +166,20 @@ export default class Help extends Command {
                 true
             );
         }
+
+        if (command.settings.botPerms.length > 0) {
+            embed.addField(
+                'Bot Permissions Required',
+                command.settings.botPerms.join(', '),
+                true
+            );
+        }
         embed.addField(
             'Parent Module',
             `${command.parent.info.name} : ${
                 guildRow[item] == false ? 'Disabled' : 'Enabled'
-            }`
+            }`,
+            true
         );
         embed.setTimestamp();
         embed.setFooter(

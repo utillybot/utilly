@@ -1,8 +1,8 @@
+import { Message } from 'eris';
+import Command from '../../framework/handlers/CommandHandler/Command/Command';
+import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import GeneralCommandModule from './moduleinfo';
-import Command from '../../framework/handlers/CommandHandler/Command/Command';
-import { Message } from 'eris';
-import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 
 export default class Eval extends Command {
     parent!: GeneralCommandModule;

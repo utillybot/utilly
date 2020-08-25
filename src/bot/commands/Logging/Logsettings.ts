@@ -28,6 +28,13 @@ export default class Logsettings extends Command {
         this.help.permission = 'Server Owner or Administrator permissions';
 
         this.settings.guildOnly = true;
+        this.settings.botPerms = [
+            'embedLinks',
+            'externalEmojis',
+            'addReactions',
+            'manageMessages',
+            'readMessageHistory',
+        ];
     }
 
     async checkPermission(message: Message): Promise<boolean> {

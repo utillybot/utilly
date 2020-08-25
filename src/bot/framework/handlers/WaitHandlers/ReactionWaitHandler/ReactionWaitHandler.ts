@@ -1,4 +1,4 @@
-import { Emoji, Message } from 'eris';
+import { Emoji, Message, Member } from 'eris';
 import Logger from '../../../../../core/Logger';
 import UtillyClient from '../../../../UtillyClient';
 import ReactionWaitOptions from './ReactionWaitOptions';
@@ -46,29 +46,23 @@ export default class ReactionWaitHandler {
         }
     }
 
-    messageReactionAdd(message: Message, emoji: Emoji, userID: string): void {
+    messageReactionAdd(message: Message, emoji: Emoji, member: Member): void {
         const options = this.handlers.get(message.id);
 
         if (options == undefined) return;
 
-        if (userID == this.bot.user.id) return;
+        if (member.id == this.bot.user.id) return;
 
-        if (options.userID != userID) {
+        if (
+            options.userID != member.id ||
+            !options.allowedEmotes.includes(emoji.id)
+        ) {
             message.removeReaction(
                 `${emoji.name}${emoji.id ? `:${emoji.id}` : ''}`,
-                userID
+                member.id
             );
             return;
         }
-
-        if (!options.allowedEmotes.includes(emoji.id)) {
-            message.removeReaction(
-                `${emoji.name}${emoji.id ? `:${emoji.id}` : ''}`,
-                userID
-            );
-            return;
-        }
-
         this.handlers.delete(message.id);
         options.success(emoji);
     }

@@ -14,11 +14,12 @@ export default class Userinfo extends Command {
         this.help.usage = '(username/user id/user mention)';
         this.help.aliases = ['uinfo'];
         this.settings.guildOnly = false;
+        this.settings.botPerms = ['embedLinks'];
     }
 
     async execute(message: Message, args: string[]): Promise<void> {
-        let user: User | undefined;
-        let member: Member | undefined;
+        let user: User | undefined | null;
+        let member: Member | undefined | null;
         const regex = /<@!?(\d+)>/;
 
         if (args.length == 0) {
@@ -61,7 +62,7 @@ export default class Userinfo extends Command {
             }
 
             // If nothing was found, call the REST API with user ID
-            if (member == undefined && user == undefined) {
+            if (member && user) {
                 try {
                     user = await this.bot.getRESTUser(args[0]);
                 } catch {
@@ -70,13 +71,14 @@ export default class Userinfo extends Command {
             }
         }
 
-        if (member == undefined && user == undefined) {
+        if (!member && !user) {
             const embed = new EmbedBuilder();
             embed.setTitle('Not Found');
             embed.setDescription(`\`${args.join(' ')}\` was not found`);
             message.channel.createMessage({ embed });
             return;
         }
+
         const embed = new EmbedBuilder();
         embed.setTitle('User Info');
         if (user != undefined) {

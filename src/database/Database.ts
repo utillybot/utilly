@@ -24,12 +24,12 @@ export default class Database {
             },
             entities: [Guild],
             logging: true,
-            cache: {
-                type: 'redis',
-                options: {
-                    url: process.env.REDIS_URL,
-                },
-            },
+            //cache: {
+            //    type: 'redis',
+            //    options: {
+            //        url: process.env.REDIS_URL,
+            //    },
+            //},
             logger: new TypeORMLogger(this._logger),
         });
     }

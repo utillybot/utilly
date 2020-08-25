@@ -3,14 +3,14 @@ import { Message } from 'eris';
 import UtillyClient from '../../../../UtillyClient';
 import Module from '../../ModuleHandler/Module/Module';
 import Command from '../Command/Command';
-import ICommandModuleInfo from './ICommandModuleInfo';
+import CommandModuleInfo from './CommandModuleInfo';
 
 /**
  * A Command Module
  */
 export default abstract class CommandModule {
     bot: UtillyClient;
-    info: ICommandModuleInfo;
+    info: CommandModuleInfo;
     commands: Map<string, Command>;
     aliases: Map<string, Command>;
     parent?: Module;

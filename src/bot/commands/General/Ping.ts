@@ -13,6 +13,7 @@ export default class Ping extends Command {
         this.help.description = "Checks the bot's ping";
         this.help.usage = '';
         this.settings.guildOnly = true;
+        this.settings.botPerms = ['embedLinks'];
     }
 
     async execute(message: Message): Promise<void> {

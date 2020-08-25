@@ -34,7 +34,7 @@ export default class ChannelLogging extends AttachableModule {
      */
     private _buildEmbed(embed: EmbedBuilder, guild: Guild): EmbedBuilder {
         embed.setTimestamp();
-        embed.setAuthor(guild.name, undefined, guild.iconURL);
+        embed.setAuthor(guild.name, undefined, guild.iconURL ?? undefined);
 
         return embed;
     }
