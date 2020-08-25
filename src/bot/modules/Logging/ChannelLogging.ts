@@ -357,7 +357,7 @@ export default class ChannelLogging extends AttachableModule {
 
         // Final additions and send message
         embed = this._buildEmbed(embed, newChannel.guild);
-        logChannel.createMessage({ embed });
+        this.parentModule.sendLogMessage(logChannel, embed);
     }
 
     /**
@@ -553,8 +553,6 @@ export default class ChannelLogging extends AttachableModule {
 
         // Final additions and send
         embed = this._buildEmbed(embed, channel.guild);
-        logChannel.createMessage({
-            embed,
-        });
+        this.parentModule.sendLogMessage(logChannel, embed);
     }
 }

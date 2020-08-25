@@ -95,7 +95,7 @@ export default class MessageLogging extends AttachableModule {
         embed.setDescription(`In channel <#${messages[0].channel.id}>`);
         embed.setTimestamp();
 
-        logChannel.createMessage({ embed });
+        this.parentModule.sendLogMessage(logChannel, embed);
     }
 
     /**
@@ -127,7 +127,7 @@ export default class MessageLogging extends AttachableModule {
 
         embed = this._buildEmbed(embed, message);
         embed = this._addOtherField(embed, message);
-        logChannel.createMessage({ embed });
+        this.parentModule.sendLogMessage(logChannel, embed);
     }
 
     /**
@@ -168,6 +168,6 @@ export default class MessageLogging extends AttachableModule {
 
         embed = this._buildEmbed(embed, message);
         embed = this._addOtherField(embed, oldMessage);
-        logChannel.createMessage({ embed });
+        this.parentModule.sendLogMessage(logChannel, embed);
     }
 }

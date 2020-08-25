@@ -130,7 +130,7 @@ export default class RoleLogging extends AttachableModule {
         // Final additions and send
         if (embed.fields == undefined || embed.fields.length == 0) return;
         embed = this._buildEmbed(embed, guild);
-        logChannel.createMessage({ embed });
+        this.parentModule.sendLogMessage(logChannel, embed);
     }
 
     /**
@@ -223,6 +223,6 @@ export default class RoleLogging extends AttachableModule {
 
         // Final additions and send
         embed = this._buildEmbed(embed, guild);
-        logChannel.createMessage({ embed });
+        this.parentModule.sendLogMessage(logChannel, embed);
     }
 }
