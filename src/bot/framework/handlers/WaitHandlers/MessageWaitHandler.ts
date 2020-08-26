@@ -12,6 +12,7 @@ export interface MessageWaitOptions {
     deleteOtherMessages: boolean;
     resolve: (message: Message) => void;
     reject: () => void;
+    timeout?: NodeJS.Timeout;
 }
 
 export class MessageWaitHandler {
@@ -27,31 +28,41 @@ export class MessageWaitHandler {
         this._bot.on('messageCreate', this._messageCreate.bind(this));
     }
 
+    /**
+     *
+     * @param channelID  - the channel to listen to messages in
+     * @param authorID - the person to listen to messages
+     * @param filter - a filter accepting a message and returning a boolean
+     * @param timeout - the timeout in seconds until this listener expires
+     * @param errors - a list of errors that can cause this handler to reject
+     * @param deleteOtherMessages - whether or not all other messages that don't fit the filter should be deleted
+     */
     addListener(
         channelID: string,
         authorID: string,
-        filter?: MessageWaitFilter,
-        timeout?: number,
-        errors?: MessageWaitErrors[],
+        filter: MessageWaitFilter = () => true,
+        timeout = 30,
+        errors: MessageWaitErrors[] = ['time'],
         deleteOtherMessages = true
     ): Promise<Message> {
-        if (timeout) {
-            setTimeout(() => {
-                if (this._handlers.has(authorID)) {
-                    this._handlers.get(authorID)?.reject();
-                    this._handlers.delete(authorID);
-                }
-            }, timeout * 1000);
-        }
-
         return new Promise((resolve, reject) => {
+            let timeoutID;
+            if (errors.includes('time')) {
+                timeoutID = setTimeout(() => {
+                    const handler = this._handlers.get(authorID);
+                    if (!handler) return;
+                    handler.reject();
+                    this._handlers.delete(authorID);
+                }, timeout * 1000);
+            }
             this._handlers.set(authorID, {
                 channelID,
-                filter: filter ?? (() => true),
-                errors: errors || ['time'],
+                filter: filter,
+                errors: errors,
                 deleteOtherMessages,
                 resolve,
                 reject,
+                timeout: timeoutID,
             });
         });
     }
@@ -74,5 +85,6 @@ export class MessageWaitHandler {
 
         this._handlers.delete(message.author.id);
         options.resolve(message);
+        if (options.timeout) clearTimeout(options.timeout);
     }
 }

@@ -69,6 +69,7 @@ export default class Embed extends Command {
             'author',
             'fields',
             'done',
+            'cancel',
         ];
 
         const embed = new EmbedBuilder();
@@ -94,7 +95,7 @@ export default class Embed extends Command {
                 message.channel.id,
                 message.author.id,
                 message => options.includes(message.content.toLowerCase()),
-                30 * 1000
+                30
             );
             await this.handleOption(
                 result,
@@ -120,9 +121,11 @@ export default class Embed extends Command {
                 embed: preview,
             });
         } catch {
-            await previewMessage.edit(
-                "Go back and edit the last field you inputted because it wasn't valid!"
-            );
+            await previewMessage.edit({
+                content:
+                    "Go back and edit the last field you inputted because it wasn't valid!",
+                embed: undefined,
+            });
         }
 
         const options = [
@@ -135,6 +138,7 @@ export default class Embed extends Command {
             'author',
             'fields',
             'done',
+            'cancel',
         ];
         const embed = new EmbedBuilder();
         embed.setTitle('Embed Builder');
@@ -154,7 +158,7 @@ export default class Embed extends Command {
                 message.channel.id,
                 message.author.id,
                 message => options.includes(message.content.toLowerCase()),
-                30 * 1000
+                30
             );
             await this.handleOption(
                 result,
@@ -176,201 +180,134 @@ export default class Embed extends Command {
         previewMessage: Message
     ): Promise<void> {
         response.delete();
-        switch (response.content.toLowerCase()) {
-            case 'title': {
+        const option = response.content.toLowerCase();
+
+        try {
+            if (
+                option == 'title' ||
+                option == 'description' ||
+                option == 'color' ||
+                option == 'image' ||
+                option == 'thumbnail'
+            ) {
                 const embed = new EmbedBuilder();
-                embed.setTitle('Type the title you would like: ');
+                embed.setTitle(
+                    `Type the ${
+                        option == 'image' || option == 'thumbnail'
+                            ? 'URL of the'
+                            : ''
+                    } ${option} you would like (or type \`clear\` to clear the field)`
+                );
                 menu = await menu.edit({ embed });
-                try {
-                    const title = await this.bot.messageWaitHandler.addListener(
-                        message.channel.id,
-                        message.author.id,
-                        undefined,
-                        30 * 1000
+
+                const result = await this.bot.messageWaitHandler.addListener(
+                    message.channel.id,
+                    message.author.id,
+                    undefined,
+                    30
+                );
+                if (option == 'title') {
+                    preview.setTitle(
+                        result.content.toLowerCase() == 'clear'
+                            ? undefined
+                            : result.content
                     );
-
-                    title.delete();
-
-                    preview.setTitle(title.content);
-                    this.handleMainMenu(message, preview, menu, previewMessage);
-                } catch {
-                    this.handleFailure(menu, previewMessage);
-                }
-                break;
-            }
-            case 'description': {
-                const embed = new EmbedBuilder();
-                embed.setTitle('Type the description you would like: ');
-                menu = await menu.edit({ embed });
-                try {
-                    const description = await this.bot.messageWaitHandler.addListener(
-                        message.channel.id,
-                        message.author.id,
-
-                        undefined,
-                        30 * 1000
+                } else if (option == 'description') {
+                    preview.setDescription(
+                        result.content.toLowerCase() == 'clear'
+                            ? undefined
+                            : result.content
                     );
-
-                    description.delete();
-                    preview.setDescription(description.content);
-                    this.handleMainMenu(message, preview, menu, previewMessage);
-                } catch {
-                    this.handleFailure(menu, previewMessage);
-                }
-                break;
-            }
-            case 'color': {
-                const embed = new EmbedBuilder();
-                embed.setTitle('Type the color you would like: ');
-                menu = await menu.edit({ embed });
-                try {
-                    const color = await this.bot.messageWaitHandler.addListener(
-                        message.channel.id,
-                        message.author.id,
-                        undefined,
-                        30 * 1000
-                    );
-
-                    color.delete();
+                } else if (option == 'color') {
                     preview.setColor(
-                        parseInt(color.content.replace('#', ''), 16)
+                        result.content.toLowerCase() == 'clear'
+                            ? undefined
+                            : parseInt(result.content.replace('#', ''), 16)
                     );
-                    this.handleMainMenu(message, preview, menu, previewMessage);
-                } catch {
-                    this.handleFailure(menu, previewMessage);
+                } else if (option == 'image') {
+                    preview.setImage(
+                        result.content.toLowerCase() == 'clear'
+                            ? undefined
+                            : result.content
+                    );
+                } else if (option == 'thumbnail') {
+                    preview.setThumbnail(
+                        result.content.toLowerCase() == 'clear'
+                            ? undefined
+                            : result.content
+                    );
                 }
-                break;
-            }
-            case 'footer': {
+
+                result.delete();
+                this.handleMainMenu(message, preview, menu, previewMessage);
+            } else if (option == 'footer') {
                 const embed = new EmbedBuilder();
                 embed.setTitle(
                     'Would you like to set the footer **`text`** or footer **`icon URL`**? (type `text` or `icon URL`)'
                 );
                 menu = await menu.edit({ embed });
-                try {
-                    const result = await this.bot.messageWaitHandler.addListener(
-                        message.channel.id,
-                        message.author.id,
-                        message =>
-                            ['text', 'icon url'].includes(
-                                message.content.toLowerCase()
-                            ),
-                        30 * 1000
-                    );
-
-                    this.handleFooter(
-                        result,
-                        message,
-                        preview,
-                        menu,
-                        previewMessage
-                    );
-                } catch {
-                    this.handleFailure(menu, previewMessage);
-                }
-                break;
-            }
-            case 'image': {
-                const embed = new EmbedBuilder();
-                embed.setTitle(
-                    'Type the URL of the image that should be set on the embed'
+                const result = await this.bot.messageWaitHandler.addListener(
+                    message.channel.id,
+                    message.author.id,
+                    message =>
+                        ['text', 'icon url'].includes(
+                            message.content.toLowerCase()
+                        ),
+                    30
                 );
-                menu = await menu.edit({ embed });
-                try {
-                    const image = await this.bot.messageWaitHandler.addListener(
-                        message.channel.id,
-                        message.author.id,
-                        undefined,
-                        30 * 1000
-                    );
 
-                    image.delete();
-                    preview.setImage(image.content);
-                    this.handleMainMenu(message, preview, menu, previewMessage);
-                } catch {
-                    this.handleFailure(menu, previewMessage);
-                }
-                break;
-            }
-            case 'thumbnail': {
-                const embed = new EmbedBuilder();
-                embed.setTitle(
-                    'Type the URL of the thumbnail that should be set on the embed'
+                this.handleFooter(
+                    result,
+                    message,
+                    preview,
+                    menu,
+                    previewMessage
                 );
-                menu = await menu.edit({ embed });
-                try {
-                    const thumbnail = await this.bot.messageWaitHandler.addListener(
-                        message.channel.id,
-                        message.author.id,
-                        undefined,
-                        30 * 1000
-                    );
-
-                    thumbnail.delete();
-                    preview.setThumbnail(thumbnail.content);
-                    this.handleMainMenu(message, preview, menu, previewMessage);
-                } catch {
-                    this.handleFailure(menu, previewMessage);
-                }
-                break;
-            }
-            case 'author': {
+            } else if (option == 'author') {
                 const embed = new EmbedBuilder();
                 embed.setTitle(
                     'Would you like to set the author **`name`**, author **`URL`**, or author **`icon URL`**? (type `name`, `URL`, or `icon URL`)'
                 );
                 menu = await menu.edit({ embed });
-                try {
-                    const result = await this.bot.messageWaitHandler.addListener(
-                        message.channel.id,
-                        message.author.id,
-                        message =>
-                            ['name', 'url', 'icon url'].includes(
-                                message.content.toLowerCase()
-                            ),
-                        30 * 1000
-                    );
+                const result = await this.bot.messageWaitHandler.addListener(
+                    message.channel.id,
+                    message.author.id,
+                    message =>
+                        ['name', 'url', 'icon url'].includes(
+                            message.content.toLowerCase()
+                        ),
+                    30
+                );
 
-                    this.handleAuthor(
-                        result,
-                        message,
-                        preview,
-                        menu,
-                        previewMessage
-                    );
-                } catch {
-                    this.handleFailure(menu, previewMessage);
-                }
-                break;
-            }
-            case 'fields': {
+                this.handleAuthor(
+                    result,
+                    message,
+                    preview,
+                    menu,
+                    previewMessage
+                );
+            } else if (option == 'fields') {
                 const embed = new EmbedBuilder();
                 embed.setTitle('Would you like to add or delete a field?');
                 menu = await menu.edit({ embed });
-                try {
-                    const result = await this.bot.messageWaitHandler.addListener(
-                        message.channel.id,
-                        message.author.id,
-                        message =>
-                            ['add', 'delete'].includes(
-                                message.content.toLowerCase()
-                            ),
-                        30 * 1000
-                    );
+                const result = await this.bot.messageWaitHandler.addListener(
+                    message.channel.id,
+                    message.author.id,
+                    message =>
+                        ['add', 'delete'].includes(
+                            message.content.toLowerCase()
+                        ),
+                    30
+                );
 
-                    this.handleFields(
-                        result,
-                        message,
-                        preview,
-                        menu,
-                        previewMessage
-                    );
-                } catch {
-                    this.handleFailure(menu, previewMessage);
-                }
-                break;
-            }
-            case 'done': {
+                this.handleFields(
+                    result,
+                    message,
+                    preview,
+                    menu,
+                    previewMessage
+                );
+            } else if (option == 'done') {
                 menu.delete();
                 previewMessage.delete();
                 if (!(message.channel instanceof GuildChannel)) return;
@@ -381,6 +318,7 @@ export default class Embed extends Command {
                 );
                 const prompt = await message.channel.createMessage({ embed });
                 const regex = /\d{18}/;
+
                 const result = (
                     await this.bot.messageWaitHandler.addListener(
                         message.channel.id,
@@ -396,7 +334,7 @@ export default class Embed extends Command {
                                 ) != undefined
                             );
                         },
-                        30 * 1000
+                        30
                     )
                 ).content.match(regex);
                 if (result == null) return;
@@ -450,7 +388,19 @@ export default class Embed extends Command {
                 channel.createMessage({ embed: preview });
                 prompt.delete();
                 message.channel.createMessage('Done!');
+            } else if (option == 'cancel') {
+                const embed = new EmbedBuilder();
+                embed.setTitle('Cancelled');
+                embed.setDescription('You exited out of the embed wizard');
+                embed.addField(
+                    'Here is your current embed code:',
+                    JSON.stringify(previewMessage.embeds[0])
+                );
+                previewMessage.delete();
+                menu.edit({ embed });
             }
+        } catch {
+            this.handleFailure(menu, previewMessage);
         }
     }
 
@@ -462,52 +412,55 @@ export default class Embed extends Command {
         previewMessage: Message
     ): Promise<void> {
         response.delete();
-        switch (response.content.toLowerCase()) {
-            case 'text': {
-                const embed = new EmbedBuilder();
-                embed.setTitle('Type the footer text: ');
-                menu = await menu.edit({ embed });
-                try {
-                    const text = await this.bot.messageWaitHandler.addListener(
-                        message.channel.id,
-                        message.author.id,
-                        undefined,
-                        30 * 1000
-                    );
-                    text.delete();
-                    preview.setFooter(
-                        text.content,
-                        preview.footer ? preview.footer.icon_url : undefined
-                    );
-                    this.handleMainMenu(message, preview, menu, previewMessage);
-                } catch {
-                    this.handleFailure(menu, previewMessage);
-                }
-
-                break;
+        const option = response.content.toLowerCase();
+        if (option == 'text') {
+            const embed = new EmbedBuilder();
+            embed.setTitle(
+                'Type the footer text (or type `clear` to clear the field)'
+            );
+            menu = await menu.edit({ embed });
+            try {
+                const text = await this.bot.messageWaitHandler.addListener(
+                    message.channel.id,
+                    message.author.id,
+                    undefined,
+                    30
+                );
+                text.delete();
+                preview.setFooter(
+                    text.content.toLowerCase() == 'clear'
+                        ? undefined
+                        : text.content,
+                    preview.footer ? preview.footer.icon_url : undefined
+                );
+                this.handleMainMenu(message, preview, menu, previewMessage);
+            } catch {
+                this.handleFailure(menu, previewMessage);
             }
-            case 'icon url': {
-                const embed = new EmbedBuilder();
-                embed.setTitle('Type the footer icon url: ');
-                menu = await menu.edit({ embed });
-                try {
-                    const url = await this.bot.messageWaitHandler.addListener(
-                        message.channel.id,
-                        message.author.id,
-                        undefined,
-                        30 * 1000
-                    );
+        } else if (option == 'icon url') {
+            const embed = new EmbedBuilder();
+            embed.setTitle(
+                'Type the footer icon url (or type `clear` to clear the field)'
+            );
+            menu = await menu.edit({ embed });
+            try {
+                const url = await this.bot.messageWaitHandler.addListener(
+                    message.channel.id,
+                    message.author.id,
+                    undefined,
+                    30
+                );
 
-                    url.delete();
-                    preview.setFooter(
-                        preview.footer ? preview.footer.text : 'No Footer Text',
-                        url.content
-                    );
-                    this.handleMainMenu(message, preview, menu, previewMessage);
-                } catch {
-                    this.handleFailure(menu, previewMessage);
-                }
-                break;
+                url.delete();
+                preview.setFooter(
+                    preview.footer ? preview.footer.text : 'No Footer Text',
+                    url.content.toLowerCase() == 'clear'
+                        ? undefined
+                        : url.content
+                );
+                this.handleMainMenu(message, preview, menu, previewMessage);
+            } catch {
+                this.handleFailure(menu, previewMessage);
             }
         }
     }
@@ -520,78 +473,84 @@ export default class Embed extends Command {
         previewMessage: Message
     ): Promise<void> {
         response.delete();
-        switch (response.content.toLowerCase()) {
-            case 'name': {
-                const embed = new EmbedBuilder();
-                embed.setTitle('Type the author name: ');
-                menu = await menu.edit({ embed });
-                try {
-                    const name = await this.bot.messageWaitHandler.addListener(
-                        message.channel.id,
-                        message.author.id,
-                        undefined,
-                        30 * 1000
-                    );
+        const option = response.content.toLowerCase();
+        if (option == 'name') {
+            const embed = new EmbedBuilder();
+            embed.setTitle(
+                'Type the author name (or type `clear` to clear the field)'
+            );
+            menu = await menu.edit({ embed });
+            try {
+                const name = await this.bot.messageWaitHandler.addListener(
+                    message.channel.id,
+                    message.author.id,
+                    undefined,
+                    30
+                );
 
-                    name.delete();
-                    preview.setAuthor(
-                        name.content,
-                        preview.author ? preview.author.url : undefined,
-                        preview.author ? preview.author.icon_url : undefined
-                    );
-                    this.handleMainMenu(message, preview, menu, previewMessage);
-                } catch {
-                    this.handleFailure(menu, previewMessage);
-                }
-                break;
+                name.delete();
+                preview.setAuthor(
+                    name.content.toLowerCase() == 'clear'
+                        ? undefined
+                        : name.content,
+                    preview.author ? preview.author.url : undefined,
+                    preview.author ? preview.author.icon_url : undefined
+                );
+                this.handleMainMenu(message, preview, menu, previewMessage);
+            } catch {
+                this.handleFailure(menu, previewMessage);
             }
-            case 'icon url': {
-                const embed = new EmbedBuilder();
-                embed.setTitle('Type the author icon url: ');
-                menu = await menu.edit({ embed });
-                try {
-                    const iconURL = await this.bot.messageWaitHandler.addListener(
-                        message.channel.id,
-                        message.author.id,
-                        undefined,
-                        30 * 1000
-                    );
-                    iconURL.delete();
-                    preview.setAuthor(
-                        preview.author ? preview.author.name : 'No Author Name',
-                        preview.author ? preview.author.url : undefined,
-                        iconURL.content
-                    );
-                    this.handleMainMenu(message, preview, menu, previewMessage);
-                } catch {
-                    this.handleFailure(menu, previewMessage);
-                }
-                break;
+        } else if (option == 'icon url') {
+            const embed = new EmbedBuilder();
+            embed.setTitle(
+                'Type the author icon url (or type `clear` to clear the field)'
+            );
+            menu = await menu.edit({ embed });
+            try {
+                const iconURL = await this.bot.messageWaitHandler.addListener(
+                    message.channel.id,
+                    message.author.id,
+                    undefined,
+                    30
+                );
+                iconURL.delete();
+                preview.setAuthor(
+                    preview.author ? preview.author.name : 'No Author Name',
+                    preview.author ? preview.author.url : undefined,
+                    iconURL.content.toLowerCase() == 'clear'
+                        ? undefined
+                        : iconURL.content
+                );
+                this.handleMainMenu(message, preview, menu, previewMessage);
+            } catch {
+                this.handleFailure(menu, previewMessage);
             }
-            case 'url': {
-                const embed = new EmbedBuilder();
-                embed.setTitle('Type the author url: ');
-                menu = await menu.edit({ embed });
-                try {
-                    const url = await this.bot.messageWaitHandler.addListener(
-                        message.channel.id,
-                        message.author.id,
-                        undefined,
-                        30 * 1000
-                    );
+        } else if (option == 'url') {
+            const embed = new EmbedBuilder();
+            embed.setTitle(
+                'Type the author url (or type `clear` to clear the field)'
+            );
+            menu = await menu.edit({ embed });
+            try {
+                const url = await this.bot.messageWaitHandler.addListener(
+                    message.channel.id,
+                    message.author.id,
+                    undefined,
+                    30
+                );
 
-                    url.delete();
-                    preview.setAuthor(
-                        preview.author ? preview.author.name : 'No Author Name',
+                url.delete();
+                preview.setAuthor(
+                    preview.author ? preview.author.name : 'No Author Name',
 
-                        url.content,
-                        preview.author ? preview.author.icon_url : undefined
-                    );
-                    this.handleMainMenu(message, preview, menu, previewMessage);
-                } catch {
-                    this.handleFailure(menu, previewMessage);
-                }
-                break;
+                    url.content.toLowerCase() == 'clear'
+                        ? undefined
+                        : url.content,
+                    preview.author ? preview.author.icon_url : undefined
+                );
+                this.handleMainMenu(message, preview, menu, previewMessage);
+            } catch {
+                this.handleFailure(menu, previewMessage);
             }
         }
     }
@@ -615,7 +574,7 @@ export default class Embed extends Command {
                     message.channel.id,
                     message.author.id,
                     undefined,
-                    30 * 1000
+                    30
                 );
 
                 name.delete();
@@ -628,7 +587,7 @@ export default class Embed extends Command {
                     message.channel.id,
                     message.author.id,
                     undefined,
-                    30 * 1000
+                    30
                 );
 
                 value.delete();
@@ -643,7 +602,7 @@ export default class Embed extends Command {
                     message.author.id,
                     (message: Message) =>
                         ['yes', 'no'].includes(message.content),
-                    30 * 1000
+                    30
                 );
 
                 inline.delete();
@@ -671,7 +630,7 @@ export default class Embed extends Command {
                         preview.fields.length == 0 ||
                         preview.fields[parseInt(message.content) - 1] !=
                             undefined,
-                    30 * 1000
+                    30
                 );
                 deleteIndex.delete();
                 if (preview.fields.length != 0) {

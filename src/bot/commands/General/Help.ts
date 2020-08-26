@@ -1,8 +1,9 @@
-import { GuildChannel, Message } from 'eris';
+import { Constants, GuildChannel, Message } from 'eris';
 import { getCustomRepository } from 'typeorm';
 import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
 import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
+import { ROLE_PERMISSIONS } from '../../constants/PermissionConstants';
 import Command from '../../framework/handlers/CommandHandler/Command';
 import DatabaseModule from '../../framework/handlers/ModuleHandler/Module/DatabaseModule';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
@@ -170,7 +171,13 @@ export default class Help extends Command {
         if (command.settings.botPerms.length > 0) {
             embed.addField(
                 'Bot Permissions Required',
-                command.settings.botPerms.join(', '),
+                command.settings.botPerms
+                    .map(perm =>
+                        /**@ts-ignore */
+
+                        ROLE_PERMISSIONS.get(Constants.Permissions[perm])
+                    )
+                    .join(', '),
                 true
             );
         }

@@ -58,7 +58,7 @@ export default class EmbedBuilder implements Embed {
      * Sets the title of the Embed
      * @param title - the title
      */
-    setTitle(title: string): EmbedBuilder {
+    setTitle(title?: string): EmbedBuilder {
         this.title = title;
         return this;
     }
@@ -67,7 +67,7 @@ export default class EmbedBuilder implements Embed {
      * Sets the description of the Embed
      * @param description - the description
      */
-    setDescription(description: string): EmbedBuilder {
+    setDescription(description?: string): EmbedBuilder {
         this.description = description;
         return this;
     }
@@ -78,8 +78,12 @@ export default class EmbedBuilder implements Embed {
      * @param url - a url when the author's name is clicked
      * @param icon_url - the url of the icon for the author
      */
-    setAuthor(name: string, url?: string, icon_url?: string): EmbedBuilder {
-        this.author = { name, url, icon_url };
+    setAuthor(name?: string, url?: string, icon_url?: string): EmbedBuilder {
+        if (name == undefined) {
+            this.author = name;
+        } else {
+            this.author = { name, url, icon_url };
+        }
         return this;
     }
 
@@ -87,7 +91,7 @@ export default class EmbedBuilder implements Embed {
      * Sets the color of the Embed
      * @param color - the color
      */
-    setColor(color: number): EmbedBuilder {
+    setColor(color?: number): EmbedBuilder {
         this.color = color;
         return this;
     }
@@ -97,8 +101,12 @@ export default class EmbedBuilder implements Embed {
      * @param text - the footer text
      * @param icon_url - the url of the icon in the footer
      */
-    setFooter(text: string, icon_url?: string): EmbedBuilder {
-        this.footer = { text, icon_url };
+    setFooter(text?: string, icon_url?: string): EmbedBuilder {
+        if (text == undefined) {
+            this.footer = undefined;
+        } else {
+            this.footer = { text, icon_url };
+        }
         return this;
     }
 
@@ -106,7 +114,7 @@ export default class EmbedBuilder implements Embed {
      * Sets the image of the Embed
      * @param url - The url of the image
      */
-    setImage(url: string): EmbedBuilder {
+    setImage(url?: string): EmbedBuilder {
         this.image = { url };
         return this;
     }
@@ -115,7 +123,7 @@ export default class EmbedBuilder implements Embed {
      * Sets the thumbnail of the Embed
      * @param url - the url of the thumbnail
      */
-    setThumbnail(url: string): EmbedBuilder {
+    setThumbnail(url?: string): EmbedBuilder {
         this.thumbnail = { url };
         return this;
     }

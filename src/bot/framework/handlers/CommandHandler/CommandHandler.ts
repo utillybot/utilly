@@ -164,7 +164,7 @@ export default class CommandHandler {
             if (!message.content.startsWith(prefix)) return;
         } else {
             for (const prefixElement of prefixes) {
-                if (message.content.startsWith(prefixElement)) {
+                if (message.content.toLowerCase().startsWith(prefixElement)) {
                     prefix = prefixElement;
                     break;
                 }
@@ -178,7 +178,8 @@ export default class CommandHandler {
         if (!command) return;
 
         const commandObj: Command | undefined =
-            this._commands.get(command) || this._aliases.get(command);
+            this._commands.get(command.toLowerCase()) ||
+            this._aliases.get(command.toLowerCase());
 
         if (commandObj == undefined) return;
         if (!commandObj.parent)
