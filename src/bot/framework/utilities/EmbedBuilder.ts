@@ -22,7 +22,7 @@ export default class EmbedBuilder implements Embed {
     url?: string;
     timestamp?: string | Date;
     color?: number;
-    fields?: EmbedField[];
+    fields: EmbedField[];
 
     /**
      * Initialize a new EmbedBuilder
@@ -41,6 +41,16 @@ export default class EmbedBuilder implements Embed {
     addField(name: string, value: string, inline = false): EmbedBuilder {
         if (this.fields == undefined) this.fields = [];
         this.fields.push({ name, value, inline });
+        return this;
+    }
+
+    /**
+     * Add multiple fields to an embed
+     * @param fields - the fields to add
+     */
+    addFields(fields: EmbedField[]): EmbedBuilder {
+        if (this.fields == undefined) this.fields = [];
+        this.fields.concat(fields);
         return this;
     }
 

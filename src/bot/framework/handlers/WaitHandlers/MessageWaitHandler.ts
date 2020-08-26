@@ -1,17 +1,17 @@
 import { Message } from 'eris';
 import UtillyClient from '../../../UtillyClient';
 
-export type MessageWaitFilter = (message: Message) => Promise<boolean>;
+export type MessageWaitFilter = (message: Message) => boolean;
 
-export type MessageWaitFailure = () => void;
-
-export type MessageWaitSuccess = (message: Message) => Promise<void>;
+export type MessageWaitErrors = 'time' | 'filter';
 
 export interface MessageWaitOptions {
     channelID: string;
-    success: MessageWaitSuccess;
-    filter?: MessageWaitFilter;
-    failure?: MessageWaitFailure;
+    filter: MessageWaitFilter;
+    errors: MessageWaitErrors[];
+    deleteOtherMessages: boolean;
+    resolve: (message: Message) => void;
+    reject: () => void;
 }
 
 export class MessageWaitHandler {
@@ -30,19 +30,30 @@ export class MessageWaitHandler {
     addListener(
         channelID: string,
         authorID: string,
-        success: MessageWaitSuccess,
         filter?: MessageWaitFilter,
         timeout?: number,
-        failure?: MessageWaitFailure
-    ): void {
-        this._handlers.set(authorID, { channelID, success, filter, failure });
-
+        errors?: MessageWaitErrors[],
+        deleteOtherMessages = true
+    ): Promise<Message> {
         if (timeout) {
             setTimeout(() => {
-                if (failure && this._handlers.has(authorID)) failure();
-                this._handlers.delete(authorID);
+                if (this._handlers.has(authorID)) {
+                    this._handlers.get(authorID)?.reject();
+                    this._handlers.delete(authorID);
+                }
             }, timeout * 1000);
         }
+
+        return new Promise((resolve, reject) => {
+            this._handlers.set(authorID, {
+                channelID,
+                filter: filter ?? (() => true),
+                errors: errors || ['time'],
+                deleteOtherMessages,
+                resolve,
+                reject,
+            });
+        });
     }
 
     private async _messageCreate(message: Message): Promise<void> {
@@ -50,15 +61,18 @@ export class MessageWaitHandler {
         const options = this._handlers.get(message.author.id);
         if (options == undefined) return;
         if (message.channel.id != options.channelID) return;
-        if (options.filter != undefined) {
-            if (!(await options.filter(message)) && options.failure) {
-                options.failure();
+        if (!options.filter(message)) {
+            if (options.errors.includes('filter')) {
+                options.reject();
                 this._handlers.delete(message.author.id);
+                return;
+            } else if (options.deleteOtherMessages) {
+                message.delete();
                 return;
             }
         }
 
         this._handlers.delete(message.author.id);
-        options.success(message);
+        options.resolve(message);
     }
 }

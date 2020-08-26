@@ -3,12 +3,9 @@ import UtillyClient from '../../../UtillyClient';
 export interface ReactionWaitOptions {
     allowedEmotes: string[];
     userID: string;
-    success: ReactionWaitSuccess;
+    resolve: (emote: Emoji) => void;
+    reject: () => void;
 }
-
-export type ReactionWaitFailure = () => void;
-
-export type ReactionWaitSuccess = (emote: Emoji) => Promise<void>;
 
 export class ReactionWaitHandler {
     private _bot: UtillyClient;
@@ -27,20 +24,24 @@ export class ReactionWaitHandler {
         messageID: string,
         userID: string,
         allowedEmotes: string[],
-        success: ReactionWaitSuccess,
-        failure: ReactionWaitFailure,
         timeout?: number
-    ): void {
-        this._handlers.set(messageID, { userID, allowedEmotes, success });
-
+    ): Promise<Emoji> {
         if (timeout) {
             setTimeout(() => {
-                if (this._handlers.has(messageID)) {
-                    failure();
-                    this._handlers.delete(messageID);
-                }
+                const message = this._handlers.get(messageID);
+                if (!message) return;
+                message.reject();
+                this._handlers.delete(messageID);
             }, timeout * 1000);
         }
+        return new Promise((resolve, reject) => {
+            this._handlers.set(messageID, {
+                userID,
+                allowedEmotes,
+                reject,
+                resolve,
+            });
+        });
     }
 
     private _messageReactionAdd(
@@ -65,6 +66,6 @@ export class ReactionWaitHandler {
             return;
         }
         this._handlers.delete(message.id);
-        options.success(emoji);
+        options.resolve(emoji);
     }
 }

@@ -1,7 +1,15 @@
-import { Message } from 'eris';
+import { GuildChannel, Message } from 'eris';
+import { getCustomRepository } from 'typeorm';
 import Logger from '../../../../core/Logger';
+import GuildRepository from '../../../../database/repository/GuildRepository';
+import EmbedBuilder from '../../utilities/EmbedBuilder';
+import Command from './Command';
 
-export type Subcommand = (message: Message, args: string[]) => void;
+export interface Subcommand {
+    description: string;
+    usage: string;
+    execute: (message: Message, args: string[]) => void;
+}
 
 export type Precheck = (message: Message, args: string[]) => Promise<boolean>;
 
@@ -48,7 +56,7 @@ export class SubcommandHandler {
         for (const preCheck of this._preChecks) {
             if (!(await preCheck(message, newArgs))) return true;
         }
-        subCommand(message, newArgs);
+        subCommand.execute(message, newArgs);
         return true;
     }
 
@@ -69,5 +77,40 @@ export class SubcommandHandler {
     registerSubcommand(label: string, command: Subcommand): void {
         this._subCommandMap.set(label, command);
         this._logger.handler(`      Loading subcommand ${label}`);
+    }
+
+    async generateHelp(
+        parentCommand: Command,
+        message: Message
+    ): Promise<EmbedBuilder> {
+        let guildRow;
+        if (message.channel instanceof GuildChannel) {
+            guildRow = await getCustomRepository(
+                GuildRepository
+            ).selectOrCreate(message.channel.guild.id, ['prefix']);
+        }
+        const embed = new EmbedBuilder();
+        embed.setTitle(`Help for \`${parentCommand.help.name}\`'s subcommands`);
+        embed.setDescription(parentCommand.help.description);
+        for (const [name, subCommand] of this._subCommandMap) {
+            embed.addField(
+                `\`${
+                    guildRow
+                        ? guildRow.prefix
+                            ? guildRow.prefix[0]
+                            : 'u!'
+                        : 'u!'
+                }${parentCommand.help.name} ${name}${
+                    subCommand.usage ? ' ' + subCommand.usage : ''
+                }\``,
+                subCommand.description
+            );
+        }
+        embed.setTimestamp();
+        embed.setFooter(
+            `Requested by ${message.author.username}#${message.author.discriminator}`,
+            message.author.avatarURL
+        );
+        return embed;
     }
 }

@@ -28,7 +28,7 @@
     },
     "scripts": {
         "start": "npm run tsc:compile && npm run run ",
-        "heavystart": "npm run eslint:check && npm run prettier:check && npm run tsc:compile && npm run run ",
+        "heavystart": "npm run eslint:fix && npm run prettier:write && npm run tsc:compile && npm run run ",
         "run": "node dist/index.js",
         "debug": "npm run compile && npm run run",
         "lint": "npm run eslint:fix && npm run prettier:write",

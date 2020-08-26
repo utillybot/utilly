@@ -28,10 +28,26 @@ export default class Module extends Command {
 
         this.subCommandHandler = new SubcommandHandler(bot.logger);
 
-        this.subCommandHandler.registerSubcommand('enable', this.enable);
-        this.subCommandHandler.registerSubcommand('disable', this.disable);
-        this.subCommandHandler.registerSubcommand('toggle', this.toggle);
-        this.subCommandHandler.registerSubcommand('info', this.info);
+        this.subCommandHandler.registerSubcommand('enable', {
+            description: 'Enable a module.',
+            usage: '(module name)',
+            execute: this.enable,
+        });
+        this.subCommandHandler.registerSubcommand('disable', {
+            description: 'Disable a module.',
+            usage: '(module name)',
+            execute: this.disable,
+        });
+        this.subCommandHandler.registerSubcommand('toggle', {
+            description: 'Toggle a module.',
+            usage: '(module name)',
+            execute: this.toggle,
+        });
+        this.subCommandHandler.registerSubcommand('info', {
+            description: 'View info about a module.',
+            usage: '(module name)',
+            execute: this.info,
+        });
 
         this.subCommandHandler.registerPrecheck(this.precheck);
     }
@@ -42,9 +58,12 @@ export default class Module extends Command {
     ): Promise<void> {
         if (!(await this.subCommandHandler.handle(message, args))) {
             if (args.length == 0) {
-                const embed = new EmbedBuilder();
-                embed.setTitle('Enable, disable, or view info about a module');
-                return;
+                message.channel.createMessage({
+                    embed: await this.subCommandHandler.generateHelp(
+                        this,
+                        message
+                    ),
+                });
             } else if (args.length == 1) {
                 if (!(await this.precheck(message, args))) return;
                 this.toggle(message, args);
