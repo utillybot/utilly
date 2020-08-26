@@ -9,7 +9,7 @@
         "dotenv": "^8.2.0",
         "eris": "github:abalabahaha/eris#dev",
         "erlpack": "^0.1.3",
-        "pg": "^8.3.0",
+        "pg": "^8.3.2",
         "redis": "^3.0.2",
         "reflect-metadata": "^0.1.13",
         "typeorm": "^0.2.25",
