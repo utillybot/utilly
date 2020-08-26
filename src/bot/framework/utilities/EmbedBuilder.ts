@@ -144,7 +144,7 @@ export default class EmbedBuilder implements Embed {
      * Sets the url of the Embed
      * @param url - the url
      */
-    setURL(url: string): EmbedBuilder {
+    setURL(url?: string): EmbedBuilder {
         this.url = url;
         return this;
     }

@@ -62,6 +62,7 @@ export default class Embed extends Command {
 
         const options = [
             'title',
+            'url',
             'description',
             'color',
             'footer',
@@ -130,6 +131,7 @@ export default class Embed extends Command {
 
         const options = [
             'title',
+            'url',
             'description',
             'color',
             'footer',
@@ -185,6 +187,7 @@ export default class Embed extends Command {
         try {
             if (
                 option == 'title' ||
+                option == 'url' ||
                 option == 'description' ||
                 option == 'color' ||
                 option == 'image' ||
@@ -208,6 +211,12 @@ export default class Embed extends Command {
                 );
                 if (option == 'title') {
                     preview.setTitle(
+                        result.content.toLowerCase() == 'clear'
+                            ? undefined
+                            : result.content
+                    );
+                } else if (option == 'url') {
+                    preview.setURL(
                         result.content.toLowerCase() == 'clear'
                             ? undefined
                             : result.content

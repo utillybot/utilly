@@ -43,14 +43,16 @@
     "author": "jtsshieh",
     "husky": {
         "hooks": {
-            "pre-commit": "lint-staged"
+            "pre-commit": "npx lint-staged"
         }
     },
     "engines": {
         "node": "14.7.0"
     },
     "lint-staged": {
-        "*.ts": "npm run eslint:fix",
-        "*.{ts,css,md}": "npm run prettier:write"
+        "*": [
+            "npm run eslint:fix",
+            "npm run prettier:write"
+        ]
     }
 }
