@@ -52,9 +52,9 @@ export default class Embed extends Command {
                 embed: await this.subCommandHandler.generateHelp(this, message),
             });
         } else {
-            if (!this.subCommandHandler.handle(message, args)) {
+            if (!(await this.subCommandHandler.handle(message, args))) {
                 message.channel.createMessage(
-                    'You used the command incorrectly.'
+                    'You used the command incorrectly. View the help page to learn how to use this command'
                 );
             }
         }
