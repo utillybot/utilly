@@ -67,6 +67,7 @@ export default class Embed extends Command {
                 Object.assign(preview, JSON.parse(args.join(' ')));
         } catch {
             message.channel.createMessage('Could not parse pased in JSON.');
+            return;
         }
         const options = [
             'title',
