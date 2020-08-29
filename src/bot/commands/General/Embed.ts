@@ -52,14 +52,22 @@ export default class Embed extends Command {
                 embed: await this.subCommandHandler.generateHelp(this, message),
             });
         } else {
-            this.subCommandHandler.handle(message, args);
+            if (!this.subCommandHandler.handle(message, args)) {
+                message.channel.createMessage(
+                    'You used the command incorrectly.'
+                );
+            }
         }
     }
 
     async create(message: Message, args: string[]): Promise<void> {
         const preview = new EmbedBuilder();
-        if (args.length > 0) Object.assign(preview, JSON.parse(args.join(' ')));
-
+        try {
+            if (args.length > 0)
+                Object.assign(preview, JSON.parse(args.join(' ')));
+        } catch {
+            message.channel.createMessage('Could not parse pased in JSON.');
+        }
         const options = [
             'title',
             'url',
