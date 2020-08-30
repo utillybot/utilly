@@ -1,12 +1,12 @@
 import {
-    Command,
+    BaseCommand,
     CommandContext,
 } from '../../framework/handlers/CommandHandler/Command';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import GeneralCommandModule from './moduleinfo';
 
-export default class Eval extends Command {
+export default class Eval extends BaseCommand {
     parent!: GeneralCommandModule;
 
     constructor(bot: UtillyClient, parent: GeneralCommandModule) {

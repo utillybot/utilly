@@ -1,5 +1,5 @@
 import {
-    Command,
+    BaseCommand,
     CommandContext,
 } from '../../framework/handlers/CommandHandler/Command';
 import { secondsToString } from '../../framework/utilities/DurationParser';
@@ -7,7 +7,7 @@ import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import InfoCommandModule from './moduleinfo';
 
-export default class ServerInfo extends Command {
+export default class ServerInfo extends BaseCommand {
     parent?: InfoCommandModule;
 
     constructor(bot: UtillyClient, parent: InfoCommandModule) {

@@ -40,7 +40,7 @@ export interface CommandPermissions {
 
     userIDs?: string[];
 
-    checkPermission: (message: Message) => Promise<boolean>;
+    checkPermission: (message: Message) => Promise<boolean> | boolean;
 }
 
 export class CommandContext {
@@ -72,7 +72,7 @@ export class CommandContext {
 /**
  * A Command
  */
-export abstract class Command {
+export abstract class BaseCommand {
     /**
      * A CommandHelp object of help info for this command
      */
@@ -108,7 +108,7 @@ export abstract class Command {
         this.permissions = {
             botPerms: [],
             userPerms: [],
-            checkPermission: async () => true,
+            checkPermission: () => true,
         };
         this.parent = parent;
     }

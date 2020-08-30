@@ -3,7 +3,7 @@ import { getCustomRepository } from 'typeorm';
 import Logger from '../../../../core/Logger';
 import GuildRepository from '../../../../database/repository/GuildRepository';
 import EmbedBuilder from '../../utilities/EmbedBuilder';
-import { Command, CommandContext } from './Command';
+import { BaseCommand, CommandContext } from './Command';
 
 export interface Subcommand {
     description: string;
@@ -84,7 +84,7 @@ export class SubcommandHandler {
     }
 
     async generateHelp(
-        parentCommand: Command,
+        parentCommand: BaseCommand,
         message: Message
     ): Promise<EmbedBuilder> {
         let guildRow;

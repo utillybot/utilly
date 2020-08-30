@@ -3,7 +3,7 @@ import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
 import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
 import {
-    Command,
+    BaseCommand,
     CommandContext,
 } from '../../framework/handlers/CommandHandler/Command';
 import { SubcommandHandler } from '../../framework/handlers/CommandHandler/SubcommandHandler';
@@ -11,7 +11,7 @@ import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import SettingsCommandModule from './moduleinfo';
 
-export default class Module extends Command {
+export default class Module extends BaseCommand {
     subCommandHandler: SubcommandHandler;
 
     constructor(bot: UtillyClient, parent: SettingsCommandModule) {

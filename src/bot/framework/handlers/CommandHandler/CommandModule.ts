@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import UtillyClient from '../../../UtillyClient';
 import Module from '../ModuleHandler/Module/Module';
-import { Command, CommandPermissions } from './Command';
+import { BaseCommand, CommandPermissions } from './Command';
 
 /**
  * Info about this command module
@@ -22,8 +22,8 @@ export interface CommandModuleInfo {
  */
 export default abstract class CommandModule {
     info: CommandModuleInfo;
-    commands: Map<string, Command>;
-    aliases: Map<string, Command>;
+    commands: Map<string, BaseCommand>;
+    aliases: Map<string, BaseCommand>;
     parent?: Module;
     permissions: CommandPermissions;
     private _bot: UtillyClient;
@@ -50,7 +50,7 @@ export default abstract class CommandModule {
      * @param label - the name of the command
      * @param command - the command object
      */
-    registerCommand(label: string, command: Command): void {
+    registerCommand(label: string, command: BaseCommand): void {
         this.commands.set(label, command);
 
         if (command.help.aliases != null) {
@@ -63,7 +63,7 @@ export default abstract class CommandModule {
     /**
      * Returns a list of Commands that have been registered to this module
      */
-    getCommands(): Command[] {
+    getCommands(): BaseCommand[] {
         return Array.from(this.commands.values());
     }
 }

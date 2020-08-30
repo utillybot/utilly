@@ -8,20 +8,20 @@ import { ROLE_PERMISSIONS } from '../../../constants/PermissionConstants';
 import UtillyClient from '../../../UtillyClient';
 import DatabaseModule from '../ModuleHandler/Module/DatabaseModule';
 import Module from '../ModuleHandler/Module/Module';
-import { Command, CommandContext } from './Command';
+import { BaseCommand, CommandContext } from './Command';
 import CommandModule from './CommandModule';
 
 /**
  * Handles all incomming commands
  */
 export default class CommandHandler {
-    private _aliases: Map<string, Command>;
+    private _aliases: Map<string, BaseCommand>;
 
     private _bot: UtillyClient;
 
     private _commandModules: Map<string, CommandModule>;
 
-    private _commands: Map<string, Command>;
+    private _commands: Map<string, BaseCommand>;
 
     private _logger: Logger;
 
@@ -41,7 +41,7 @@ export default class CommandHandler {
     /**
      * A map of the registred aliases to their command
      */
-    get aliases(): Map<string, Command> {
+    get aliases(): Map<string, BaseCommand> {
         return this._aliases;
     }
 
@@ -55,7 +55,7 @@ export default class CommandHandler {
     /**
      * A map of the registered command names to their command
      */
-    get commands(): Map<string, Command> {
+    get commands(): Map<string, BaseCommand> {
         return this._commands;
     }
 
@@ -107,7 +107,7 @@ export default class CommandHandler {
                 if (command == 'moduleinfo.js') continue;
 
                 this._logger.handler(`    Loading Command "${command}".`);
-                const commandObj: Command = new (
+                const commandObj: BaseCommand = new (
                     await import(path.join(directory, module, command))
                 ).default(this._bot, moduleObj);
 
@@ -176,7 +176,7 @@ export default class CommandHandler {
         const command = args.shift();
         if (!command) return;
 
-        const commandObj: Command | undefined =
+        const commandObj: BaseCommand | undefined =
             this._commands.get(command.toLowerCase()) ||
             this._aliases.get(command.toLowerCase());
 

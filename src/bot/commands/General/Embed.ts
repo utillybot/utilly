@@ -1,6 +1,6 @@
 import { GuildChannel, Message, TextChannel } from 'eris';
 import {
-    Command,
+    BaseCommand,
     CommandContext,
 } from '../../framework/handlers/CommandHandler/Command';
 import { SubcommandHandler } from '../../framework/handlers/CommandHandler/SubcommandHandler';
@@ -9,7 +9,7 @@ import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import GeneralCommandModule from './moduleinfo';
 
-export default class Embed extends Command {
+export default class Embed extends BaseCommand {
     parent!: GeneralCommandModule;
     subCommandHandler: SubcommandHandler;
 

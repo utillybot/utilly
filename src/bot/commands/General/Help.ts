@@ -5,7 +5,7 @@ import GuildRepository from '../../../database/repository/GuildRepository';
 import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
 import { ROLE_PERMISSIONS } from '../../constants/PermissionConstants';
 import {
-    Command,
+    BaseCommand,
     CommandContext,
 } from '../../framework/handlers/CommandHandler/Command';
 import DatabaseModule from '../../framework/handlers/ModuleHandler/Module/DatabaseModule';
@@ -13,7 +13,7 @@ import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import GeneralCommandModule from './moduleinfo';
 
-export default class Help extends Command {
+export default class Help extends BaseCommand {
     parent!: GeneralCommandModule;
 
     constructor(bot: UtillyClient, parent: GeneralCommandModule) {
@@ -184,7 +184,7 @@ export default class Help extends Command {
         if (command.permissions.userPerms.length > 0) {
             embed.addField(
                 'User Permissions Required',
-                command.permissions.botPerms
+                command.permissions.userPerms
                     .map(perm =>
                         /**@ts-ignore */
 

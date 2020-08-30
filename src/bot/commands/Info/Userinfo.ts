@@ -1,13 +1,13 @@
 import { Member, User } from 'eris';
 import {
-    Command,
+    BaseCommand,
     CommandContext,
 } from '../../framework/handlers/CommandHandler/Command';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import InfoCommandModule from './moduleinfo';
 
-export default class Userinfo extends Command {
+export default class Userinfo extends BaseCommand {
     parent?: InfoCommandModule;
 
     constructor(bot: UtillyClient, parent: InfoCommandModule) {

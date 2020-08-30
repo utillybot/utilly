@@ -5,14 +5,14 @@ import GuildRepository from '../../../database/repository/GuildRepository';
 import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
 import { EVENT_CONSTANTS } from '../../constants/EventConstants';
 import {
-    Command,
+    BaseCommand,
     CommandContext,
 } from '../../framework/handlers/CommandHandler/Command';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import LoggingCommandModule from './moduleinfo';
 
-export default class Logsettings extends Command {
+export default class Logsettings extends BaseCommand {
     parent?: LoggingCommandModule;
 
     constructor(bot: UtillyClient, parent: LoggingCommandModule) {
