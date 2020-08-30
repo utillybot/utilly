@@ -148,29 +148,27 @@ export default class CommandHandler {
             return;
 
         //#region prefix
-        let prefix: string | undefined;
-        let prefixes: string[] = [];
+        let prefix: string | undefined = undefined;
+        let prefixes: string[] = [
+            `<@${this._bot.user.id}>`,
+            `<@!${this._bot.user.id}>`,
+        ];
 
         if (message.channel instanceof GuildChannel) {
             const guildRow = await getCustomRepository(
                 GuildRepository
             ).selectOrCreate(message.channel.guild.id, ['prefix']);
-            prefixes = guildRow.prefix;
+            prefixes = prefixes.concat(guildRow.prefix);
         } else {
-            prefix = 'u!';
+            prefixes.push('u!');
         }
-
-        if (prefix != undefined) {
-            if (!message.content.startsWith(prefix)) return;
-        } else {
-            for (const prefixElement of prefixes) {
-                if (message.content.toLowerCase().startsWith(prefixElement)) {
-                    prefix = prefixElement;
-                    break;
-                }
+        for (const prefixElement of prefixes) {
+            if (message.content.toLowerCase().startsWith(prefixElement)) {
+                prefix = prefixElement;
+                break;
             }
-            if (!prefix) return;
         }
+        if (!prefix) return;
         //#endregion
 
         //#region command discovery
