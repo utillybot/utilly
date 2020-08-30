@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Message } from 'eris';
+import { Guild, GuildChannel, Member, Message, MessageContent } from 'eris';
 import UtillyClient from '../../../UtillyClient';
 import CommandModule from './CommandModule';
 
@@ -36,11 +36,36 @@ export interface CommandSettings {
      */
     botPerms: string[];
 }
+export class CommandContext {
+    message: Message;
+
+    args: string[];
+
+    guild?: Guild;
+
+    member?: Member;
+
+    constructor(message: Message, args: string[]) {
+        this.message = message;
+        this.args = args;
+
+        this.guild =
+            message.channel instanceof GuildChannel
+                ? message.channel.guild
+                : undefined;
+
+        this.member = message.member ?? undefined;
+    }
+
+    reply(content: MessageContent): Promise<Message> {
+        return this.message.channel.createMessage(content);
+    }
+}
 
 /**
  * A Command
  */
-export default abstract class Command {
+export abstract class Command {
     /**
      * A CommandHelp object of help info for this command
      */
@@ -86,5 +111,5 @@ export default abstract class Command {
      * @param message - the message
      * @param args - the arguments
      */
-    abstract async execute(message: Message, args: string[]): Promise<void>;
+    abstract async execute(ctx: CommandContext): Promise<void>;
 }

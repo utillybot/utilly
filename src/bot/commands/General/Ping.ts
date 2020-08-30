@@ -1,5 +1,7 @@
-import { GuildChannel, Message } from 'eris';
-import Command from '../../framework/handlers/CommandHandler/Command';
+import {
+    Command,
+    CommandContext,
+} from '../../framework/handlers/CommandHandler/Command';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import GeneralCommandModule from './moduleinfo';
@@ -16,34 +18,30 @@ export default class Ping extends Command {
         this.settings.botPerms = ['embedLinks'];
     }
 
-    async execute(message: Message): Promise<void> {
-        if (message.channel instanceof GuildChannel) {
+    async execute(ctx: CommandContext): Promise<void> {
+        if (ctx.guild) {
             const ZWS = '​';
-            const m = await message.channel.createMessage(ZWS);
+            const m = await ctx.reply(ZWS);
             const embed = new EmbedBuilder();
             embed.setTitle('Bot Ping');
             embed.addField(
                 'Shard Latency (Server)',
-                `${message.channel.guild.shard.latency.toString()}ms`,
+                `${ctx.guild.shard.latency.toString()}ms`,
                 true
             );
             embed.addField(
                 'Bot Latency (Client)',
-                `${m.timestamp - message.timestamp}ms`,
+                `${m.timestamp - ctx.message.timestamp}ms`,
                 true
             );
-            if (message.member != undefined) {
+            if (ctx.message.member != undefined) {
                 embed.addField(
                     'Shard Id',
-                    message.member.guild.shard.id.toString(),
+                    ctx.message.member.guild.shard.id.toString(),
                     true
                 );
             }
-            embed.setTimestamp();
-            embed.setFooter(
-                `Requested by ${message.author.username}#${message.author.discriminator}`,
-                message.author.avatarURL
-            );
+            embed.addDefaults(ctx.message.author);
 
             m.edit({ content: '', embed });
         }

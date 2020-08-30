@@ -1,5 +1,8 @@
 import { Message } from 'eris';
-import Command from '../../framework/handlers/CommandHandler/Command';
+import {
+    Command,
+    CommandContext,
+} from '../../framework/handlers/CommandHandler/Command';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import GeneralCommandModule from './moduleinfo';
@@ -20,8 +23,8 @@ export default class Eval extends Command {
         return message.author.id == '236279900728721409';
     }
 
-    async execute(message: Message, args: string[]): Promise<void> {
-        const code = args.join(' ');
+    async execute(ctx: CommandContext): Promise<void> {
+        const code = ctx.args.join(' ');
 
         let evaled;
         let remove;
@@ -62,7 +65,7 @@ export default class Eval extends Command {
                 .setFooter('Eval', this.bot.user.avatarURL)
                 .setTimestamp();
             //Send the embed
-            message.channel.createMessage({
+            ctx.reply({
                 embed,
             });
             return;
@@ -89,7 +92,7 @@ export default class Eval extends Command {
                 .setTimestamp();
 
             //Send the embed
-            message.channel.createMessage({
+            ctx.reply({
                 embed,
             });
         } catch (err) {
@@ -112,7 +115,7 @@ export default class Eval extends Command {
                 .setTimestamp();
 
             //And send it
-            message.channel.createMessage({
+            ctx.reply({
                 embed,
             });
         }

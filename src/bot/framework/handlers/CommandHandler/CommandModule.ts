@@ -2,7 +2,7 @@
 import { Message } from 'eris';
 import UtillyClient from '../../../UtillyClient';
 import Module from '../ModuleHandler/Module/Module';
-import Command from './Command';
+import { Command } from './Command';
 
 /**
  * Info about this command module

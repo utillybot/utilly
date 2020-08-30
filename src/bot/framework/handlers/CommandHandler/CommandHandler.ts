@@ -8,7 +8,7 @@ import { ROLE_PERMISSIONS } from '../../../constants/PermissionConstants';
 import UtillyClient from '../../../UtillyClient';
 import DatabaseModule from '../ModuleHandler/Module/DatabaseModule';
 import Module from '../ModuleHandler/Module/Module';
-import Command from './Command';
+import { Command, CommandContext } from './Command';
 import CommandModule from './CommandModule';
 
 /**
@@ -239,7 +239,7 @@ export default class CommandHandler {
         }
 
         try {
-            await commandObj.execute(message, args);
+            await commandObj.execute(new CommandContext(message, args));
         } catch (e) {
             console.error('Bot command error', e.stack);
         }

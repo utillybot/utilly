@@ -7,6 +7,7 @@ import {
     EmbedImage,
     EmbedProvider,
     EmbedVideo,
+    User,
 } from 'eris';
 
 export default class EmbedBuilder implements Embed {
@@ -146,6 +147,19 @@ export default class EmbedBuilder implements Embed {
      */
     setURL(url?: string): EmbedBuilder {
         this.url = url;
+        return this;
+    }
+
+    /**
+     * Sets the timestamp and the requested by footer
+     * @param user the user
+     */
+    addDefaults(user: User): EmbedBuilder {
+        this.setTimestamp();
+        this.setFooter(
+            `Requested by ${user.username}#${user.discriminator}`,
+            user.avatarURL
+        );
         return this;
     }
 }

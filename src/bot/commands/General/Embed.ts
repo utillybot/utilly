@@ -1,5 +1,8 @@
-import { GuildChannel, GuildTextableChannel, Message, TextChannel } from 'eris';
-import Command from '../../framework/handlers/CommandHandler/Command';
+import { GuildChannel, Message, TextChannel } from 'eris';
+import {
+    Command,
+    CommandContext,
+} from '../../framework/handlers/CommandHandler/Command';
 import { SubcommandHandler } from '../../framework/handlers/CommandHandler/SubcommandHandler';
 import { MessageWaitFilter } from '../../framework/handlers/WaitHandlers/MessageWaitHandler';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
@@ -44,30 +47,30 @@ export default class Embed extends Command {
         });
     }
 
-    async execute(
-        message: Message<GuildTextableChannel>,
-        args: string[]
-    ): Promise<void> {
-        if (args.length == 0) {
-            message.channel.createMessage({
-                embed: await this.subCommandHandler.generateHelp(this, message),
+    async execute(ctx: CommandContext): Promise<void> {
+        if (ctx.args.length == 0) {
+            ctx.reply({
+                embed: await this.subCommandHandler.generateHelp(
+                    this,
+                    ctx.message
+                ),
             });
         } else {
-            if (!(await this.subCommandHandler.handle(message, args))) {
-                message.channel.createMessage(
+            if (!(await this.subCommandHandler.handle(ctx))) {
+                ctx.reply(
                     'You used the command incorrectly. View the help page to learn how to use this command'
                 );
             }
         }
     }
 
-    async create(message: Message, args: string[]): Promise<void> {
+    async create(ctx: CommandContext): Promise<void> {
         const preview = new EmbedBuilder();
         try {
-            if (args.length > 0)
-                Object.assign(preview, JSON.parse(args.join(' ')));
+            if (ctx.args.length > 0)
+                Object.assign(preview, JSON.parse(ctx.args.join(' ')));
         } catch {
-            message.channel.createMessage('Could not parse your JSON.');
+            ctx.reply('Could not parse your JSON.');
             return;
         }
         const options = [
@@ -88,29 +91,25 @@ export default class Embed extends Command {
         embed.setDescription(
             'Please choose an option to modify: ' + options.join(', ')
         );
-        embed.setTimestamp();
-        embed.setFooter(
-            `Requested by ${message.author.username}#${message.author.discriminator}`,
-            message.author.avatarURL
-        );
+        embed.addDefaults(ctx.message.author);
 
-        const previewMessage = await message.channel.createMessage({
+        const previewMessage = await ctx.reply({
             content: '> **`PREVIEW`**',
             embed: preview,
         });
 
-        const menu = await message.channel.createMessage({ embed });
+        const menu = await ctx.reply({ embed });
 
         try {
             const result = await this.bot.messageWaitHandler.addListener(
-                message.channel.id,
-                message.author.id,
+                ctx.message.channel.id,
+                ctx.message.author.id,
                 message => options.includes(message.content.toLowerCase()),
                 30
             );
             await this.handleOption(
                 result,
-                message,
+                ctx.message,
                 preview,
                 menu,
                 previewMessage
@@ -157,11 +156,7 @@ export default class Embed extends Command {
         embed.setDescription(
             'Please choose an option to modify: ' + options.join(', ')
         );
-        embed.setTimestamp();
-        embed.setFooter(
-            `Requested by ${message.author.username}#${message.author.discriminator}`,
-            message.author.avatarURL
-        );
+        embed.addDefaults(message.author);
 
         menu.edit({ embed });
 
@@ -710,91 +705,75 @@ export default class Embed extends Command {
         menu.edit({ embed });
     }
 
-    async edit(message: Message, args: string[]): Promise<void> {
-        if (!(message.channel instanceof GuildChannel)) return;
+    async edit(ctx: CommandContext): Promise<void> {
+        if (!ctx.guild) return;
 
         let foundMessage: Message | undefined;
-        for (const channel of message.channel.guild.channels.values()) {
+        for (const channel of ctx.guild.channels.values()) {
             if (!(channel instanceof TextChannel)) continue;
             try {
-                foundMessage = await channel.getMessage(args[0]);
+                foundMessage = await channel.getMessage(ctx.args[0]);
             } catch (ex) {
                 continue;
             }
 
             if (foundMessage.author.id != this.bot.user.id) {
                 const embed = new EmbedBuilder();
-                embed.setTimestamp();
-                embed.setFooter(
-                    `Requested by ${message.author.username}#${message.author.discriminator}`,
-                    message.author.avatarURL
-                );
+                embed.addDefaults(ctx.message.author);
                 embed.setTitle(
                     `Error: The specified message is not written by the bot`
                 );
                 embed.setColor(0xff0000);
-                message.channel.createMessage({ embed });
+                ctx.reply({ embed });
                 return;
             }
         }
 
         if (!foundMessage) {
             const embed = new EmbedBuilder();
-            embed.setTimestamp();
-            embed.setFooter(
-                `Requested by ${message.author.username}#${message.author.discriminator}`,
-                message.author.avatarURL
-            );
+            embed.addDefaults(ctx.message.author);
             embed.setTitle(
                 `Error: The specified message was not found in this server.`
             );
             embed.setColor(0xff0000);
-            message.channel.createMessage({ embed });
+            ctx.reply({ embed });
             return;
         } else if (foundMessage.embeds.length == 0) {
             const embed = new EmbedBuilder();
-            embed.setTimestamp();
-            embed.setFooter(
-                `Requested by ${message.author.username}#${message.author.discriminator}`,
-                message.author.avatarURL
-            );
+            embed.addDefaults(ctx.message.author);
             embed.setTitle(
                 `Error: The specified message did not have an embed.`
             );
             embed.setColor(0xff0000);
-            message.channel.createMessage({ embed });
+            ctx.reply({ embed });
             return;
         }
-        args.shift();
+        ctx.args.shift();
         let embedObj;
         try {
-            embedObj = JSON.parse(args.join(' '));
+            embedObj = JSON.parse(ctx.args.join(' '));
         } catch (ex) {
             const embed = new EmbedBuilder();
-            embed.setTimestamp();
-            embed.setFooter(
-                `Requested by ${message.author.username}#${message.author.discriminator}`,
-                message.author.avatarURL
-            );
+            embed.addDefaults(ctx.message.author);
             embed.setTitle(`Error: There was an error parsing your input.`);
             embed.setColor(0xff0000);
-            message.channel.createMessage({ embed });
+            ctx.reply({ embed });
             return;
         }
 
         foundMessage.edit({ embed: embedObj });
 
-        message.channel.createMessage('Done!');
+        ctx.reply('Done!');
     }
 
-    async view(message: Message, args: string[]): Promise<void> {
-        if (!(message.channel instanceof GuildChannel)) return;
+    async view(ctx: CommandContext): Promise<void> {
+        if (!ctx.guild) return;
 
         let foundMessage: Message | undefined;
-        for (const channel of message.channel.guild.channels.values()) {
+        for (const channel of ctx.guild.channels.values()) {
             if (!(channel instanceof TextChannel)) continue;
             try {
-                foundMessage = await channel.getMessage(args[0]);
+                foundMessage = await channel.getMessage(ctx.args[0]);
             } catch (ex) {
                 continue;
             }
@@ -802,43 +781,31 @@ export default class Embed extends Command {
 
         if (!foundMessage) {
             const embed = new EmbedBuilder();
-            embed.setTimestamp();
-            embed.setFooter(
-                `Requested by ${message.author.username}#${message.author.discriminator}`,
-                message.author.avatarURL
-            );
+            embed.addDefaults(ctx.message.author);
             embed.setTitle(
                 `Error: The specified message was not found in this server.`
             );
             embed.setColor(0xff0000);
-            message.channel.createMessage({ embed });
+            ctx.reply({ embed });
             return;
         } else if (foundMessage.embeds.length == 0) {
             const embed = new EmbedBuilder();
-            embed.setTimestamp();
-            embed.setFooter(
-                `Requested by ${message.author.username}#${message.author.discriminator}`,
-                message.author.avatarURL
-            );
+            embed.addDefaults(ctx.message.author);
             embed.setTitle(
                 `Error: The specified message did not have an embed.`
             );
             embed.setColor(0xff0000);
-            message.channel.createMessage({ embed });
+            ctx.reply({ embed });
             return;
         }
 
         const embed = new EmbedBuilder();
-        embed.setTimestamp();
-        embed.setFooter(
-            `Requested by ${message.author.username}#${message.author.discriminator}`,
-            message.author.avatarURL
-        );
+        embed.addDefaults(ctx.message.author);
         embed.setTitle(`Here is the embed:`);
         const description = JSON.stringify(foundMessage.embeds[0]);
         embed.setDescription(`\`\`\`
                 ${description}\`\`\``);
         embed.setColor(0x00ff00);
-        message.channel.createMessage({ embed });
+        ctx.reply({ embed });
     }
 }

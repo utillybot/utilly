@@ -3,15 +3,15 @@ import { getCustomRepository } from 'typeorm';
 import Logger from '../../../../core/Logger';
 import GuildRepository from '../../../../database/repository/GuildRepository';
 import EmbedBuilder from '../../utilities/EmbedBuilder';
-import Command from './Command';
+import { Command, CommandContext } from './Command';
 
 export interface Subcommand {
     description: string;
     usage: string;
-    execute: (message: Message, args: string[]) => void;
+    execute: (ctx: CommandContext) => void;
 }
 
-export type Precheck = (message: Message, args: string[]) => Promise<boolean>;
+export type Precheck = (ctx: CommandContext) => Promise<boolean>;
 
 /**
  * Handles Subcommands on request from a Command
@@ -47,16 +47,20 @@ export class SubcommandHandler {
      * @param args - the arguments
      * @returns a boolean telling whether a subcommand was found
      */
-    async handle(message: Message, args: string[]): Promise<boolean> {
-        const command = args[0];
+    async handle(ctx: CommandContext): Promise<boolean> {
+        const command = ctx.args[0];
         const subCommand = this._subCommandMap.get(command);
         if (subCommand == undefined) return false;
-        const newArgs = [...args];
+
+        const newArgs = [...ctx.args];
         newArgs.shift();
+
+        const newCtx = new CommandContext(ctx.message, newArgs);
         for (const preCheck of this._preChecks) {
-            if (!(await preCheck(message, newArgs))) return true;
+            if (!(await preCheck(newCtx))) return true;
         }
-        subCommand.execute(message, newArgs);
+
+        subCommand.execute(newCtx);
         return true;
     }
 
@@ -106,11 +110,8 @@ export class SubcommandHandler {
                 subCommand.description
             );
         }
-        embed.setTimestamp();
-        embed.setFooter(
-            `Requested by ${message.author.username}#${message.author.discriminator}`,
-            message.author.avatarURL
-        );
+        embed.addDefaults(message.author);
+
         return embed;
     }
 }

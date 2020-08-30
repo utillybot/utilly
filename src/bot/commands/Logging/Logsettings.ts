@@ -1,17 +1,13 @@
-import {
-    Emoji,
-    GuildChannel,
-    GuildTextableChannel,
-    Message,
-    TextChannel,
-    User,
-} from 'eris';
+import { Emoji, GuildChannel, Message, TextChannel, User } from 'eris';
 import { getCustomRepository, getRepository } from 'typeorm';
 import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
 import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
 import { EVENT_CONSTANTS } from '../../constants/EventConstants';
-import Command from '../../framework/handlers/CommandHandler/Command';
+import {
+    Command,
+    CommandContext,
+} from '../../framework/handlers/CommandHandler/Command';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import LoggingCommandModule from './moduleinfo';
@@ -51,7 +47,7 @@ export default class Logsettings extends Command {
         return false;
     }
 
-    async execute(message: Message<GuildTextableChannel>): Promise<void> {
+    async execute(ctx: CommandContext): Promise<void> {
         const embed = new EmbedBuilder();
         embed.setTitle('Logging Settings');
         embed.setDescription(
@@ -70,7 +66,7 @@ export default class Logsettings extends Command {
             'View the currently set log channel and status of each event'
         );
         embed.addField(`${EMOTE_CONSTANTS.cancel} Cancel`, 'Close this menu');
-        const menu = await message.channel.createMessage({ embed });
+        const menu = await ctx.reply({ embed });
         menu.addReaction(`channel:${EMOTE_CONSTANTS.channelID}`);
         menu.addReaction(`event:${EMOTE_CONSTANTS.eventID}`);
         menu.addReaction(`info:${EMOTE_CONSTANTS.infoID}`);
@@ -79,7 +75,7 @@ export default class Logsettings extends Command {
         try {
             const result = await this.bot.reactionWaitHandler.addListener(
                 menu.id,
-                message.author.id,
+                ctx.message.author.id,
                 [
                     EMOTE_CONSTANTS.channelID,
                     EMOTE_CONSTANTS.eventID,
@@ -88,7 +84,7 @@ export default class Logsettings extends Command {
                 ],
                 60
             );
-            this.handleSuccess(result, message, menu);
+            this.handleSuccess(result, ctx.message, menu);
         } catch {
             this.handleFailure(menu);
         }
@@ -177,11 +173,7 @@ export default class Logsettings extends Command {
         }
 
         // Prepare the footer of the embed
-        embed.setTimestamp();
-        embed.setFooter(
-            `Requested by ${message.author.username}#${message.author.discriminator}`,
-            message.author.avatarURL
-        );
+        embed.addDefaults(message.author);
 
         menu.edit({ embed });
         menu.removeReactions();
@@ -213,11 +205,7 @@ export default class Logsettings extends Command {
         }
 
         // Prepare the footer of the embed
-        embed.setTimestamp();
-        embed.setFooter(
-            `Requested by ${author.username}#${author.discriminator}`,
-            author.avatarURL
-        );
+        embed.addDefaults(author);
 
         //Edit the message and clear user response
         menu.edit({ embed });
@@ -289,11 +277,7 @@ export default class Logsettings extends Command {
                 .map(item => `\`${item}\``)
                 .join(', ')} to go to.`
         );
-        embed.setTimestamp();
-        embed.setFooter(
-            `Requested by ${author.username}#${author.discriminator}`,
-            author.avatarURL
-        );
+        embed.addDefaults(author);
 
         // Edit the message and clear user response
         menu.edit({ embed });
@@ -382,11 +366,7 @@ export default class Logsettings extends Command {
                 .map(item => `\`${item}\``)
                 .join(', ')} have been set to ${channel.mention}`
         );
-        embed.setTimestamp();
-        embed.setFooter(
-            `Requested by ${author.username}#${author.discriminator}`,
-            author.avatarURL
-        );
+        embed.addDefaults(author);
 
         // Edit the message and clear user response
         menu.edit({ embed });
@@ -442,11 +422,7 @@ export default class Logsettings extends Command {
         }
 
         // Prepare the footer of the embed
-        embed.setTimestamp();
-        embed.setFooter(
-            `Requested by ${author.username}#${author.discriminator}`,
-            author.avatarURL
-        );
+        embed.addDefaults(author);
 
         //Edit the message and clear user response
         menu.edit({ embed });
@@ -521,11 +497,7 @@ export default class Logsettings extends Command {
                 .join(', ')}`
         );
 
-        embed.setTimestamp();
-        embed.setFooter(
-            `Requested by ${author.username}#${author.discriminator}`,
-            author.avatarURL
-        );
+        embed.addDefaults(author);
 
         // Edit the message and clear user response
         menu.edit({ embed });

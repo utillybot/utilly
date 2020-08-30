@@ -1,5 +1,7 @@
-import { GuildChannel, Message } from 'eris';
-import Command from '../../framework/handlers/CommandHandler/Command';
+import {
+    Command,
+    CommandContext,
+} from '../../framework/handlers/CommandHandler/Command';
 import { secondsToString } from '../../framework/utilities/DurationParser';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
@@ -18,9 +20,9 @@ export default class ServerInfo extends Command {
         this.settings.botPerms = ['embedLinks'];
     }
 
-    async execute(message: Message): Promise<void> {
-        if (!(message.channel instanceof GuildChannel)) return;
-        const server = message.channel.guild;
+    async execute(ctx: CommandContext): Promise<void> {
+        if (!ctx.guild) return;
+        const server = ctx.guild;
         const embed = new EmbedBuilder();
         embed.setTitle('Server Info');
         embed.addField('Name', server.name, true);
@@ -76,6 +78,6 @@ export default class ServerInfo extends Command {
         if (server.bannerURL) embed.setImage(server.bannerURL);
         if (server.iconURL) embed.setThumbnail(server.iconURL);
 
-        message.channel.createMessage({ embed });
+        ctx.reply({ embed });
     }
 }

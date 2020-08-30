@@ -1,5 +1,8 @@
-import { GuildChannel, Member, Message, User } from 'eris';
-import Command from '../../framework/handlers/CommandHandler/Command';
+import { Member, User } from 'eris';
+import {
+    Command,
+    CommandContext,
+} from '../../framework/handlers/CommandHandler/Command';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import InfoCommandModule from './moduleinfo';
@@ -17,19 +20,19 @@ export default class Userinfo extends Command {
         this.settings.botPerms = ['embedLinks'];
     }
 
-    async execute(message: Message): Promise<void> {
-        let member: Member | null = null;
+    async execute(ctx: CommandContext): Promise<void> {
+        let member: Member | undefined;
         let user: User | null = null;
 
-        if (message.channel instanceof GuildChannel) {
-            member = message.member;
+        if (ctx.guild) {
+            member = ctx.member;
         } else {
-            user = message.author;
+            user = ctx.message.author;
         }
 
         const embed = new EmbedBuilder();
         embed.setTitle('User Info');
-        if (user != null) {
+        if (user) {
             embed.addField('Username', user.username, true);
             embed.addField('Discriminator', user.discriminator, true);
             embed.addField('Bot', user.bot ? 'Yes' : 'No', true);
@@ -40,7 +43,7 @@ export default class Userinfo extends Command {
                 new Date(user.createdAt).toUTCString()
             );
             embed.setThumbnail(user.dynamicAvatarURL('png', 1024));
-        } else if (member != null) {
+        } else if (member) {
             embed.addField('Username', member.username, true);
             if (member.nick) embed.addField('Nickname', member.nick, true);
             embed.addField('Discriminator', member.discriminator, true);
@@ -58,6 +61,6 @@ export default class Userinfo extends Command {
             embed.setThumbnail(member.user.dynamicAvatarURL('png', 1024));
         }
 
-        message.channel.createMessage({ embed });
+        ctx.reply({ embed });
     }
 }

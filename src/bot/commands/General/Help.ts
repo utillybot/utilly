@@ -1,10 +1,13 @@
-import { Constants, GuildChannel, Message } from 'eris';
+import { Constants, Message } from 'eris';
 import { getCustomRepository } from 'typeorm';
 import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
 import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
 import { ROLE_PERMISSIONS } from '../../constants/PermissionConstants';
-import Command from '../../framework/handlers/CommandHandler/Command';
+import {
+    Command,
+    CommandContext,
+} from '../../framework/handlers/CommandHandler/Command';
 import DatabaseModule from '../../framework/handlers/ModuleHandler/Module/DatabaseModule';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
@@ -24,29 +27,29 @@ export default class Help extends Command {
         this.settings.botPerms = ['embedLinks'];
     }
 
-    async execute(message: Message, args: string[]): Promise<void> {
-        if (message.channel instanceof GuildChannel) {
+    async execute(ctx: CommandContext): Promise<void> {
+        if (ctx.guild) {
             const guildRow = await getCustomRepository(
                 GuildRepository
-            ).selectOrCreate(message.channel.guild.id, MODULES);
-            if (args.length == 0) {
-                this.handleBaseCommand(message, guildRow);
+            ).selectOrCreate(ctx.guild.id, MODULES);
+            if (ctx.args.length == 0) {
+                this.handleBaseCommand(ctx.message, guildRow);
             } else {
-                const item = args[0].toLowerCase();
+                const item = ctx.args[0].toLowerCase();
 
                 if (
                     Array.from(
                         this.bot.commandHandler.commandModules.keys()
                     ).find(module => module.toLowerCase() == item) != undefined
                 ) {
-                    this.handleModule(message, item, guildRow);
+                    this.handleModule(ctx.message, item, guildRow);
                 } else if (
                     this.bot.commandHandler.commands.has(item) ||
                     this.bot.commandHandler.aliases.has(item)
                 ) {
-                    this.handleCommand(message, item, guildRow);
+                    this.handleCommand(ctx.message, item, guildRow);
                 } else {
-                    message.channel.createMessage(
+                    ctx.reply(
                         'Unable to find the specified module/command. Please visit the main help page to learn the modules and commands.'
                     );
                 }
@@ -95,11 +98,7 @@ export default class Help extends Command {
                 guildRow.prefix ? guildRow.prefix[0] : 'u!'
             }module enable module\` where the second module is the name of the module you want to enable.`
         );
-        embed.setTimestamp();
-        embed.setFooter(
-            `Requested by ${message.author.username}#${message.author.discriminator}`,
-            message.author.avatarURL
-        );
+        embed.addDefaults(message.author);
         message.channel.createMessage({ embed });
     }
 
@@ -124,11 +123,7 @@ export default class Help extends Command {
                 command.help.description
             );
         }
-        embed.setTimestamp();
-        embed.setFooter(
-            `Requested by ${message.author.username}#${message.author.discriminator}`,
-            message.author.avatarURL
-        );
+        embed.addDefaults(message.author);
         message.channel.createMessage({ embed });
     }
 
@@ -192,11 +187,7 @@ export default class Help extends Command {
             }`,
             true
         );
-        embed.setTimestamp();
-        embed.setFooter(
-            `Requested by ${message.author.username}#${message.author.discriminator}`,
-            message.author.avatarURL
-        );
+        embed.addDefaults(message.author);
         message.channel.createMessage({ embed });
     }
 }
