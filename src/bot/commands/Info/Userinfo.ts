@@ -17,7 +17,7 @@ export default class Userinfo extends Command {
         this.help.usage = '';
         this.help.aliases = ['uinfo'];
         this.settings.guildOnly = false;
-        this.settings.botPerms = ['embedLinks'];
+        this.permissions.botPerms = ['embedLinks'];
     }
 
     async execute(ctx: CommandContext): Promise<void> {

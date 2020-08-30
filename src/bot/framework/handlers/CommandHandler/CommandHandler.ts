@@ -173,6 +173,7 @@ export default class CommandHandler {
         }
         //#endregion
 
+        //#region command discovery
         const args = message.content.slice(prefix.length).trim().split(/ +/g);
         const command = args.shift();
         if (!command) return;
@@ -186,11 +187,32 @@ export default class CommandHandler {
             throw new Error(
                 `Command object ${commandObj.help.name} doesn't have a parent.`
             );
+        //#endregion
+
+        //#region permission checking
 
         if (
-            !(await commandObj.parent.checkPermission(message)) ||
-            !(await commandObj.checkPermission(message))
+            !(await commandObj.parent.permissions.checkPermission(message)) ||
+            !(await commandObj.permissions.checkPermission(message))
         ) {
+            message.channel.createMessage(
+                "Uh oh, it looks like you don't have permission to run this command"
+            );
+            return;
+        }
+
+        const allowedIDs: string[] = [];
+        let match = false;
+        if (commandObj.parent.permissions.userIDs)
+            allowedIDs.concat(commandObj.parent.permissions.userIDs);
+        if (commandObj.permissions.userIDs)
+            allowedIDs.concat(commandObj.permissions.userIDs);
+
+        for (const user of allowedIDs) {
+            if (message.author.id == user) match = true;
+        }
+
+        if (!match && allowedIDs.length != 0) {
             message.channel.createMessage(
                 "Uh oh, it looks like you don't have permission to run this command"
             );
@@ -206,14 +228,14 @@ export default class CommandHandler {
                 )
                     return;
             }
-            const missingPerms = [];
-            for (const permission of commandObj.settings.botPerms) {
+            const missingBotPerms = [];
+            for (const permission of commandObj.permissions.botPerms) {
                 if (
                     !message.channel
                         .permissionsOf(this._bot.user.id)
                         .has(permission)
                 ) {
-                    missingPerms.push(
+                    missingBotPerms.push(
                         ROLE_PERMISSIONS.get(
                             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                             // @ts-ignore
@@ -223,9 +245,35 @@ export default class CommandHandler {
                 }
             }
 
-            if (missingPerms.length > 0) {
+            if (missingBotPerms.length > 0) {
                 await message.channel.createMessage(
-                    `The bot is missing the permissions: ${missingPerms.join(
+                    `The bot is missing the permissions: ${missingBotPerms.join(
+                        ', '
+                    )}`
+                );
+                return;
+            }
+
+            const missingUserPerms = [];
+            for (const permission of commandObj.permissions.userPerms) {
+                if (
+                    !message.channel
+                        .permissionsOf(message.author.id)
+                        .has(permission)
+                ) {
+                    missingUserPerms.push(
+                        ROLE_PERMISSIONS.get(
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            Eris.Constants.Permissions[permission]
+                        )
+                    );
+                }
+            }
+
+            if (missingUserPerms.length > 0) {
+                await message.channel.createMessage(
+                    `You are missing the permissions: ${missingBotPerms.join(
                         ', '
                     )}`
                 );
@@ -237,6 +285,7 @@ export default class CommandHandler {
             );
             return;
         }
+        //#endregion
 
         try {
             await commandObj.execute(new CommandContext(message, args));

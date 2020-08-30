@@ -15,7 +15,7 @@ export default class Privacy extends Command {
         this.help.description = "Shows the bot's privacy policy";
         this.help.usage = '';
         this.settings.guildOnly = true;
-        this.settings.botPerms = ['embedLinks'];
+        this.permissions.botPerms = ['embedLinks'];
     }
 
     async execute(ctx: CommandContext): Promise<void> {

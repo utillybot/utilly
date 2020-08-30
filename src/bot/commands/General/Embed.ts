@@ -21,7 +21,7 @@ export default class Embed extends Command {
         this.help.usage = '(create/edit/view) (message id)';
 
         this.settings.guildOnly = true;
-        this.settings.botPerms = [
+        this.permissions.botPerms = [
             'embedLinks',
             'manageMessages',
             'readMessageHistory',

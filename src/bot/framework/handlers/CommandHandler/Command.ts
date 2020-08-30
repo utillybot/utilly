@@ -31,11 +31,18 @@ export interface CommandSettings {
      * Whether or not this command can only be executed in a guild
      */
     guildOnly: boolean;
-    /**
-     * The permissions the bot needs
-     */
-    botPerms: string[];
 }
+
+export interface CommandPermissions {
+    botPerms: string[];
+
+    userPerms: string[];
+
+    userIDs?: string[];
+
+    checkPermission: (message: Message) => Promise<boolean>;
+}
+
 export class CommandContext {
     message: Message;
 
@@ -76,10 +83,13 @@ export abstract class Command {
      */
     settings: CommandSettings;
 
+    permissions: CommandPermissions;
+
     /**
      * The parent module of this command
      */
     parent?: CommandModule;
+
     protected bot: UtillyClient;
 
     constructor(bot: UtillyClient, parent: CommandModule) {
@@ -93,19 +103,15 @@ export abstract class Command {
 
         this.settings = {
             guildOnly: false,
+        };
+
+        this.permissions = {
             botPerms: [],
+            userPerms: [],
+            checkPermission: async () => true,
         };
         this.parent = parent;
     }
-
-    /**
-     * Checks if a user has permission to run a command
-     * @param message - the message
-     */
-    async checkPermission(message: Message): Promise<boolean> {
-        return true;
-    }
-
     /**
      * Executes the command
      * @param message - the message

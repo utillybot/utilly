@@ -17,7 +17,7 @@ export default class ServerInfo extends Command {
         this.help.usage = '';
         this.help.aliases = ['sinfo'];
         this.settings.guildOnly = true;
-        this.settings.botPerms = ['embedLinks'];
+        this.permissions.botPerms = ['embedLinks'];
     }
 
     async execute(ctx: CommandContext): Promise<void> {

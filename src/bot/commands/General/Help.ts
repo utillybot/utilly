@@ -24,7 +24,7 @@ export default class Help extends Command {
         this.help.usage = '(command/module)';
         this.help.aliases = ['h'];
         this.settings.guildOnly = true;
-        this.settings.botPerms = ['embedLinks'];
+        this.permissions.botPerms = ['embedLinks'];
     }
 
     async execute(ctx: CommandContext): Promise<void> {
@@ -167,10 +167,24 @@ export default class Help extends Command {
             );
         }
 
-        if (command.settings.botPerms.length > 0) {
+        if (command.permissions.botPerms.length > 0) {
             embed.addField(
                 'Bot Permissions Required',
-                command.settings.botPerms
+                command.permissions.botPerms
+                    .map(perm =>
+                        /**@ts-ignore */
+
+                        ROLE_PERMISSIONS.get(Constants.Permissions[perm])
+                    )
+                    .join(', '),
+                true
+            );
+        }
+
+        if (command.permissions.userPerms.length > 0) {
+            embed.addField(
+                'User Permissions Required',
+                command.permissions.botPerms
                     .map(perm =>
                         /**@ts-ignore */
 

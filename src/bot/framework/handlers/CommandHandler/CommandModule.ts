@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Message } from 'eris';
 import UtillyClient from '../../../UtillyClient';
 import Module from '../ModuleHandler/Module/Module';
-import { Command } from './Command';
+import { Command, CommandPermissions } from './Command';
 
 /**
  * Info about this command module
@@ -26,6 +25,7 @@ export default abstract class CommandModule {
     commands: Map<string, Command>;
     aliases: Map<string, Command>;
     parent?: Module;
+    permissions: CommandPermissions;
     private _bot: UtillyClient;
 
     constructor(bot: UtillyClient) {
@@ -34,6 +34,13 @@ export default abstract class CommandModule {
             name: '',
             description: 'No description provided',
         };
+
+        this.permissions = {
+            botPerms: [],
+            userPerms: [],
+            checkPermission: async () => true,
+        };
+
         this.commands = new Map();
         this.aliases = new Map();
     }
@@ -58,13 +65,5 @@ export default abstract class CommandModule {
      */
     getCommands(): Command[] {
         return Array.from(this.commands.values());
-    }
-    /**
-     * Checks if a user is authorized to run commands in this module
-     * @param bot - the client
-     * @param message - the message
-     */
-    async checkPermission(message: Message): Promise<boolean> {
-        return true;
     }
 }

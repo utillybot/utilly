@@ -21,8 +21,8 @@ export default class Module extends Command {
         this.help.usage = '(enable, disable, toggle, info) (module name)';
 
         this.settings.guildOnly = true;
-        this.settings.botPerms = ['embedLinks'];
-
+        this.permissions.botPerms = ['embedLinks'];
+        this.permissions.userPerms = ['manageGuild'];
         this.subCommandHandler = new SubcommandHandler(bot.logger);
 
         this.subCommandHandler.registerSubcommand('enable', {

@@ -1,4 +1,3 @@
-import { Message } from 'eris';
 import {
     Command,
     CommandContext,
@@ -17,10 +16,8 @@ export default class Eval extends Command {
             'View all the modules, or commands in a specific module';
         this.help.usage = '(command/module)';
         this.settings.guildOnly = true;
-    }
 
-    async checkPermission(message: Message): Promise<boolean> {
-        return message.author.id == '236279900728721409';
+        this.permissions.userIDs = ['236279900728721409'];
     }
 
     async execute(ctx: CommandContext): Promise<void> {

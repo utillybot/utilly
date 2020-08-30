@@ -24,27 +24,14 @@ export default class Logsettings extends Command {
             'Server Owner, Administrator, or Manage Server permission';
 
         this.settings.guildOnly = true;
-        this.settings.botPerms = [
+        this.permissions.botPerms = [
             'embedLinks',
             'externalEmojis',
             'addReactions',
             'manageMessages',
             'readMessageHistory',
         ];
-    }
-
-    async checkPermission(message: Message): Promise<boolean> {
-        if (message.channel instanceof GuildChannel) {
-            if (message.author.id == message.channel.guild.ownerID) return true;
-            if (
-                message.member &&
-                message.member.permission.has('administrator')
-            )
-                return true;
-            if (message.member && message.member.permission.has('manageGuild'))
-                return true;
-        }
-        return false;
+        this.permissions.userPerms = ['manageGuild'];
     }
 
     async execute(ctx: CommandContext): Promise<void> {
