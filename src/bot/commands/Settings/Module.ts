@@ -1,13 +1,13 @@
 import { getCustomRepository, getRepository } from 'typeorm';
 import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
-import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
 import {
     BaseCommand,
     CommandContext,
-} from '../../framework/handlers/CommandHandler/Command';
-import { SubcommandHandler } from '../../framework/handlers/CommandHandler/SubcommandHandler';
-import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
+} from '../../../framework/handlers/CommandHandler/Command';
+import { SubcommandHandler } from '../../../framework/handlers/CommandHandler/SubcommandHandler';
+import EmbedBuilder from '../../../framework/utilities/EmbedBuilder';
+import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
 import UtillyClient from '../../UtillyClient';
 import SettingsCommandModule from './moduleinfo';
 

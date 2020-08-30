@@ -2,10 +2,10 @@ import { GuildChannel, Message, TextChannel } from 'eris';
 import {
     BaseCommand,
     CommandContext,
-} from '../../framework/handlers/CommandHandler/Command';
-import { SubcommandHandler } from '../../framework/handlers/CommandHandler/SubcommandHandler';
-import { MessageWaitFilter } from '../../framework/handlers/WaitHandlers/MessageWaitHandler';
-import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
+} from '../../../framework/handlers/CommandHandler/Command';
+import { SubcommandHandler } from '../../../framework/handlers/CommandHandler/SubcommandHandler';
+import { MessageWaitFilter } from '../../../framework/handlers/WaitHandlers/MessageWaitHandler';
+import EmbedBuilder from '../../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import GeneralCommandModule from './moduleinfo';
 

@@ -2,13 +2,13 @@ import { Emoji, GuildChannel, Message, TextChannel, User } from 'eris';
 import { getCustomRepository, getRepository } from 'typeorm';
 import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
-import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
-import { EVENT_CONSTANTS } from '../../constants/EventConstants';
 import {
     BaseCommand,
     CommandContext,
-} from '../../framework/handlers/CommandHandler/Command';
-import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
+} from '../../../framework/handlers/CommandHandler/Command';
+import EmbedBuilder from '../../../framework/utilities/EmbedBuilder';
+import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
+import { EVENT_CONSTANTS } from '../../constants/EventConstants';
 import UtillyClient from '../../UtillyClient';
 import LoggingCommandModule from './moduleinfo';
 

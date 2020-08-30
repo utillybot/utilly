@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Guild, GuildChannel, Member, Message, MessageContent } from 'eris';
-import UtillyClient from '../../../UtillyClient';
+import UtillyClient from '../../../bot/UtillyClient';
 import CommandModule from './CommandModule';
 
 export interface CommandHelp {
@@ -112,10 +111,6 @@ export abstract class BaseCommand {
         };
         this.parent = parent;
     }
-    /**
-     * Executes the command
-     * @param message - the message
-     * @param args - the arguments
-     */
+
     abstract async execute(ctx: CommandContext): Promise<void>;
 }

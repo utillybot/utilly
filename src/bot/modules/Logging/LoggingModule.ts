@@ -2,8 +2,8 @@ import Eris, { Webhook } from 'eris';
 import { getCustomRepository } from 'typeorm';
 import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
-import DatabaseModule from '../../framework/handlers/ModuleHandler/Module/DatabaseModule';
-import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
+import DatabaseModule from '../../../framework/handlers/ModuleHandler/Module/DatabaseModule';
+import EmbedBuilder from '../../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 
 /**

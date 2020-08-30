@@ -1,6 +1,6 @@
 import { Message, TextChannel } from 'eris';
-import AttachableModule from '../../framework/handlers/ModuleHandler/Submodule/AttachableModule';
-import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
+import AttachableModule from '../../../framework/handlers/ModuleHandler/Submodule/AttachableModule';
+import EmbedBuilder from '../../../framework/utilities/EmbedBuilder';
 import LoggingModule from './LoggingModule';
 
 /**

@@ -1,7 +1,7 @@
 import { GuildChannel, Message } from 'eris';
 import { getCustomRepository } from 'typeorm';
-import Logger from '../../../../core/Logger';
-import GuildRepository from '../../../../database/repository/GuildRepository';
+import Logger from '../../../core/Logger';
+import GuildRepository from '../../../database/repository/GuildRepository';
 import EmbedBuilder from '../../utilities/EmbedBuilder';
 import { BaseCommand, CommandContext } from './Command';
 

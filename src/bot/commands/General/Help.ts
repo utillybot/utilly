@@ -2,14 +2,14 @@ import { Constants, Message } from 'eris';
 import { getCustomRepository } from 'typeorm';
 import Guild from '../../../database/entity/Guild';
 import GuildRepository from '../../../database/repository/GuildRepository';
-import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
-import { ROLE_PERMISSIONS } from '../../constants/PermissionConstants';
 import {
     BaseCommand,
     CommandContext,
-} from '../../framework/handlers/CommandHandler/Command';
-import DatabaseModule from '../../framework/handlers/ModuleHandler/Module/DatabaseModule';
-import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
+} from '../../../framework/handlers/CommandHandler/Command';
+import DatabaseModule from '../../../framework/handlers/ModuleHandler/Module/DatabaseModule';
+import EmbedBuilder from '../../../framework/utilities/EmbedBuilder';
+import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
+import { ROLE_PERMISSIONS } from '../../constants/PermissionConstants';
 import UtillyClient from '../../UtillyClient';
 import GeneralCommandModule from './moduleinfo';
 

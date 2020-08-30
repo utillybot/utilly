@@ -1,5 +1,5 @@
 import { Message } from 'eris';
-import UtillyClient from '../../../UtillyClient';
+import UtillyClient from '../../../bot/UtillyClient';
 
 export type MessageWaitFilter = (message: Message) => boolean;
 

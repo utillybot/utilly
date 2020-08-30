@@ -1,9 +1,9 @@
 import {
     BaseCommand,
     CommandContext,
-} from '../../framework/handlers/CommandHandler/Command';
-import { secondsToString } from '../../framework/utilities/DurationParser';
-import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
+} from '../../../framework/handlers/CommandHandler/Command';
+import { secondsToString } from '../../../framework/utilities/DurationParser';
+import EmbedBuilder from '../../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import InfoCommandModule from './moduleinfo';
 

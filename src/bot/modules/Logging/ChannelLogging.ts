@@ -6,10 +6,10 @@ import {
     TextChannel,
     VoiceChannel,
 } from 'eris';
+import AttachableModule from '../../../framework/handlers/ModuleHandler/Submodule/AttachableModule';
+import { secondsToString } from '../../../framework/utilities/DurationParser';
+import EmbedBuilder from '../../../framework/utilities/EmbedBuilder';
 import { CHANNEL_PERMISSIONS } from '../../constants/PermissionConstants';
-import AttachableModule from '../../framework/handlers/ModuleHandler/Submodule/AttachableModule';
-import { secondsToString } from '../../framework/utilities/DurationParser';
-import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import LoggingModule from './LoggingModule';
 
 /* eslint-disable no-prototype-builtins */

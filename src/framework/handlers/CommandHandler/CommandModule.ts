@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import UtillyClient from '../../../UtillyClient';
+import UtillyClient from '../../../bot/UtillyClient';
 import Module from '../ModuleHandler/Module/Module';
 import { BaseCommand, CommandPermissions } from './Command';
 

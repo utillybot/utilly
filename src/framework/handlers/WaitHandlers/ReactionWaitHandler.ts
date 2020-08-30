@@ -1,5 +1,5 @@
 import { Emoji, Member, Message } from 'eris';
-import UtillyClient from '../../../UtillyClient';
+import UtillyClient from '../../../bot/UtillyClient';
 export interface ReactionWaitOptions {
     allowedEmotes: string[];
     userID: string;

@@ -1,8 +1,8 @@
 import {
     BaseCommand,
     CommandContext,
-} from '../../framework/handlers/CommandHandler/Command';
-import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
+} from '../../../framework/handlers/CommandHandler/Command';
+import EmbedBuilder from '../../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import GeneralCommandModule from './moduleinfo';
 

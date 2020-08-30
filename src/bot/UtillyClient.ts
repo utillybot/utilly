@@ -4,10 +4,10 @@ import path from 'path';
 import 'reflect-metadata';
 import Logger from '../core/Logger';
 import Database from '../database/Database';
-import CommandHandler from './framework/handlers/CommandHandler/CommandHandler';
-import ModuleHandler from './framework/handlers/ModuleHandler/ModuleHandler';
-import { MessageWaitHandler } from './framework/handlers/WaitHandlers/MessageWaitHandler';
-import { ReactionWaitHandler } from './framework/handlers/WaitHandlers/ReactionWaitHandler';
+import CommandHandler from '../framework/handlers/CommandHandler/CommandHandler';
+import ModuleHandler from '../framework/handlers/ModuleHandler/ModuleHandler';
+import { MessageWaitHandler } from '../framework/handlers/WaitHandlers/MessageWaitHandler';
+import { ReactionWaitHandler } from '../framework/handlers/WaitHandlers/ReactionWaitHandler';
 
 export default class UtillyClient extends Client {
     commandHandler: CommandHandler;

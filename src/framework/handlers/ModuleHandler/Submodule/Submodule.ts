@@ -1,4 +1,4 @@
-import UtillyClient from '../../../../UtillyClient';
+import UtillyClient from '../../../../bot/UtillyClient';
 import Module from '../Module/Module';
 
 /**
