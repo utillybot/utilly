@@ -1,6 +1,7 @@
 import { GuildChannel, GuildTextableChannel, Message, TextChannel } from 'eris';
 import Command from '../../framework/handlers/CommandHandler/Command';
 import { SubcommandHandler } from '../../framework/handlers/CommandHandler/SubcommandHandler';
+import { MessageWaitFilter } from '../../framework/handlers/WaitHandlers/MessageWaitHandler';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
 import UtillyClient from '../../UtillyClient';
 import GeneralCommandModule from './moduleinfo';
@@ -38,7 +39,7 @@ export default class Embed extends Command {
         });
         this.subCommandHandler.registerSubcommand('view', {
             description: 'View the code behind and embed that was sent.',
-            usage: '(message id) (embed)',
+            usage: '(message id)',
             execute: this.view.bind(this),
         });
     }
@@ -202,6 +203,7 @@ export default class Embed extends Command {
                 option == 'image' ||
                 option == 'thumbnail'
             ) {
+                let filter: MessageWaitFilter | undefined;
                 const embed = new EmbedBuilder();
                 embed.setTitle(
                     `Type the ${
@@ -210,14 +212,27 @@ export default class Embed extends Command {
                             : ''
                     } ${option} you would like (or type \`clear\` to clear the field)`
                 );
+
+                if (option == 'title') {
+                    filter = (message: Message) => message.content.length < 256;
+                    embed.setDescription('The length limit is 256 characters.');
+                } else if (option == 'description') {
+                    filter = (message: Message) =>
+                        message.content.length < 2048;
+                    embed.setDescription(
+                        'The length limit is 2048 characters.'
+                    );
+                }
+
                 menu = await menu.edit({ embed });
 
                 const result = await this.bot.messageWaitHandler.addListener(
                     message.channel.id,
                     message.author.id,
-                    undefined,
+                    filter,
                     30
                 );
+                console.log(result.content.length);
                 if (option == 'title') {
                     preview.setTitle(
                         result.content.toLowerCase() == 'clear'
@@ -436,15 +451,17 @@ export default class Embed extends Command {
             embed.setTitle(
                 'Type the footer text (or type `clear` to clear the field)'
             );
+            embed.setDescription('The length limit is 2048 characters.');
             menu = await menu.edit({ embed });
             try {
                 const text = await this.bot.messageWaitHandler.addListener(
                     message.channel.id,
                     message.author.id,
-                    undefined,
+                    (message: Message) => message.content.length < 2048,
                     30
                 );
                 text.delete();
+
                 preview.setFooter(
                     text.content.toLowerCase() == 'clear'
                         ? undefined
@@ -497,12 +514,14 @@ export default class Embed extends Command {
             embed.setTitle(
                 'Type the author name (or type `clear` to clear the field)'
             );
+            embed.setDescription('The length limit is 256 characters.');
+
             menu = await menu.edit({ embed });
             try {
                 const name = await this.bot.messageWaitHandler.addListener(
                     message.channel.id,
                     message.author.id,
-                    undefined,
+                    (message: Message) => message.content.length < 256,
                     30
                 );
 
@@ -584,55 +603,73 @@ export default class Embed extends Command {
 
         const action = response.content.toLowerCase();
         if (action == 'add') {
-            const nameEmbed = new EmbedBuilder();
-            nameEmbed.setTitle('Type the name of the field: ');
-            menu = await menu.edit({ embed: nameEmbed });
-            try {
-                const name = await this.bot.messageWaitHandler.addListener(
-                    message.channel.id,
-                    message.author.id,
-                    undefined,
-                    30
+            if (preview.fields.length > 25) {
+                const fieldEmbed = new EmbedBuilder();
+                fieldEmbed.setTitle(
+                    'There were are more than 25 fields. Delete one to add another.'
                 );
+                menu = await menu.edit({ embed: fieldEmbed });
+                setTimeout(() => {
+                    this.handleMainMenu(message, preview, menu, previewMessage);
+                }, 30000);
+            } else {
+                try {
+                    const nameEmbed = new EmbedBuilder();
+                    nameEmbed.setTitle('Type the name of the field: ');
+                    nameEmbed.setDescription(
+                        'The length limit is 256 characters.'
+                    );
+                    menu = await menu.edit({ embed: nameEmbed });
 
-                name.delete();
+                    const name = await this.bot.messageWaitHandler.addListener(
+                        message.channel.id,
+                        message.author.id,
+                        (message: Message) => message.content.length < 256,
+                        30
+                    );
 
-                const valueEmbed = new EmbedBuilder();
-                valueEmbed.setTitle('Type the value of the field: ');
-                menu = await menu.edit({ embed: valueEmbed });
+                    name.delete();
 
-                const value = await this.bot.messageWaitHandler.addListener(
-                    message.channel.id,
-                    message.author.id,
-                    undefined,
-                    30
-                );
+                    const valueEmbed = new EmbedBuilder();
+                    valueEmbed.setTitle('Type the value of the field: ');
+                    nameEmbed.setDescription(
+                        'The length limit is 1024 characters.'
+                    );
+                    menu = await menu.edit({ embed: valueEmbed });
 
-                value.delete();
+                    const value = await this.bot.messageWaitHandler.addListener(
+                        message.channel.id,
+                        message.author.id,
+                        (message: Message) => message.content.length < 1024,
+                        30
+                    );
 
-                const inlineEmbed = new EmbedBuilder();
-                inlineEmbed.setTitle(
-                    'Finally, do you want this field to be inline or no (type `yes` or `no`. default is `no`)'
-                );
-                menu = await menu.edit({ embed: inlineEmbed });
-                const inline = await this.bot.messageWaitHandler.addListener(
-                    message.channel.id,
-                    message.author.id,
-                    (message: Message) =>
-                        ['yes', 'no'].includes(message.content),
-                    30
-                );
+                    value.delete();
 
-                inline.delete();
+                    const inlineEmbed = new EmbedBuilder();
+                    inlineEmbed.setTitle(
+                        'Finally, do you want this field to be inline or no (type `yes` or `no`. default is `no`)'
+                    );
+                    menu = await menu.edit({ embed: inlineEmbed });
+                    const inline = await this.bot.messageWaitHandler.addListener(
+                        message.channel.id,
+                        message.author.id,
+                        (message: Message) =>
+                            ['yes', 'no'].includes(message.content),
+                        30
+                    );
 
-                preview.addField(
-                    name.content,
-                    value.content,
-                    inline.content.toLowerCase() == 'yes' ? true : false
-                );
-                this.handleMainMenu(message, preview, menu, previewMessage);
-            } catch {
-                this.handleFailure(menu, previewMessage);
+                    inline.delete();
+
+                    preview.addField(
+                        name.content,
+                        value.content,
+                        inline.content.toLowerCase() == 'yes' ? true : false
+                    );
+                    this.handleMainMenu(message, preview, menu, previewMessage);
+                } catch {
+                    this.handleFailure(menu, previewMessage);
+                }
             }
         } else if (action == 'delete') {
             const nameEmbed = new EmbedBuilder();

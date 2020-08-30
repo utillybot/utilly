@@ -1,4 +1,4 @@
-import { Guild, GuildChannel, Message } from 'eris';
+import { GuildChannel, Message } from 'eris';
 import Command from '../../framework/handlers/CommandHandler/Command';
 import { secondsToString } from '../../framework/utilities/DurationParser';
 import EmbedBuilder from '../../framework/utilities/EmbedBuilder';
@@ -12,37 +12,15 @@ export default class ServerInfo extends Command {
         super(bot, parent);
         this.help.name = 'serverinfo';
         this.help.description = 'View information about a server';
-        this.help.usage = '(server id)';
+        this.help.usage = '';
         this.help.aliases = ['sinfo'];
-        this.settings.guildOnly = false;
+        this.settings.guildOnly = true;
         this.settings.botPerms = ['embedLinks'];
     }
 
-    async execute(message: Message, args: string[]): Promise<void> {
-        let server: Guild | undefined;
-
-        if (args.length == 0 && message.channel instanceof GuildChannel) {
-            server = message.channel.guild;
-        } else {
-            const entity = args[0];
-            server = this.bot.guilds.find(guild => guild.id == entity);
-            if (server == undefined) {
-                try {
-                    server = await this.bot.getRESTGuild(args[0]);
-                } catch {
-                    server = undefined;
-                }
-            }
-        }
-
-        if (server == undefined) {
-            const embed = new EmbedBuilder();
-            embed.setTitle('Not Found');
-            embed.setDescription(`\`${args.join(' ')}\` was not found`);
-            message.channel.createMessage({ embed });
-            return;
-        }
-
+    async execute(message: Message): Promise<void> {
+        if (!(message.channel instanceof GuildChannel)) return;
+        const server = message.channel.guild;
         const embed = new EmbedBuilder();
         embed.setTitle('Server Info');
         embed.addField('Name', server.name, true);

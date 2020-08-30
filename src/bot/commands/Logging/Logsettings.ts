@@ -24,7 +24,8 @@ export default class Logsettings extends Command {
         this.help.name = 'logsettings';
         this.help.description = 'Modify settings for the logging plugin';
         this.help.usage = '';
-        this.help.permission = 'Server Owner or Administrator permissions';
+        this.help.permission =
+            'Server Owner, Administrator, or Manage Server permission';
 
         this.settings.guildOnly = true;
         this.settings.botPerms = [
@@ -43,6 +44,8 @@ export default class Logsettings extends Command {
                 message.member &&
                 message.member.permission.has('administrator')
             )
+                return true;
+            if (message.member && message.member.permission.has('manageGuild'))
                 return true;
         }
         return false;
