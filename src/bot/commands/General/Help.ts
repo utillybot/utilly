@@ -45,6 +45,10 @@ export default class Help extends Command {
                     this.bot.commandHandler.aliases.has(item)
                 ) {
                     this.handleCommand(message, item, guildRow);
+                } else {
+                    message.channel.createMessage(
+                        'Unable to find the specified module/command. Please visit the main help page to learn the modules and commands.'
+                    );
                 }
             }
         }
