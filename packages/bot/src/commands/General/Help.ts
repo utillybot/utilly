@@ -8,7 +8,6 @@ import {
     UtillyClient,
 } from '@utilly/framework';
 import { Constants, Message } from 'eris';
-import { getCustomRepository } from 'typeorm';
 import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
 import GeneralCommandModule from './moduleinfo';
 
@@ -28,9 +27,9 @@ export default class Help extends BaseCommand {
 
     async execute(ctx: CommandContext): Promise<void> {
         if (ctx.guild) {
-            const guildRow = await getCustomRepository(
-                GuildRepository
-            ).selectOrCreate(ctx.guild.id, MODULES);
+            const guildRow = await this.bot.database.connection
+                .getCustomRepository(GuildRepository)
+                .selectOrCreate(ctx.guild.id, MODULES);
             if (ctx.args.length == 0) {
                 this.handleBaseCommand(ctx.message, guildRow);
             } else {

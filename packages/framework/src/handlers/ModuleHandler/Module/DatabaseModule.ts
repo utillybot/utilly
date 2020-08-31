@@ -1,5 +1,4 @@
 import { GuildRepository } from '@utilly/database';
-import { getCustomRepository } from 'typeorm';
 import { UtillyClient } from '../../../UtillyClient';
 import { Module } from './Module';
 
@@ -15,9 +14,9 @@ export abstract class DatabaseModule extends Module {
     }
 
     async isEnabled(guildID: string): Promise<boolean> {
-        const guildRow = await getCustomRepository(
-            GuildRepository
-        ).selectOrCreate(guildID, [this.databaseEntry]);
+        const guildRow = await this.bot.database.connection
+            .getCustomRepository(GuildRepository)
+            .selectOrCreate(guildID, [this.databaseEntry]);
         const enabled = guildRow[this.databaseEntry];
         if (enabled == null) {
             return false;

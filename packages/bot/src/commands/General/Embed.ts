@@ -27,7 +27,7 @@ export default class Embed extends BaseCommand {
             'readMessageHistory',
         ];
 
-        this.subCommandHandler = new SubcommandHandler(bot.logger);
+        this.subCommandHandler = new SubcommandHandler(bot.logger, bot);
 
         this.subCommandHandler.registerSubcommand('create', {
             description:

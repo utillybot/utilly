@@ -1,7 +1,6 @@
 import { Guild, GuildRepository } from '@utilly/database';
 import { DatabaseModule, EmbedBuilder, UtillyClient } from '@utilly/framework';
 import Eris, { Webhook } from 'eris';
-import { getCustomRepository } from 'typeorm';
 
 /**
  * Base Logging Module
@@ -18,13 +17,13 @@ export default class LoggingModule extends DatabaseModule {
      * @param type - the type of the event
      */
     async selectGuildRow(guildID: string, type: string): Promise<Guild> {
-        return await getCustomRepository(
-            GuildRepository
-        ).selectOrCreate(guildID, [
-            'logging',
-            `logging_${type}Channel`,
-            `logging_${type}Event`,
-        ]);
+        return await this.bot.database.connection
+            .getCustomRepository(GuildRepository)
+            .selectOrCreate(guildID, [
+                'logging',
+                `logging_${type}Channel`,
+                `logging_${type}Event`,
+            ]);
     }
 
     /**

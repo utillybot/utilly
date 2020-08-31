@@ -6,7 +6,6 @@ import {
     UtillyClient,
 } from '@utilly/framework';
 import { Emoji, GuildChannel, Message, TextChannel, User } from 'eris';
-import { getCustomRepository, getRepository } from 'typeorm';
 import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
 import { EVENT_CONSTANTS } from '../../constants/EventConstants';
 import LoggingCommandModule from './moduleinfo';
@@ -116,12 +115,12 @@ export default class Logsettings extends BaseCommand {
         for (const categoryValue of Object.values(EVENT_CONSTANTS)) {
             eventOptions = eventOptions.concat(Object.values(categoryValue));
         }
-        const guildRow = await getCustomRepository(
-            GuildRepository
-        ).selectOrCreate(menu.channel.guild.id, [
-            ...eventOptions.map(item => `logging_${item}Event`),
-            ...eventOptions.map(item => `logging_${item}Channel`),
-        ]);
+        const guildRow = await this.bot.database.connection
+            .getCustomRepository(GuildRepository)
+            .selectOrCreate(menu.channel.guild.id, [
+                ...eventOptions.map(item => `logging_${item}Event`),
+                ...eventOptions.map(item => `logging_${item}Channel`),
+            ]);
         const embed = new EmbedBuilder();
         embed.setTitle('Info');
         embed.setDescription(
@@ -342,7 +341,9 @@ export default class Logsettings extends BaseCommand {
             guildRow[`logging_${event}Channel`] = channel.id;
         }
         // Update the guild
-        getRepository(Guild).update(menu.channel.guild.id, guildRow);
+        this.bot.database.connection
+            .getRepository(Guild)
+            .update(menu.channel.guild.id, guildRow);
 
         // Prepare the embed for the success message
         const embed = new EmbedBuilder();
@@ -541,11 +542,15 @@ export default class Logsettings extends BaseCommand {
                 ];
         }
 
-        getRepository(Guild).update(menu.channel.guild.id, guildRow);
-        guildRow = await getCustomRepository(GuildRepository).selectOrCreate(
-            menu.channel.guild.id,
-            eventOptions.map(item => `logging_${item}Event`)
-        );
+        this.bot.database.connection
+            .getRepository(Guild)
+            .update(menu.channel.guild.id, guildRow);
+        guildRow = await this.bot.database.connection
+            .getCustomRepository(GuildRepository)
+            .selectOrCreate(
+                menu.channel.guild.id,
+                eventOptions.map(item => `logging_${item}Event`)
+            );
         const embed = new EmbedBuilder();
         embed.setTitle('Success!');
         embed.setDescription(

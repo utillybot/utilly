@@ -13,7 +13,6 @@
         "dotenv": "^8.2.0",
         "eris": "abalabahaha/eris#dev",
         "erlpack": "^0.1.3",
-        "typeorm": "^0.2.25",
         "zlib-sync": "^0.1.7"
     },
     "devDependencies": {

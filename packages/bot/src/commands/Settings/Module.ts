@@ -6,7 +6,6 @@ import {
     SubcommandHandler,
     UtillyClient,
 } from '@utilly/framework';
-import { getCustomRepository, getRepository } from 'typeorm';
 import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
 import SettingsCommandModule from './moduleinfo';
 
@@ -22,7 +21,7 @@ export default class Module extends BaseCommand {
         this.settings.guildOnly = true;
         this.permissions.botPerms = ['embedLinks'];
         this.permissions.userPerms = ['manageGuild'];
-        this.subCommandHandler = new SubcommandHandler(bot.logger);
+        this.subCommandHandler = new SubcommandHandler(bot.logger, bot);
 
         this.subCommandHandler.registerSubcommand('enable', {
             description: 'Enable a module.',
@@ -67,9 +66,9 @@ export default class Module extends BaseCommand {
     async enable(ctx: CommandContext): Promise<void> {
         const module = ctx.args[0].toLowerCase();
         if (!ctx.guild) return;
-        const guildRow = await getCustomRepository(
-            GuildRepository
-        ).selectOrCreate(ctx.guild.id, [module]);
+        const guildRow = await this.bot.database.connection
+            .getCustomRepository(GuildRepository)
+            .selectOrCreate(ctx.guild.id, [module]);
 
         const embed = new EmbedBuilder();
         embed.addDefaults(ctx.message.author);
@@ -82,7 +81,9 @@ export default class Module extends BaseCommand {
             embed.setColor(0xff0000);
         } else {
             guildRow[module] = true;
-            getRepository(Guild).update(ctx.guild.id, guildRow);
+            this.bot.database.connection
+                .getRepository(Guild)
+                .update(ctx.guild.id, guildRow);
 
             embed.setTitle('Module Enabled');
             embed.setDescription(`The module \`${module}\` has been enabled.`);
@@ -94,9 +95,9 @@ export default class Module extends BaseCommand {
     async disable(ctx: CommandContext): Promise<void> {
         const module = ctx.args[0].toLowerCase();
         if (!ctx.guild) return;
-        const guildRow = await getCustomRepository(
-            GuildRepository
-        ).selectOrCreate(ctx.guild.id, [module]);
+        const guildRow = await this.bot.database.connection
+            .getCustomRepository(GuildRepository)
+            .selectOrCreate(ctx.guild.id, [module]);
 
         const embed = new EmbedBuilder();
         embed.addDefaults(ctx.message.author);
@@ -109,7 +110,9 @@ export default class Module extends BaseCommand {
             embed.setColor(0xff0000);
         } else {
             guildRow[module] = false;
-            getRepository(Guild).update(ctx.guild.id, guildRow);
+            this.bot.database.connection
+                .getRepository(Guild)
+                .update(ctx.guild.id, guildRow);
 
             embed.setTitle('Module Disabled');
             embed.setDescription(`The module \`${module}\` has been disabled.`);
@@ -121,9 +124,9 @@ export default class Module extends BaseCommand {
     async toggle(ctx: CommandContext): Promise<void> {
         const module = ctx.args[0].toLowerCase();
         if (!ctx.guild) return;
-        const guildRow = await getCustomRepository(
-            GuildRepository
-        ).selectOrCreate(ctx.guild.id, [module]);
+        const guildRow = await this.bot.database.connection
+            .getCustomRepository(GuildRepository)
+            .selectOrCreate(ctx.guild.id, [module]);
 
         const embed = new EmbedBuilder();
         embed.addDefaults(ctx.message.author);
@@ -144,7 +147,9 @@ export default class Module extends BaseCommand {
             );
             embed.setColor(0xff0000);
         } else {
-            getRepository(Guild).update(ctx.guild.id, guildRow);
+            this.bot.database.connection
+                .getRepository(Guild)
+                .update(ctx.guild.id, guildRow);
             embed.setTitle(
                 `Module ${newModuleSetting ? 'Enabled' : 'Disabled'}`
             );
@@ -161,9 +166,9 @@ export default class Module extends BaseCommand {
     async info(ctx: CommandContext): Promise<void> {
         const module = ctx.args[0].toLowerCase();
         if (!ctx.guild) return;
-        const guildRow = await getCustomRepository(
-            GuildRepository
-        ).selectOrCreate(ctx.guild.id, [module]);
+        const guildRow = await this.bot.database.connection
+            .getCustomRepository(GuildRepository)
+            .selectOrCreate(ctx.guild.id, [module]);
 
         const embed = new EmbedBuilder();
         embed.addDefaults(ctx.message.author);

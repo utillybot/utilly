@@ -6,7 +6,7 @@
     "typings": "dist/index.d.ts",
     "author": "jtsshieh",
     "dependencies": {
-        "chalk": "^4.1.0"
+        "ansi-styles": "^4.2.1"
     },
     "scripts": {
         "build": "tsc"

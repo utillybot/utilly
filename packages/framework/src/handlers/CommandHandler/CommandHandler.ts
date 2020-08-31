@@ -3,7 +3,6 @@ import { Logger } from '@utilly/utils';
 import Eris, { GuildChannel, Message } from 'eris';
 import fs from 'fs/promises';
 import path from 'path';
-import { getCustomRepository } from 'typeorm';
 import { ROLE_PERMISSIONS } from '../../constants/PermissionConstants';
 import { UtillyClient } from '../../UtillyClient';
 import { DatabaseModule } from '../ModuleHandler/Module/DatabaseModule';
@@ -155,9 +154,9 @@ export class CommandHandler {
         ];
 
         if (message.channel instanceof GuildChannel) {
-            const guildRow = await getCustomRepository(
-                GuildRepository
-            ).selectOrCreate(message.channel.guild.id, ['prefix']);
+            const guildRow = await this._bot.database.connection
+                .getCustomRepository(GuildRepository)
+                .selectOrCreate(message.channel.guild.id, ['prefix']);
             prefixes = prefixes.concat(guildRow.prefix);
         } else {
             prefixes.push('u!');

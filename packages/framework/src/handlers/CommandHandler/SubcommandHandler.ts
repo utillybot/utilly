@@ -1,7 +1,7 @@
 import { GuildRepository } from '@utilly/database';
 import { Logger } from '@utilly/utils';
 import { GuildChannel, Message } from 'eris';
-import { getCustomRepository } from 'typeorm';
+import { UtillyClient } from '../../UtillyClient';
 import { EmbedBuilder } from '../../utils/EmbedBuilder';
 import { BaseCommand, CommandContext } from './Command';
 
@@ -26,19 +26,23 @@ export class SubcommandHandler {
      * An array of registered prechecks to run before a subcommand
      */
     private _preChecks: Precheck[];
+
     /**
      * A map of registered subcommand names to their subcommand
      */
     private _subCommandMap: Map<string, Subcommand>;
 
+    private _bot: UtillyClient;
+
     /**
      * Creates a new SubcommandHandler with the specified logger
      * @param logger the logger to use
      */
-    constructor(logger: Logger) {
+    constructor(logger: Logger, bot: UtillyClient) {
         this._subCommandMap = new Map();
         this._preChecks = [];
         this._logger = logger;
+        this._bot = bot;
     }
 
     /**
@@ -89,9 +93,9 @@ export class SubcommandHandler {
     ): Promise<EmbedBuilder> {
         let guildRow;
         if (message.channel instanceof GuildChannel) {
-            guildRow = await getCustomRepository(
-                GuildRepository
-            ).selectOrCreate(message.channel.guild.id, ['prefix']);
+            guildRow = await this._bot.database.connection
+                .getCustomRepository(GuildRepository)
+                .selectOrCreate(message.channel.guild.id, ['prefix']);
         }
         const embed = new EmbedBuilder();
         embed.setTitle(`Help for \`${parentCommand.help.name}\`'s subcommands`);

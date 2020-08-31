@@ -4,7 +4,7 @@ import { Guild } from './entities/Guild';
 import { TypeORMLogger } from './TypeORMLogger';
 
 export class Database {
-    connection?: Connection;
+    connection!: Connection;
     private _logger: Logger;
 
     constructor(logger: Logger) {
