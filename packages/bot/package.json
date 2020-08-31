@@ -1,7 +1,7 @@
 {
     "name": "@utilly/bot",
     "version": "1.0.0",
-    "description": "",
+    "description": "The bot package for Utilly",
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
     "author": "jtsshieh",

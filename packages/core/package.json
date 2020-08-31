@@ -1,7 +1,7 @@
 {
     "name": "@utilly/core",
     "version": "1.0.0",
-    "description": "",
+    "description": "The launcher for Utilly",
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
     "author": "jtsshieh",
