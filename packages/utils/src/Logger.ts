@@ -1,4 +1,4 @@
-import style from 'ansi-styles';
+import chalk from 'chalk';
 
 export class Logger {
     private _off: boolean;
@@ -8,43 +8,22 @@ export class Logger {
     }
 
     database(msg: string): void {
-        if (!this._off)
-            console.log(
-                `${style.magenta.open}${style.bold.open}[Database] ${style.bold.close}${style.magenta.close}`,
-                msg
-            );
+        if (!this._off) console.log(chalk.magenta.bold(`[Database] `), msg);
     }
 
     handler(msg: string): void {
-        if (!this._off)
-            console.log(
-                `${style.green.open}${style.bold.open}[Handler] ${style.bold.close}${style.green.close}`,
-                msg
-            );
+        if (!this._off) console.log(chalk.green.bold(`[Handler] `), msg);
     }
 
     gateway(msg: string): void {
-        if (!this._off)
-            console.log(
-                `${style.blue.open}${style.bold.open}[Gateway] ${style.bold.close}${style.blue.close}`,
-                msg
-            );
+        if (!this._off) console.log(chalk.blue.bold(`[Gateway] `), msg);
     }
 
     error(error: string, ...args: string[]): void {
-        if (!this._off)
-            console.error(
-                `${style.red.open}${style.bold.open}[Error] ${style.bold.close}${style.red.close}`,
-                error,
-                args
-            );
+        if (!this._off) console.error(chalk.red.bold(`[Error] `), error, args);
     }
 
     log(msg: string): void {
-        if (!this._off)
-            console.log(
-                `${style.white.open}${style.bold.open}[Log] ${style.bold.close}${style.white.close}`,
-                msg
-            );
+        if (!this._off) console.log(chalk.white.bold(`[Log] `), msg);
     }
 }

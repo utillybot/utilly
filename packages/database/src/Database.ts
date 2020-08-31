@@ -14,8 +14,6 @@ export class Database {
     async connect(): Promise<void> {
         if (!process.env.DATABASE_URL)
             throw new Error('DATABASE_URL env variable not present');
-        if (!process.env.REDIS_URL)
-            throw new Error('REDIS_URL env variable not present');
         this.connection = await createConnection({
             type: 'postgres',
             url: process.env.DATABASE_URL,
@@ -25,12 +23,6 @@ export class Database {
             },
             entities: [Guild],
             logging: true,
-            //cache: {
-            //    type: 'redis',
-            //    options: {
-            //        url: process.env.REDIS_URL,
-            //    },
-            //},
             logger: new TypeORMLogger(this._logger),
         });
     }
