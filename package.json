@@ -2,43 +2,33 @@
     "name": "utilly",
     "version": "1.0.0",
     "description": "A discord bot",
+    "private": true,
+    "workspaces": [
+        "packages/*"
+    ],
     "main": "dist/bot.js",
-    "dependencies": {
-        "bufferutil": "^4.0.1",
-        "chalk": "^4.1.0",
-        "dotenv": "^8.2.0",
-        "eris": "github:abalabahaha/eris#dev",
-        "erlpack": "^0.1.3",
-        "pg": "^8.3.3",
-        "redis": "^3.0.2",
-        "reflect-metadata": "^0.1.13",
-        "typeorm": "^0.2.25",
-        "zlib-sync": "^0.1.7"
-    },
     "devDependencies": {
-        "@types/node": "^14.6.2",
         "@typescript-eslint/eslint-plugin": "^3.10.1",
         "@typescript-eslint/parser": "^3.10.1",
         "eslint": "^7.7.0",
         "eslint-config-prettier": "^6.11.0",
         "husky": "^4.2.5",
+        "lerna": "^3.22.1",
         "lint-staged": "^10.2.13",
         "prettier": "2.1.1",
         "typescript": "^4.0.2"
     },
     "scripts": {
-        "start": "npm run tsc:compile && npm run run ",
-        "heavystart": "npm run eslint:fix && npm run prettier:write && npm run tsc:compile && npm run run ",
-        "run": "node dist/index.js",
-        "debug": "npm run compile && npm run run",
-        "lint": "npm run eslint:fix && npm run prettier:write",
-        "check": "npm run eslint:check && npm run prettier:check",
-        "postinstall": "npx tsc",
-        "tsc:compile": "npx tsc",
-        "eslint:check": "npx eslint src/**/*.ts",
-        "eslint:fix": "npx eslint src/**/*.ts --fix",
-        "prettier:check": "npx prettier src/**/*.ts --check",
-        "prettier:write": "npx prettier src/**/*.ts --write"
+        "build": "lerna run build",
+        "start": "yarn build && yarn run run",
+        "heavystart": "yarn eslint:fix && yarn prettier:write && yarn start ",
+        "run": "node packages/core/dist/Utilly.js",
+        "lint": "yarn eslint:fix && yarn prettier:write",
+        "lint:check": "yarn eslint:check && yarn prettier:check",
+        "eslint:check": "npx eslint packages/**/*.ts",
+        "eslint:fix": "npx eslint packages/**/*.ts --fix",
+        "prettier:check": "npx prettier packages/**/*.ts --check",
+        "prettier:write": "npx prettier packages/**/*.ts --write"
     },
     "author": "jtsshieh",
     "husky": {
@@ -47,7 +37,7 @@
         }
     },
     "engines": {
-        "node": "14.7.0"
+        "node": "14.8.0"
     },
     "lint-staged": {
         "*": [

@@ -1,0 +1,18 @@
+{
+    "name": "@utilly/bot",
+    "version": "1.0.0",
+    "description": "",
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts",
+    "author": "jtsshieh",
+    "dependencies": {
+        "@utilly/database": "1.0.0",
+        "@utilly/framework": "1.0.0",
+        "@utilly/utils": "1.0.0",
+        "eris": "abalabahaha/eris#dev",
+        "typeorm": "^0.2.25"
+    },
+    "scripts": {
+        "build": "tsc"
+    }
+}
