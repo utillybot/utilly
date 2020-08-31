@@ -12,6 +12,7 @@ import {
     TextChannel,
     VoiceChannel,
 } from 'eris';
+import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
 import LoggingModule from './LoggingModule';
 
 /* eslint-disable no-prototype-builtins */
@@ -78,7 +79,10 @@ export default class ChannelLogging extends AttachableModule {
             embed.setTitle('Text Channel Updated');
             embed.setDescription(`Channel: <#${newChannel.id}>`);
 
-            if (newChannel.topic != oldChannel.topic)
+            if (
+                newChannel.topic != oldChannel.topic &&
+                oldChannel.topic != null
+            )
                 overview +=
                     `**Topic**: ${
                         oldChannel.topic != '' && oldChannel.topic != null
@@ -114,8 +118,16 @@ export default class ChannelLogging extends AttachableModule {
                 newChannel.nsfw != undefined
             )
                 overview +=
-                    `**NSFW**: ${oldChannel.nsfw ? '✅' : '❎'} ` +
-                    `➜ ${newChannel.nsfw ? '✅' : '❎'}\n`;
+                    `**NSFW**: ${
+                        oldChannel.nsfw
+                            ? EMOTE_CONSTANTS.check
+                            : EMOTE_CONSTANTS.xmark
+                    } ` +
+                    `➜ ${
+                        newChannel.nsfw
+                            ? EMOTE_CONSTANTS.check
+                            : EMOTE_CONSTANTS.xmark
+                    }\n`;
 
             if (newChannel.parentID != oldChannel.parentID)
                 overview +=
@@ -236,10 +248,10 @@ export default class ChannelLogging extends AttachableModule {
                         (!(newOverwrite.allow & permissionBit) &&
                             !(newOverwrite.deny & permissionBit))
                     ) {
-                        changedText += `${permission}: ✅ ➜ ⬜\n`;
+                        changedText += `${permission}: ${EMOTE_CONSTANTS.check} ➜ ${EMOTE_CONSTANTS.empty}\n`;
                         // The new overwrite denies the permission
                     } else if (newOverwrite.deny & permissionBit) {
-                        changedText += `${permission}: ✅ ➜ ❎\n`;
+                        changedText += `${permission}: ${EMOTE_CONSTANTS.check} ➜ ${EMOTE_CONSTANTS.xmark}\n`;
                     }
                     // The permission is denied in the old overwrite
                 } else if (oldOverwrite.deny & permissionBit) {
@@ -250,16 +262,16 @@ export default class ChannelLogging extends AttachableModule {
                         (!(newOverwrite.allow & permissionBit) &&
                             !(newOverwrite.deny & permissionBit))
                     ) {
-                        changedText += `${permission}: ❎ ➜ ⬜\n`;
+                        changedText += `${permission}: ${EMOTE_CONSTANTS.xmark} ➜ ${EMOTE_CONSTANTS.empty}\n`;
                         // The new overwrite allows the permission
                     } else if (newOverwrite.allow & permissionBit) {
-                        changedText += `${permission}: ❎ ➜ ✅\n`;
+                        changedText += `${permission}: ${EMOTE_CONSTANTS.xmark} ➜ ${EMOTE_CONSTANTS.check}\n`;
                     }
                 } else if (newOverwrite != null) {
                     if (newOverwrite.allow & permissionBit) {
-                        changedText += `${permission}: ⬜ ➜ ✅\n`;
+                        changedText += `${permission}: ${EMOTE_CONSTANTS.empty} ➜ ${EMOTE_CONSTANTS.check}\n`;
                     } else if (newOverwrite.deny & permissionBit) {
-                        changedText += `${permission}: ⬜ ➜ ❎\n`;
+                        changedText += `${permission}: ${EMOTE_CONSTANTS.empty} ➜ ${EMOTE_CONSTANTS.xmark}\n`;
                     }
                 }
                 if (changedText != undefined)
@@ -303,9 +315,9 @@ export default class ChannelLogging extends AttachableModule {
                 let changedText = permissions.get(entity);
 
                 if (overwrite.allow & permissionBit) {
-                    changedText += `${permission}: ⬜ ➜ ✅\n`;
+                    changedText += `${permission}: ${EMOTE_CONSTANTS.empty} ➜ ${EMOTE_CONSTANTS.check}\n`;
                 } else if (overwrite.deny & permissionBit) {
-                    changedText += `${permission}: ⬜ ➜ ❎\n`;
+                    changedText += `${permission}: ${EMOTE_CONSTANTS.empty} ➜ ${EMOTE_CONSTANTS.xmark}\n`;
                 }
                 if (changedText != undefined)
                     permissions.set(entity, changedText);
@@ -439,7 +451,9 @@ export default class ChannelLogging extends AttachableModule {
                     : 'Off'
             }\n`;
 
-            info += `**NSFW**: ${channel.nsfw ? '✅' : '❎'}\n`;
+            info += `**NSFW**: ${
+                channel.nsfw ? EMOTE_CONSTANTS.check : EMOTE_CONSTANTS.xmark
+            }\n`;
 
             if (channel.parentID) {
                 info += `**Category**: ${
@@ -508,9 +522,9 @@ export default class ChannelLogging extends AttachableModule {
             for (const [permissionBit, permission] of CHANNEL_PERMISSIONS) {
                 let changedText = permissions.get(entity);
                 if (overwrite.allow & permissionBit) {
-                    changedText += `${permission}: ✅\n`;
+                    changedText += `${permission}: ${EMOTE_CONSTANTS.check}\n`;
                 } else if (overwrite.deny & permissionBit) {
-                    changedText += `${permission}: ❎\n`;
+                    changedText += `${permission}: ${EMOTE_CONSTANTS.xmark}\n`;
                 }
                 if (changedText != null) permissions.set(entity, changedText);
             }

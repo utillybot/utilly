@@ -4,6 +4,7 @@ import {
     ROLE_PERMISSIONS,
 } from '@utilly/framework';
 import { Guild, Role, TextChannel } from 'eris';
+import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
 import LoggingModule from './LoggingModule';
 
 /* eslint-disable no-prototype-builtins */
@@ -85,21 +86,43 @@ export default class RoleLogging extends AttachableModule {
             `${
                 role.hoist != oldRole.hoist
                     ? `**Displayed Seperately**: ${
-                          oldRole.hoist ? 'Yes' : 'No'
-                      } ` + `➜ ${role.hoist ? 'Yes' : 'No'}\n`
+                          oldRole.hoist
+                              ? EMOTE_CONSTANTS.check
+                              : EMOTE_CONSTANTS.xmark
+                      } ` +
+                      `➜ ${
+                          role.hoist
+                              ? EMOTE_CONSTANTS.check
+                              : EMOTE_CONSTANTS.xmark
+                      }\n`
                     : ''
             }` +
             `${
                 role.mentionable != oldRole.mentionable
                     ? `**Mentionable**: ${
-                          oldRole.mentionable ? 'Yes' : 'No'
-                      } ` + `➜ ${role.mentionable ? 'Yes' : 'No'}\n`
+                          oldRole.mentionable
+                              ? EMOTE_CONSTANTS.check
+                              : EMOTE_CONSTANTS.xmark
+                      } ` +
+                      `➜ ${
+                          role.mentionable
+                              ? EMOTE_CONSTANTS.check
+                              : EMOTE_CONSTANTS.xmark
+                      }\n`
                     : ''
             }` +
             `${
                 role.managed != oldRole.managed
-                    ? `**Managed**: ${oldRole.managed ? 'Yes' : 'No'} ` +
-                      `➜ ${role.managed ? 'Yes' : 'No'}`
+                    ? `**Managed**: ${
+                          oldRole.managed
+                              ? EMOTE_CONSTANTS.check
+                              : EMOTE_CONSTANTS.xmark
+                      } ` +
+                      `➜ ${
+                          role.managed
+                              ? EMOTE_CONSTANTS.check
+                              : EMOTE_CONSTANTS.xmark
+                      }`
                     : ''
             }`;
         if (updatedRoleInfo != '') embed.addField('Info', updatedRoleInfo);
@@ -109,24 +132,57 @@ export default class RoleLogging extends AttachableModule {
 
         //#region permissions
         // Prepare updates to the permissions
-        let permissionField = '';
+        const permissions: string[] = [];
         for (const [permissionBit, permission] of ROLE_PERMISSIONS) {
             if (
                 oldRole.permissions.allow & permissionBit &&
                 !(role.permissions.allow & permissionBit)
             ) {
                 //Permissions go from allow to deny
-                permissionField += `${permission}: ✅ ➜ ❎\n`;
+                permissions.push(
+                    `${permission}: ${EMOTE_CONSTANTS.check} ➜ ${EMOTE_CONSTANTS.xmark}\n`
+                );
             } else if (
                 !(oldRole.permissions.allow & permissionBit) &&
                 role.permissions.allow & permissionBit
             ) {
                 //Permissiongs go from deny to allow
-                permissionField += `${permission}: ❎ ➜ ✅\n`;
+                permissions.push(
+                    `${permission}: ${EMOTE_CONSTANTS.xmark} ➜ ${EMOTE_CONSTANTS.check}\n`
+                );
             }
         }
-        if (permissionField != '')
-            embed.addField('Permissions', permissionField, true);
+        // If any permission has been updated, the map size will be greater than 0
+        if (permissions.length > 0) {
+            // Prepare to have multiple pages of permissions
+            const embedPages = [''];
+            let current = 0;
+
+            // Loop through the permissions map
+            for (const permission of permissions) {
+                // If current page's length plus the next overwrite's length is greater than 1024 (embed field maximum)
+                // increase the page number
+                if (embedPages[current].length + permission.length > 1024) {
+                    current++;
+                }
+                // If the current page is null, add the page in
+                if (embedPages[current] == null) {
+                    embedPages.push('');
+                }
+                // Add the permission overwrite data to the current page
+                embedPages[current] += permission;
+            }
+
+            // If there is only 1 page, add that page to the embed
+            if (embedPages.length == 1) {
+                embed.addField('Permissions', embedPages[0], true);
+                // Otherwise, loop through the pages and add each one to the embed
+            } else {
+                for (let i = 0; i < embedPages.length; i++) {
+                    embed.addField(`Permissions ${i + 1}`, embedPages[i], true);
+                }
+            }
+        }
         //#endregion
 
         // Final additions and send
@@ -204,23 +260,64 @@ export default class RoleLogging extends AttachableModule {
         embed.addField(
             'Info',
             `**Color**: #${role.color.toString(16)}\n` +
-                `**Displayed Seperately**: ${role.hoist ? 'Yes' : 'No'}\n` +
-                `**Mentionable**: ${role.mentionable ? 'Yes' : 'No'}\n` +
-                `**Managed**: ${role.managed ? 'Yes' : 'No'}`
+                `**Displayed Seperately**: ${
+                    role.hoist ? EMOTE_CONSTANTS.check : EMOTE_CONSTANTS.xmark
+                }\n` +
+                `**Mentionable**: ${
+                    role.mentionable
+                        ? EMOTE_CONSTANTS.check
+                        : EMOTE_CONSTANTS.xmark
+                }\n` +
+                `**Managed**: ${
+                    role.managed ? EMOTE_CONSTANTS.check : EMOTE_CONSTANTS.xmark
+                }`
         );
         embed.setFooter(`Role ID: ${role.id}`);
         //#endregion
 
         //#region permissions
         // Prepare permission info
-        let permissionField = '';
+        const permissions: string[] = [];
         for (const [permissionBit, permission] of ROLE_PERMISSIONS) {
-            permissionField += `${permission}: ${
-                role.permissions.allow & permissionBit ? '✅' : '❎'
-            }\n`;
+            permissions.push(
+                `${permission}: ${
+                    role.permissions.allow & permissionBit
+                        ? EMOTE_CONSTANTS.check
+                        : EMOTE_CONSTANTS.xmark
+                }\n`
+            );
         }
-        if (permissionField != '')
-            embed.addField('Permissions', permissionField, true);
+        // If any permission has been updated, the map size will be greater than 0
+        if (permissions.length > 0) {
+            // Prepare to have multiple pages of permissions
+            const embedPages = [''];
+            let current = 0;
+
+            // Loop through the permissions map
+            for (const permission of permissions) {
+                // If current page's length plus the next overwrite's length is greater than 1024 (embed field maximum)
+                // increase the page number
+                if (embedPages[current].length + permission.length > 1024) {
+                    current++;
+                }
+                // If the current page is null, add the page in
+                if (embedPages[current] == null) {
+                    embedPages.push('');
+                }
+                // Add the permission overwrite data to the current page
+                embedPages[current] += permission;
+            }
+
+            // If there is only 1 page, add that page to the embed
+            if (embedPages.length == 1) {
+                embed.addField('Permissions', embedPages[0], true);
+                // Otherwise, loop through the pages and add each one to the embed
+            } else {
+                for (let i = 0; i < embedPages.length; i++) {
+                    embed.addField(`Permissions ${i + 1}`, embedPages[i], true);
+                }
+            }
+        }
         //#endregion
 
         // Final additions and send
