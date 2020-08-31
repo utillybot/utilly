@@ -9,7 +9,6 @@
         "@utilly/database": "1.0.0",
         "@utilly/utils": "1.0.0",
         "bufferutil": "^4.0.1",
-        "chalk": "^4.1.0",
         "dotenv": "^8.2.0",
         "eris": "abalabahaha/eris#dev",
         "erlpack": "^0.1.3",
