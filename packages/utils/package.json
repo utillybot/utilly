@@ -6,7 +6,8 @@
     "typings": "dist/index.d.ts",
     "author": "jtsshieh",
     "dependencies": {
-        "chalk": "^4.1.0"
+        "chalk": "^4.1.0",
+        "eris": "abalabahaha/eris#dev"
     },
     "scripts": {
         "build": "tsc"

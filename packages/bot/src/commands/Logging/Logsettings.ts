@@ -5,6 +5,7 @@ import {
     EmbedBuilder,
     UtillyClient,
 } from '@utilly/framework';
+import { parseChannel } from '@utilly/utils';
 import { Emoji, GuildChannel, Message, TextChannel, User } from 'eris';
 import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
 import { EVENT_CONSTANTS } from '../../constants/EventConstants';
@@ -82,7 +83,11 @@ export default class Logsettings extends BaseCommand {
     ): Promise<void> {
         switch (emote.id) {
             case EMOTE_CONSTANTS.channelID:
-                this.handleChannelSettings(message.author, menu);
+                try {
+                    this.handleChannelSettings(message.author, menu);
+                } catch {
+                    this.handleEventNotFound(menu);
+                }
                 break;
             case EMOTE_CONSTANTS.eventID:
                 this.handleEventSettings(message.author, menu);
@@ -169,196 +174,187 @@ export default class Logsettings extends BaseCommand {
 
     //#region channel
     async handleChannelSettings(author: User, menu: Message): Promise<void> {
+        //#region event names
         // Prepare embed
-        const embed = new EmbedBuilder();
-        embed.setTitle('Log Channel Settings');
-        embed.setDescription(
+        const settingsEmbed = new EmbedBuilder();
+        settingsEmbed.setTitle('Log Channel Settings');
+        settingsEmbed.setDescription(
             'Type a list of event names or thier categories that you would like to change the log channel of.\n' +
                 'eg: `message edited, message deleted, channel`'
         );
 
         // Populate options with all the event names and categories
+        const categoryNames: string[] = [];
+        let eventNames: string[] = [];
+        let events: string[] = [];
+
         for (const [categoryName, categoryValue] of Object.entries(
             EVENT_CONSTANTS
         )) {
-            const eventNames = Object.getOwnPropertyNames(categoryValue);
-            embed.addField(
+            categoryNames.push(categoryName);
+            eventNames = eventNames.concat(Object.keys(categoryValue));
+            events = events.concat(Object.values(categoryValue));
+
+            const curEventNames = Object.getOwnPropertyNames(categoryValue);
+            settingsEmbed.addField(
                 categoryName,
-                eventNames.map(item => `\`${item}\``).join('\n'),
+                curEventNames.map(item => `\`${item}\``).join('\n'),
                 true
             );
         }
 
         // Prepare the footer of the embed
-        embed.addDefaults(author);
+        settingsEmbed.addDefaults(author);
 
         //Edit the message and clear user response
-        menu.edit({ embed });
+        menu.edit({ embed: settingsEmbed });
         menu.removeReactions();
 
-        try {
-            const result = await this.bot.messageWaitHandler.addListener(
-                menu.channel.id,
-                author.id,
-                undefined,
-                60
-            );
-            this.handleChannelName(result, author, menu);
-        } catch (ex) {
-            this.handleEventNotFound(menu);
-        }
-    }
+        //#endregion
 
-    async handleChannelName(
-        response: Message,
-        author: User,
-        menu: Message
-    ): Promise<void> {
-        menu.removeReactions();
-        const selectedEvents = response.content.toLowerCase().split(/ *, */);
-        if (selectedEvents.length == 0) selectedEvents[0] = response.content;
+        //#region select events
+        const selectedEventsResponse = await this.bot.messageWaitHandler.addListener(
+            menu.channel.id,
+            author.id,
+            (message: Message) => {
+                const selectedEvents = message.content
+                    .toLowerCase()
+                    .split(/ *, */);
 
-        const embed = new EmbedBuilder();
+                if (selectedEvents.length == 0)
+                    selectedEvents[0] = message.content;
 
-        // Populate events with the event names and humanEvents with the human equivalent
-        let events: string[] = [];
-        let humanEvents: string[] = [];
-        for (const [categoryName, categoryValue] of Object.entries(
-            EVENT_CONSTANTS
-        )) {
-            const eventNames = Object.keys(categoryValue);
-            // Check if the response is a category
-            if (selectedEvents.includes(categoryName)) {
-                events = events.concat(Object.values(categoryValue));
-                humanEvents = humanEvents.concat(eventNames);
-                continue;
-            }
+                let matched = 0;
 
-            // Check if the response is a specific event
-
-            const matchedEvents = eventNames.filter(event =>
-                selectedEvents.includes(event)
-            );
-            if (matchedEvents.length != 0) {
-                for (const eventName of matchedEvents) {
-                    events.push(categoryValue[eventName]);
-                    humanEvents.push(eventName);
+                for (const event of selectedEvents) {
+                    if (
+                        eventNames.includes(event) ||
+                        categoryNames.includes(event)
+                    )
+                        matched++;
                 }
-            }
+                if (matched == 0) return false;
+                return true;
+            },
+            60
+        );
+        selectedEventsResponse.delete();
+
+        menu.removeReactions();
+
+        const selectedEvents = selectedEventsResponse.content
+            .toLowerCase()
+            .split(/ *, */);
+
+        if (selectedEvents.length == 0)
+            selectedEvents[0] = selectedEventsResponse.content;
+
+        const eventsEmbed = new EmbedBuilder();
+
+        const matchedEvents: string[] = [];
+        for (const event of selectedEvents) {
+            if (eventNames.includes(event) || categoryNames.includes(event))
+                matchedEvents.push(event);
         }
-        // An event hasn't been found, none of their specified events are valid
-        if (events.length == 0) {
-            embed.setTitle('Error');
-            embed.setDescription('The channel(s) you provided were not valid.');
-            menu.edit({ embed });
+
+        if (matchedEvents.length == 0) {
+            eventsEmbed.setTitle('Error');
+            eventsEmbed.setDescription(
+                'The channel(s) you provided were not valid.'
+            );
+            menu.edit({ embed: eventsEmbed });
             setTimeout(() => menu.delete(), 30000);
             return;
         }
 
+        events = events.filter(item => matchedEvents.includes(item));
+
         // Prepare embed
-        embed.setTitle('Log Channel Settings');
-        embed.setDescription(
-            `Mention, type the name, or input the id of the channel that you would like the logs for ${humanEvents
+        eventsEmbed.setTitle('Log Channel Settings');
+        eventsEmbed.setDescription(
+            `Mention, type the name, or input the id of the channel that you would like the logs for ${events
                 .map(item => `\`${item}\``)
-                .join(', ')} to go to.`
+                .join(
+                    ', '
+                )} to go to. Or, type \`clear\` to clear to log channel set.`
         );
-        embed.addDefaults(author);
+        eventsEmbed.addDefaults(author);
 
         // Edit the message and clear user response
-        menu.edit({ embed });
-        response.delete();
+        menu.edit({ embed: eventsEmbed });
+        //#endregion
 
-        try {
-            const result = await this.bot.messageWaitHandler.addListener(
-                menu.channel.id,
-                author.id,
-                undefined,
-                60
-            );
-            this.handleChannelParse(result, author, events, humanEvents, menu);
-        } catch (ex) {
-            this.handleEventNotFound(menu);
-        }
-    }
+        //#region select channel
+        const channelResponse = await this.bot.messageWaitHandler.addListener(
+            menu.channel.id,
+            author.id,
+            (message: Message) => {
+                if (!(message.channel instanceof GuildChannel)) return false;
+                if (message.content.toLowerCase() == 'clear') return true;
+                const channel = parseChannel(
+                    message.content,
+                    message.channel.guild
+                );
 
-    async handleChannelParse(
-        response: Message,
-        author: User,
-        events: string[],
-        humanEvents: string[],
-        menu: Message
-    ): Promise<void> {
-        // Command is guildonly so this shouldn't happen, but typescript needs it
-        if (!(menu.channel instanceof GuildChannel)) return;
+                if (!channel) return false;
+                return true;
+            },
+            60
+        );
+        channelResponse.delete();
+        if (!(channelResponse.channel instanceof GuildChannel)) return;
 
-        // Try to parse channel ids, channel mentions, or channel names
-        let channelID = '';
-        let channel: GuildChannel | undefined = undefined;
-        const regex = /\d{18}/;
-        const matched = response.content.match(regex);
-        if (response.content.length == 18) {
-            channelID = response.content;
-        } else if (matched != null) {
-            channelID = matched[0];
-        } else if (menu.channel instanceof GuildChannel) {
-            // Find a channel in the guild with the name
-            const result = menu.channel.guild.channels.find(
-                c => c.name.toLowerCase() == response.content.toLowerCase()
-            );
-
-            // Ensure the channel is a TextChannel
-            if (result instanceof TextChannel) {
-                channel = result;
-            } else {
-                this.channelParseError(response, menu);
-                return;
-            }
-        }
-        // Channel ID will not be empty when there was a channel id or mention
-        if (channelID != '') {
-            // Find a channel in the guild with the id
-            const result = menu.channel.guild.channels.find(
-                c => c.id == channelID
-            );
-
-            // Ensure the channel is a TextChannel
-            if (result instanceof TextChannel) {
-                channel = result;
-            } else {
-                this.channelParseError(response, menu);
-                return;
-            }
-        }
-
-        if (channel == undefined) return;
         // Initialize a GuildRow with the guildID
         const guildRow = new Guild();
-        guildRow.guildID = menu.channel.guild.id;
+        guildRow.guildID = channelResponse.channel.guild.id;
 
-        // Loop through the selected events and set the channel
-        for (let i = 0; i < events.length; i++) {
-            const event = events[i];
-            guildRow[`logging_${event}Channel`] = channel.id;
+        let channel;
+        if (channelResponse.content.toLowerCase() != 'clear') {
+            const parsedChannel = parseChannel(
+                channelResponse.content,
+                channelResponse.channel.guild
+            );
+            if (!parsedChannel || !(parsedChannel instanceof TextChannel)) {
+                this.channelParseError(channelResponse, menu);
+                return;
+            }
+            channel = parsedChannel;
+
+            // Loop through the selected events and set the channel
+            for (let i = 0; i < events.length; i++) {
+                const event = events[i];
+                guildRow[`logging_${event}Channel`] = channel.id;
+            }
+        } else {
+            for (let i = 0; i < events.length; i++) {
+                const event = events[i];
+                guildRow[`logging_${event}Channel`] = null;
+            }
         }
+
         // Update the guild
         this.bot.database.connection
             .getRepository(Guild)
-            .update(menu.channel.guild.id, guildRow);
+            .update(channelResponse.channel.guild.id, guildRow);
 
         // Prepare the embed for the success message
-        const embed = new EmbedBuilder();
-        embed.setTitle('Success!');
-        embed.setDescription(
-            `The log channel for the event(s) ${humanEvents
+        const channelEmbed = new EmbedBuilder();
+        channelEmbed.setTitle('Success!');
+        channelEmbed.setDescription(
+            `The log channel for the event(s) ${events
                 .map(item => `\`${item}\``)
-                .join(', ')} have been set to ${channel.mention}`
+                .join(', ')} have been ${
+                channelResponse.content.toLowerCase() == 'clear'
+                    ? 'cleared'
+                    : `set to ${channel?.mention}`
+            }`
         );
-        embed.addDefaults(author);
+        channelEmbed.addDefaults(author);
 
         // Edit the message and clear user response
-        menu.edit({ embed });
-        response.delete();
+        menu.edit({ embed: channelEmbed });
         setTimeout(() => menu.delete(), 30000);
+        //#endregion
     }
 
     channelParseError(response: Message, menu: Message): void {
