@@ -1,6 +1,7 @@
 import { Guild, GuildRepository } from '@utilly/database';
 import { DatabaseModule, EmbedBuilder, UtillyClient } from '@utilly/framework';
 import Eris, { Webhook } from 'eris';
+import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
 
 /**
  * Base Logging Module
@@ -48,6 +49,44 @@ export default class LoggingModule extends DatabaseModule {
         } else {
             return null;
         }
+    }
+
+    getEmotes(
+        channel: Eris.GuildChannel
+    ): { check: string; xmark: string; empty: string } {
+        let check = EMOTE_CONSTANTS.fallbackcheck;
+        let xmark = EMOTE_CONSTANTS.fallbackxmark;
+        let empty = EMOTE_CONSTANTS.fallbackempty;
+
+        let notice = false;
+
+        const everyoneOverwrites = channel.permissionOverwrites.get(
+            channel.guild.id
+        );
+
+        // If the @everyone overwrite doesn't exist or it doesn't allow or deny use external emojis
+        if (
+            !everyoneOverwrites ||
+            (!(everyoneOverwrites.allow & 0x00040000) &&
+                !(everyoneOverwrites.deny & 0x00040000))
+        ) {
+            const everyoneRole = channel.guild.roles.get(channel.guild.id);
+            if (!everyoneRole) return { check, xmark, empty };
+
+            // If the @everyone role doesn't allow pexternal emojis, use the fallback
+            if (!(everyoneRole.permissions.allow & 0x00040000)) notice = true;
+        } else if (everyoneOverwrites && everyoneOverwrites.deny & 0x00040000) {
+            // If the @everyone overwrite exists and denies external emojis, use the fallback
+            notice = true;
+        }
+
+        if (notice == false) {
+            check = EMOTE_CONSTANTS.check;
+            xmark = EMOTE_CONSTANTS.xmark;
+            empty = EMOTE_CONSTANTS.empty;
+        }
+
+        return { check, xmark, empty };
     }
 
     async sendLogMessage(

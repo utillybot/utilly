@@ -3,6 +3,10 @@ export const EMOTE_CONSTANTS = {
     xmark: '<:xmark:314349398824058880>',
     empty: '<:empty:314349398723264512>',
 
+    fallbackcheck: '✅',
+    fallbackxmark: '❎',
+    fallbackempty: '🔳',
+
     cancel: '<:cancel:739928695023730739>',
     channel: '<:channel:738552818918752266>',
     event: '<:event:739906488134533231>',

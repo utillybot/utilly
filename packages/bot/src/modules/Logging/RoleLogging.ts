@@ -4,7 +4,6 @@ import {
     ROLE_PERMISSIONS,
 } from '@utilly/framework';
 import { Guild, Role, TextChannel } from 'eris';
-import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
 import LoggingModule from './LoggingModule';
 
 /* eslint-disable no-prototype-builtins */
@@ -58,6 +57,9 @@ export default class RoleLogging extends AttachableModule {
             guildRow.logging_guildRoleUpdateChannel
         );
         if (logChannel == null) return;
+
+        const { check, xmark } = this.parentModule.getEmotes(logChannel);
+
         //#endregion
 
         //#region embed header
@@ -86,43 +88,21 @@ export default class RoleLogging extends AttachableModule {
             `${
                 role.hoist != oldRole.hoist
                     ? `**Displayed Seperately**: ${
-                          oldRole.hoist
-                              ? EMOTE_CONSTANTS.check
-                              : EMOTE_CONSTANTS.xmark
-                      } ` +
-                      `➜ ${
-                          role.hoist
-                              ? EMOTE_CONSTANTS.check
-                              : EMOTE_CONSTANTS.xmark
-                      }\n`
+                          oldRole.hoist ? check : xmark
+                      } ` + `➜ ${role.hoist ? check : xmark}\n`
                     : ''
             }` +
             `${
                 role.mentionable != oldRole.mentionable
                     ? `**Mentionable**: ${
-                          oldRole.mentionable
-                              ? EMOTE_CONSTANTS.check
-                              : EMOTE_CONSTANTS.xmark
-                      } ` +
-                      `➜ ${
-                          role.mentionable
-                              ? EMOTE_CONSTANTS.check
-                              : EMOTE_CONSTANTS.xmark
-                      }\n`
+                          oldRole.mentionable ? check : xmark
+                      } ` + `➜ ${role.mentionable ? check : xmark}\n`
                     : ''
             }` +
             `${
                 role.managed != oldRole.managed
-                    ? `**Managed**: ${
-                          oldRole.managed
-                              ? EMOTE_CONSTANTS.check
-                              : EMOTE_CONSTANTS.xmark
-                      } ` +
-                      `➜ ${
-                          role.managed
-                              ? EMOTE_CONSTANTS.check
-                              : EMOTE_CONSTANTS.xmark
-                      }`
+                    ? `**Managed**: ${oldRole.managed ? check : xmark} ` +
+                      `➜ ${role.managed ? check : xmark}`
                     : ''
             }`;
         if (updatedRoleInfo != '') embed.addField('Info', updatedRoleInfo);
@@ -139,17 +119,13 @@ export default class RoleLogging extends AttachableModule {
                 !(role.permissions.allow & permissionBit)
             ) {
                 //Permissions go from allow to deny
-                permissions.push(
-                    `${permission}: ${EMOTE_CONSTANTS.check} ➜ ${EMOTE_CONSTANTS.xmark}\n`
-                );
+                permissions.push(`${permission}: ${check} ➜ ${xmark}\n`);
             } else if (
                 !(oldRole.permissions.allow & permissionBit) &&
                 role.permissions.allow & permissionBit
             ) {
                 //Permissiongs go from deny to allow
-                permissions.push(
-                    `${permission}: ${EMOTE_CONSTANTS.xmark} ➜ ${EMOTE_CONSTANTS.check}\n`
-                );
+                permissions.push(`${permission}: ${xmark} ➜ ${check}\n`);
             }
         }
         // If any permission has been updated, the map size will be greater than 0
@@ -212,7 +188,13 @@ export default class RoleLogging extends AttachableModule {
         if (logChannel == null) return;
         //#endregion
 
-        this._guildRoleCD(guild, role, logChannel, 'Deleted');
+        this._guildRoleCD(
+            guild,
+            role,
+            logChannel,
+            'Deleted',
+            this.parentModule.getEmotes(logChannel)
+        );
     }
 
     /**
@@ -236,15 +218,24 @@ export default class RoleLogging extends AttachableModule {
         if (logChannel == null) return;
         //#endregion
 
-        this._guildRoleCD(guild, role, logChannel, 'Created');
+        this._guildRoleCD(
+            guild,
+            role,
+            logChannel,
+            'Created',
+            this.parentModule.getEmotes(logChannel)
+        );
     }
 
     private async _guildRoleCD(
         guild: Guild,
         role: Role,
         logChannel: TextChannel,
-        request: string
+        request: string,
+        emotes: { check: string; xmark: string; empty: string }
     ): Promise<void> {
+        const { check, xmark } = emotes;
+
         //#region embed header
         // Prepare Embed
         let embed = new EmbedBuilder();
@@ -260,17 +251,9 @@ export default class RoleLogging extends AttachableModule {
         embed.addField(
             'Info',
             `**Color**: #${role.color.toString(16)}\n` +
-                `**Displayed Seperately**: ${
-                    role.hoist ? EMOTE_CONSTANTS.check : EMOTE_CONSTANTS.xmark
-                }\n` +
-                `**Mentionable**: ${
-                    role.mentionable
-                        ? EMOTE_CONSTANTS.check
-                        : EMOTE_CONSTANTS.xmark
-                }\n` +
-                `**Managed**: ${
-                    role.managed ? EMOTE_CONSTANTS.check : EMOTE_CONSTANTS.xmark
-                }`
+                `**Displayed Seperately**: ${role.hoist ? check : xmark}\n` +
+                `**Mentionable**: ${role.mentionable ? check : xmark}\n` +
+                `**Managed**: ${role.managed ? check : xmark}`
         );
         embed.setFooter(`Role ID: ${role.id}`);
         //#endregion
@@ -281,9 +264,7 @@ export default class RoleLogging extends AttachableModule {
         for (const [permissionBit, permission] of ROLE_PERMISSIONS) {
             permissions.push(
                 `${permission}: ${
-                    role.permissions.allow & permissionBit
-                        ? EMOTE_CONSTANTS.check
-                        : EMOTE_CONSTANTS.xmark
+                    role.permissions.allow & permissionBit ? check : xmark
                 }\n`
             );
         }
