@@ -8,7 +8,7 @@ import {
 import { parseChannel } from '@utilly/utils';
 import { Emoji, GuildChannel, Message, TextChannel, User } from 'eris';
 import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
-import { EVENT_CONSTANTS } from '../../constants/EventConstants';
+import { EVENT_CONSTANTS, EVENT_NAMES } from '../../constants/EventConstants';
 import LoggingCommandModule from './moduleinfo';
 
 export default class Logsettings extends BaseCommand {
@@ -186,14 +186,12 @@ export default class Logsettings extends BaseCommand {
         // Populate options with all the event names and categories
         const categoryNames: string[] = [];
         let eventNames: string[] = [];
-        let events: string[] = [];
 
         for (const [categoryName, categoryValue] of Object.entries(
             EVENT_CONSTANTS
         )) {
             categoryNames.push(categoryName);
             eventNames = eventNames.concat(Object.keys(categoryValue));
-            events = events.concat(Object.values(categoryValue));
 
             const curEventNames = Object.getOwnPropertyNames(categoryValue);
             settingsEmbed.addField(
@@ -267,7 +265,14 @@ export default class Logsettings extends BaseCommand {
             return;
         }
 
-        events = events.filter(item => matchedEvents.includes(item));
+        let events: string[] = [];
+        for (const event of matchedEvents) {
+            if (Object.keys(EVENT_NAMES).includes(event)) {
+                events.push(EVENT_NAMES[event]);
+            } else {
+                events = events.concat(Object.values(EVENT_CONSTANTS[event]));
+            }
+        }
 
         // Prepare embed
         eventsEmbed.setTitle('Log Channel Settings');

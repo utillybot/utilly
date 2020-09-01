@@ -26,3 +26,15 @@ export const EVENT_CONSTANTS: {
     channel: CHANNEL_NAMES,
     role: ROLE_NAMES,
 };
+
+export const EVENT_NAMES: { [string: string]: string } = {
+    'message deleted': 'messageDelete',
+    'message edited': 'messageUpdate',
+    'message bulk deleted': 'messageDeleteBulk',
+    'channel created': 'channelCreate',
+    'channel updated': 'channelUpdate',
+    'channel deleted': 'channelDelete',
+    'role created': 'guildRoleCreate',
+    'role deleted': 'guildRoleDelete',
+    'role updated': 'guildRoleUpdate',
+};
