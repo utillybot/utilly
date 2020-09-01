@@ -174,7 +174,7 @@ export default class Logsettings extends BaseCommand {
 
     //#region channel
     async handleChannelSettings(author: User, menu: Message): Promise<void> {
-        //#region event names
+        //#region select event names
         // Prepare embed
         const settingsEmbed = new EmbedBuilder();
         settingsEmbed.setTitle('Log Channel Settings');
@@ -184,7 +184,9 @@ export default class Logsettings extends BaseCommand {
         );
 
         // Populate options with all the event names and categories
+        // Category names in human form
         const categoryNames: string[] = [];
+        // Event names in human form
         let eventNames: string[] = [];
 
         for (const [categoryName, categoryValue] of Object.entries(
@@ -249,12 +251,17 @@ export default class Logsettings extends BaseCommand {
 
         const eventsEmbed = new EmbedBuilder();
 
-        const matchedEvents: string[] = [];
+        // Event names that were matched in human form
+        let matchedEvents: string[] = [];
         for (const event of selectedEvents) {
-            if (eventNames.includes(event) || categoryNames.includes(event))
-                matchedEvents.push(event);
+            if (eventNames.includes(event)) matchedEvents.push(event);
+            if (categoryNames.includes(event))
+                matchedEvents = matchedEvents.concat(
+                    Object.keys(EVENT_CONSTANTS[event])
+                );
         }
 
+        // An event hasn't been found, none of their specified events are valid
         if (matchedEvents.length == 0) {
             eventsEmbed.setTitle('Error');
             eventsEmbed.setDescription(
@@ -265,19 +272,13 @@ export default class Logsettings extends BaseCommand {
             return;
         }
 
-        let events: string[] = [];
-        for (const event of matchedEvents) {
-            if (Object.keys(EVENT_NAMES).includes(event)) {
-                events.push(EVENT_NAMES[event]);
-            } else {
-                events = events.concat(Object.values(EVENT_CONSTANTS[event]));
-            }
-        }
+        // The whole list of events that were selected, in computer form
+        const events = matchedEvents.map(item => EVENT_NAMES[item]);
 
         // Prepare embed
         eventsEmbed.setTitle('Log Channel Settings');
         eventsEmbed.setDescription(
-            `Mention, type the name, or input the id of the channel that you would like the logs for ${events
+            `Mention, type the name, or input the id of the channel that you would like the logs for ${matchedEvents
                 .map(item => `\`${item}\``)
                 .join(
                     ', '
@@ -346,7 +347,7 @@ export default class Logsettings extends BaseCommand {
         const channelEmbed = new EmbedBuilder();
         channelEmbed.setTitle('Success!');
         channelEmbed.setDescription(
-            `The log channel for the event(s) ${events
+            `The log channel for the event(s) ${matchedEvents
                 .map(item => `\`${item}\``)
                 .join(', ')} have been ${
                 channelResponse.content.toLowerCase() == 'clear'
@@ -387,157 +388,144 @@ export default class Logsettings extends BaseCommand {
 
     //#region event
     async handleEventSettings(author: User, menu: Message): Promise<void> {
+        //#region select event names
         // Prepare embed
-        const embed = new EmbedBuilder();
-        embed.setTitle('Log Event Settings');
-        embed.setDescription(
+        const settingsEmbed = new EmbedBuilder();
+        settingsEmbed.setTitle('Log Event Settings');
+        settingsEmbed.setDescription(
             'Type a list of event names or thier categories that you would like enable, disable, or toggle.\n' +
                 'eg: `message edited, message deleted, channel`'
         );
 
         // Populate options with all the event names and categories
-        let eventOptions: string[] = [];
+        // Category names in human form
+        const categoryNames: string[] = [];
+        // Event names in human form
+        let eventNames: string[] = [];
+
         for (const [categoryName, categoryValue] of Object.entries(
             EVENT_CONSTANTS
         )) {
-            const eventNames = Object.getOwnPropertyNames(categoryValue);
-            eventOptions = eventOptions.concat(Object.values(categoryValue));
-            embed.addField(
+            categoryNames.push(categoryName);
+            eventNames = eventNames.concat(Object.keys(categoryValue));
+
+            const curEventNames = Object.getOwnPropertyNames(categoryValue);
+            settingsEmbed.addField(
                 categoryName,
-                eventNames.map(item => `\`${item}\``).join('\n'),
+                curEventNames.map(item => `\`${item}\``).join('\n'),
                 true
             );
         }
 
         // Prepare the footer of the embed
-        embed.addDefaults(author);
+        settingsEmbed.addDefaults(author);
 
         //Edit the message and clear user response
-        menu.edit({ embed });
+        menu.edit({ embed: settingsEmbed });
         menu.removeReactions();
 
-        try {
-            const result = await this.bot.messageWaitHandler.addListener(
-                menu.channel.id,
-                author.id,
+        //#endregion
 
-                undefined,
-                60
-            );
-            this.handleEventName(result, author, menu, eventOptions);
-        } catch (ex) {
-            this.handleEventNotFound(menu);
-        }
-    }
+        //#region select events
+        const selectedEventsResponse = await this.bot.messageWaitHandler.addListener(
+            menu.channel.id,
+            author.id,
+            (message: Message) => {
+                const selectedEvents = message.content
+                    .toLowerCase()
+                    .split(/ *, */);
 
-    async handleEventName(
-        response: Message,
-        author: User,
-        menu: Message,
-        eventOptions: string[]
-    ): Promise<void> {
-        menu.removeReactions();
-        const selectedEvents = response.content.toLowerCase().split(/ *, */);
-        if (selectedEvents.length == 0) selectedEvents[0] = response.content;
+                if (selectedEvents.length == 0)
+                    selectedEvents[0] = message.content;
 
-        const embed = new EmbedBuilder();
+                let matched = 0;
 
-        // Populate events with the event names and humanEvents with the human equivalent
-        let events: string[] = [];
-        let humanEvents: string[] = [];
-        for (const [categoryName, categoryValue] of Object.entries(
-            EVENT_CONSTANTS
-        )) {
-            const eventNames = Object.keys(categoryValue);
-            // Check if the response is a category
-            if (selectedEvents.includes(categoryName)) {
-                events = events.concat(Object.values(categoryValue));
-                humanEvents = humanEvents.concat(eventNames);
-                continue;
-            }
-
-            // Check if the response is a specific event
-
-            const matchedEvents = eventNames.filter(event =>
-                selectedEvents.includes(event)
-            );
-            if (matchedEvents.length != 0) {
-                for (const eventName of matchedEvents) {
-                    events.push(categoryValue[eventName]);
-                    humanEvents.push(eventName);
+                for (const event of selectedEvents) {
+                    if (
+                        eventNames.includes(event) ||
+                        categoryNames.includes(event)
+                    )
+                        matched++;
                 }
-            }
+                if (matched == 0) return false;
+                return true;
+            },
+            60
+        );
+        selectedEventsResponse.delete();
+
+        menu.removeReactions();
+
+        const selectedEvents = selectedEventsResponse.content
+            .toLowerCase()
+            .split(/ *, */);
+
+        if (selectedEvents.length == 0)
+            selectedEvents[0] = selectedEventsResponse.content;
+
+        const eventsEmbed = new EmbedBuilder();
+
+        // Event names that were matched in human form
+        let matchedEvents: string[] = [];
+        for (const event of selectedEvents) {
+            if (eventNames.includes(event)) matchedEvents.push(event);
+            if (categoryNames.includes(event))
+                matchedEvents = matchedEvents.concat(
+                    Object.keys(EVENT_CONSTANTS[event])
+                );
         }
+
         // An event hasn't been found, none of their specified events are valid
-        if (events.length == 0) {
-            embed.setTitle('Error');
-            embed.setDescription('The channel(s) you provided were not valid.');
-            menu.edit({ embed });
+        if (matchedEvents.length == 0) {
+            eventsEmbed.setTitle('Error');
+            eventsEmbed.setDescription(
+                'The channel(s) you provided were not valid.'
+            );
+            menu.edit({ embed: eventsEmbed });
             setTimeout(() => menu.delete(), 30000);
             return;
         }
 
+        // The whole list of events that were selected, in computer form
+        const events = matchedEvents.map(item => EVENT_NAMES[item]);
+
         // Prepare the rest of the embed
-        embed.setTitle('Log Event Settings');
-        embed.setDescription(
-            `Would you like to \`enable\`, \`disable\`, or \`toggle\` the settings for ${humanEvents
+        eventsEmbed.setTitle('Log Event Settings');
+        eventsEmbed.setDescription(
+            `Would you like to \`enable\`, \`disable\`, or \`toggle\` the settings for ${matchedEvents
                 .map(item => `\`${item}\``)
                 .join(', ')}`
         );
 
-        embed.addDefaults(author);
+        eventsEmbed.addDefaults(author);
 
         // Edit the message and clear user response
-        menu.edit({ embed });
-        response.delete();
+        menu.edit({ embed: eventsEmbed });
+        //#endregion
 
-        try {
-            const result = await this.bot.messageWaitHandler.addListener(
-                menu.channel.id,
-                author.id,
-                (m: Message) =>
-                    m.content.toLowerCase() == 'enable' ||
-                    m.content.toLowerCase() == 'disable' ||
-                    m.content.toLowerCase() == 'toggle',
-                60
-            );
-            this.handleEventParse(
-                result,
-                events,
-                humanEvents,
-                menu,
-                eventOptions
-            );
-        } catch (ex) {
-            const result = await menu.channel.createMessage(
-                "That wasn't one of the options"
-            );
-            setTimeout(() => {
-                result.delete();
-                menu.delete();
-            }, 30000);
-        }
-    }
+        //#region select enable/disable/toggle
+        const channelResponse = await this.bot.messageWaitHandler.addListener(
+            menu.channel.id,
+            author.id,
+            (m: Message) =>
+                m.content.toLowerCase() == 'enable' ||
+                m.content.toLowerCase() == 'disable' ||
+                m.content.toLowerCase() == 'toggle',
+            60
+        );
 
-    async handleEventParse(
-        response: Message,
-        events: string[],
-        humanEvents: string[],
-        menu: Message,
-        eventOptions: string[]
-    ): Promise<void> {
-        // Command is guildonly so this shouldn't happen, but typescript needs it
-        if (!(menu.channel instanceof GuildChannel)) return;
+        channelResponse.delete();
+        if (!(channelResponse.channel instanceof GuildChannel)) return;
 
         //Create a new guildRow and handle the actions for each event
-        let guildRow = new Guild();
+        const guildRow = new Guild();
         for (let i = 0; i < events.length; i++) {
             const event = events[i];
-            if (response.content.toLowerCase() == 'enable')
+            if (channelResponse.content.toLowerCase() == 'enable')
                 guildRow[`logging_${event}Event`] = true;
-            if (response.content.toLowerCase() == 'disable')
+            if (channelResponse.content.toLowerCase() == 'disable')
                 guildRow[`logging_${event}Event`] = false;
-            if (response.content.toLowerCase() == 'toggle')
+            if (channelResponse.content.toLowerCase() == 'toggle')
                 guildRow[`logging_${event}Event`] = !guildRow[
                     `logging_${event}Event`
                 ];
@@ -545,41 +533,19 @@ export default class Logsettings extends BaseCommand {
 
         this.bot.database.connection
             .getRepository(Guild)
-            .update(menu.channel.guild.id, guildRow);
-        guildRow = await this.bot.database.connection
-            .getCustomRepository(GuildRepository)
-            .selectOrCreate(
-                menu.channel.guild.id,
-                eventOptions.map(item => `logging_${item}Event`)
-            );
+            .update(channelResponse.channel.guild.id, guildRow);
+
         const embed = new EmbedBuilder();
         embed.setTitle('Success!');
         embed.setDescription(
-            `The events ${humanEvents
+            `The events ${matchedEvents
                 .map(item => `\`${item}\``)
-                .join(', ')} have been ${response.content.toLowerCase()}d`
+                .join(
+                    ', '
+                )} have been ${channelResponse.content.toLowerCase()}d`
         );
+        embed.addDefaults(author);
 
-        for (const [categoryName, categoryValue] of Object.entries(
-            EVENT_CONSTANTS
-        )) {
-            const eventNames = Object.keys(categoryValue);
-            embed.addField(
-                categoryName,
-                eventNames
-                    .map(
-                        item =>
-                            `\`${item}\`: ${
-                                guildRow[`logging_${categoryValue[item]}Event`]
-                                    ? 'enabled'
-                                    : 'disabled'
-                            }`
-                    )
-                    .join('\n'),
-                true
-            );
-        }
-        response.delete();
         menu.edit({ embed });
         setTimeout(() => menu.delete(), 30000);
     }
