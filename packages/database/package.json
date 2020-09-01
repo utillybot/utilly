@@ -7,7 +7,6 @@
     "author": "jtsshieh",
     "dependencies": {
         "@utilly/utils": "1.0.0",
-        "dotenv": "^8.2.0",
         "pg": "^8.3.3",
         "reflect-metadata": "^0.1.13",
         "typeorm": "^0.2.25"

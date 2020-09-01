@@ -6,17 +6,17 @@ import { TypeORMLogger } from './TypeORMLogger';
 export class Database {
     connection!: Connection;
     private _logger: Logger;
+    private _databaseUrl: string;
 
-    constructor(logger: Logger) {
+    constructor(databaseUrl: string, logger: Logger) {
         this._logger = logger;
+        this._databaseUrl = databaseUrl;
     }
 
     async connect(): Promise<void> {
-        if (!process.env.DATABASE_URL)
-            throw new Error('DATABASE_URL env variable not present');
         this.connection = await createConnection({
             type: 'postgres',
-            url: process.env.DATABASE_URL,
+            url: this._databaseUrl,
             ssl: {
                 require: true,
                 rejectUnauthorized: false,
@@ -25,5 +25,7 @@ export class Database {
             logging: true,
             logger: new TypeORMLogger(this._logger),
         });
+
+        this._logger.database('Connection has been established successfully.');
     }
 }

@@ -1,7 +1,6 @@
 import { Database } from '@utilly/database';
 import { Logger } from '@utilly/utils';
-import dotenv from 'dotenv';
-import { Client } from 'eris';
+import { Client, ClientOptions } from 'eris';
 import path from 'path';
 import { CommandHandler } from './handlers/CommandHandler/CommandHandler';
 import { ModuleHandler } from './handlers/ModuleHandler/ModuleHandler';
@@ -16,29 +15,13 @@ export class UtillyClient extends Client {
     logger: Logger;
     database: Database;
 
-    constructor(logger: Logger, database: Database) {
-        dotenv.config();
-        if (!process.env.TOKEN)
-            throw new Error('TOKEN env variable not present');
-        super('Bot ' + process.env.TOKEN, {
-            intents: [
-                'guilds',
-                'guildMembers',
-                'guildBans',
-                'guildEmojis',
-                'guildIntegrations',
-                'guildWebhooks',
-                'guildInvites',
-                'guildVoiceStates',
-                'guildMessages',
-                'guildMessageReactions',
-                'directMessages',
-                'directMessageReactions',
-            ],
-            restMode: true,
-            compress: true,
-        });
-
+    constructor(
+        token: string,
+        options: ClientOptions,
+        logger: Logger,
+        database: Database
+    ) {
+        super(token, options);
         this.logger = logger;
         this.database = database;
 

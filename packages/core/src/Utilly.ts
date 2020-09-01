@@ -1,6 +1,7 @@
 import { Database } from '@utilly/database';
 import { UtillyClient } from '@utilly/framework';
 import { Logger } from '@utilly/utils';
+import dotenv from 'dotenv';
 import path from 'path';
 
 export class Utilly {
@@ -9,9 +10,37 @@ export class Utilly {
     protected bot: UtillyClient;
 
     constructor() {
+        dotenv.config();
+        if (!process.env.DATABASE_URL)
+            throw new Error('DATABASE_URL env variable not present');
+        if (!process.env.TOKEN)
+            throw new Error('TOKEN env variable not present');
+
         this.logger = new Logger();
-        this.database = new Database(this.logger);
-        this.bot = new UtillyClient(this.logger, this.database);
+        this.database = new Database(process.env.DATABASE_URL, this.logger);
+        this.bot = new UtillyClient(
+            'Bot ' + process.env.TOKEN,
+            {
+                intents: [
+                    'guilds',
+                    'guildMembers',
+                    'guildBans',
+                    'guildEmojis',
+                    'guildIntegrations',
+                    'guildWebhooks',
+                    'guildInvites',
+                    'guildVoiceStates',
+                    'guildMessages',
+                    'guildMessageReactions',
+                    'directMessages',
+                    'directMessageReactions',
+                ],
+                restMode: true,
+                compress: true,
+            },
+            this.logger,
+            this.database
+        );
     }
 
     async start(rootDir: string): Promise<void> {
