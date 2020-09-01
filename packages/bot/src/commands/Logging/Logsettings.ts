@@ -548,6 +548,7 @@ export default class Logsettings extends BaseCommand {
 
         menu.edit({ embed });
         setTimeout(() => menu.delete(), 30000);
+        //#endregion
     }
     //#endregion
 }
