@@ -9,7 +9,7 @@
         "@utilly/database": "1.0.0",
         "@utilly/framework": "1.0.0",
         "@utilly/utils": "1.0.0",
-        "axios": "^0.19.0",
+        "axios": "^0.20.0",
         "eris": "abalabahaha/eris#dev"
     },
     "scripts": {
