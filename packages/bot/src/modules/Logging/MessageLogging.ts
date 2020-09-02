@@ -1,6 +1,6 @@
 import { AttachableModule, EmbedBuilder } from '@utilly/framework';
-import { Message, TextChannel } from 'eris';
-import LoggingModule from './LoggingModule';
+import type { Message, TextChannel } from 'eris';
+import type LoggingModule from './LoggingModule';
 
 /**
  * Logging Module for Messages

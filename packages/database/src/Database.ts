@@ -1,5 +1,6 @@
-import { Logger } from '@utilly/utils';
-import { Connection, createConnection } from 'typeorm';
+import type { Logger } from '@utilly/utils';
+import type { Connection } from 'typeorm';
+import { createConnection } from 'typeorm';
 import { Guild } from './entities/Guild';
 import { TypeORMLogger } from './TypeORMLogger';
 

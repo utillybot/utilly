@@ -1,5 +1,6 @@
-import { CommandModule, UtillyClient } from '@utilly/framework';
-import GeneralModule from '../../modules/General/GeneralModule';
+import type { UtillyClient } from '@utilly/framework';
+import { CommandModule } from '@utilly/framework';
+import type GeneralModule from '../../modules/General/GeneralModule';
 
 export default class GeneralCommandModule extends CommandModule {
     parent?: GeneralModule;

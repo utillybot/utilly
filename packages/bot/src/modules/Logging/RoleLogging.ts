@@ -3,8 +3,8 @@ import {
     EmbedBuilder,
     ROLE_PERMISSIONS,
 } from '@utilly/framework';
-import { Guild, Role, TextChannel } from 'eris';
-import LoggingModule from './LoggingModule';
+import type { Guild, Role, TextChannel } from 'eris';
+import type LoggingModule from './LoggingModule';
 
 /* eslint-disable no-prototype-builtins */
 

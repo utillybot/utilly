@@ -1,11 +1,7 @@
-import {
-    BaseCommand,
-    CommandContext,
-    EmbedBuilder,
-    UtillyClient,
-} from '@utilly/framework';
+import type { CommandContext, UtillyClient } from '@utilly/framework';
+import { BaseCommand, EmbedBuilder } from '@utilly/framework';
 import { secondsToString } from '@utilly/utils';
-import InfoCommandModule from './moduleinfo';
+import type InfoCommandModule from './moduleinfo';
 
 export default class ServerInfo extends BaseCommand {
     parent?: InfoCommandModule;

@@ -1,11 +1,7 @@
-import {
-    BaseCommand,
-    CommandContext,
-    EmbedBuilder,
-    UtillyClient,
-} from '@utilly/framework';
+import type { CommandContext, UtillyClient } from '@utilly/framework';
+import { BaseCommand, EmbedBuilder } from '@utilly/framework';
 import axios from 'axios';
-import GeneralCommandModule from './moduleinfo';
+import type GeneralCommandModule from './moduleinfo';
 
 export default class Eval extends BaseCommand {
     parent!: GeneralCommandModule;

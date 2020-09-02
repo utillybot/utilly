@@ -1,5 +1,5 @@
-import { UtillyClient } from '../../../UtillyClient';
-import { Submodule } from '../Submodule/Submodule';
+import type { UtillyClient } from '../../../UtillyClient';
+import type { Submodule } from '../Submodule/Submodule';
 
 /**
  * Base Module

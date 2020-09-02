@@ -1,5 +1,6 @@
-import { CommandModule, UtillyClient } from '@utilly/framework';
-import InfoModule from '../../modules/Info/InfoModule';
+import type { UtillyClient } from '@utilly/framework';
+import { CommandModule } from '@utilly/framework';
+import type InfoModule from '../../modules/Info/InfoModule';
 
 export default class InfoCommandModule extends CommandModule {
     parent?: InfoModule;

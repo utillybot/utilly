@@ -1,10 +1,6 @@
-import {
-    BaseCommand,
-    CommandContext,
-    EmbedBuilder,
-    UtillyClient,
-} from '@utilly/framework';
-import GeneralCommandModule from './moduleinfo';
+import type { CommandContext, UtillyClient } from '@utilly/framework';
+import { BaseCommand, EmbedBuilder } from '@utilly/framework';
+import type GeneralCommandModule from './moduleinfo';
 
 export default class Ping extends BaseCommand {
     parent?: GeneralCommandModule;

@@ -1,9 +1,11 @@
 import { GuildRepository } from '@utilly/database';
-import { Logger } from '@utilly/utils';
-import { GuildChannel, Message } from 'eris';
-import { UtillyClient } from '../../UtillyClient';
+import type { Logger } from '@utilly/utils';
+import type { Message } from 'eris';
+import { GuildChannel } from 'eris';
+import type { UtillyClient } from '../../UtillyClient';
 import { EmbedBuilder } from '../../utils/EmbedBuilder';
-import { BaseCommand, CommandContext } from './Command';
+import type { BaseCommand } from './Command';
+import { CommandContext } from './Command';
 
 export interface Subcommand {
     description: string;

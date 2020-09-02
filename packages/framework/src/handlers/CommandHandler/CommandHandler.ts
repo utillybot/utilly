@@ -1,14 +1,16 @@
 import { GuildRepository } from '@utilly/database';
-import { Logger } from '@utilly/utils';
-import Eris, { GuildChannel, Message } from 'eris';
+import type { Logger } from '@utilly/utils';
+import type { Message } from 'eris';
+import Eris, { GuildChannel } from 'eris';
 import fs from 'fs/promises';
 import path from 'path';
 import { ROLE_PERMISSIONS } from '../../constants/PermissionConstants';
-import { UtillyClient } from '../../UtillyClient';
+import type { UtillyClient } from '../../UtillyClient';
 import { DatabaseModule } from '../ModuleHandler/Module/DatabaseModule';
-import { Module } from '../ModuleHandler/Module/Module';
-import { BaseCommand, CommandContext } from './Command';
-import { CommandModule } from './CommandModule';
+import type { Module } from '../ModuleHandler/Module/Module';
+import type { BaseCommand } from './Command';
+import { CommandContext } from './Command';
+import type { CommandModule } from './CommandModule';
 
 /**
  * Handles all incomming commands

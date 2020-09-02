@@ -1,15 +1,16 @@
-import { Guild, GuildRepository } from '@utilly/database';
+import type { Guild } from '@utilly/database';
+import { GuildRepository } from '@utilly/database';
+import type { CommandContext, UtillyClient } from '@utilly/framework';
 import {
     BaseCommand,
-    CommandContext,
     DatabaseModule,
     EmbedBuilder,
     ROLE_PERMISSIONS,
-    UtillyClient,
 } from '@utilly/framework';
-import { Constants, Message } from 'eris';
+import type { Message } from 'eris';
+import { Constants } from 'eris';
 import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
-import GeneralCommandModule from './moduleinfo';
+import type GeneralCommandModule from './moduleinfo';
 
 export default class Help extends BaseCommand {
     parent!: GeneralCommandModule;

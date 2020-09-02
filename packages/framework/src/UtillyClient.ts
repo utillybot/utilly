@@ -1,6 +1,7 @@
-import { Database } from '@utilly/database';
-import { Logger } from '@utilly/utils';
-import { Client, ClientOptions } from 'eris';
+import type { Database } from '@utilly/database';
+import type { Logger } from '@utilly/utils';
+import type { ClientOptions } from 'eris';
+import { Client } from 'eris';
 import path from 'path';
 import { CommandHandler } from './handlers/CommandHandler/CommandHandler';
 import { ModuleHandler } from './handlers/ModuleHandler/ModuleHandler';

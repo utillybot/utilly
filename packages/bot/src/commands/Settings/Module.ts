@@ -1,13 +1,12 @@
 import { Guild, GuildRepository } from '@utilly/database';
+import type { CommandContext, UtillyClient } from '@utilly/framework';
 import {
     BaseCommand,
-    CommandContext,
     EmbedBuilder,
     SubcommandHandler,
-    UtillyClient,
 } from '@utilly/framework';
 import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
-import SettingsCommandModule from './moduleinfo';
+import type SettingsCommandModule from './moduleinfo';
 
 export default class Module extends BaseCommand {
     subCommandHandler: SubcommandHandler;

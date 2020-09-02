@@ -1,5 +1,7 @@
-import { CommandModule, UtillyClient } from '@utilly/framework';
-import { GuildChannel, Message } from 'eris';
+import type { UtillyClient } from '@utilly/framework';
+import { CommandModule } from '@utilly/framework';
+import type { Message } from 'eris';
+import { GuildChannel } from 'eris';
 
 export default class SettingsCommandModule extends CommandModule {
     constructor(bot: UtillyClient) {

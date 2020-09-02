@@ -1,6 +1,9 @@
-import { Guild, GuildRepository } from '@utilly/database';
-import { DatabaseModule, EmbedBuilder, UtillyClient } from '@utilly/framework';
-import Eris, { Webhook } from 'eris';
+import type { Guild } from '@utilly/database';
+import { GuildRepository } from '@utilly/database';
+import type { EmbedBuilder, UtillyClient } from '@utilly/framework';
+import { DatabaseModule } from '@utilly/framework';
+import type { Webhook } from 'eris';
+import Eris from 'eris';
 import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
 
 /**

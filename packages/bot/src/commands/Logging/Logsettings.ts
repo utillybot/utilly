@@ -1,15 +1,12 @@
 import { Guild, GuildRepository } from '@utilly/database';
-import {
-    BaseCommand,
-    CommandContext,
-    EmbedBuilder,
-    UtillyClient,
-} from '@utilly/framework';
+import type { CommandContext, UtillyClient } from '@utilly/framework';
+import { BaseCommand, EmbedBuilder } from '@utilly/framework';
 import { parseChannel } from '@utilly/utils';
-import { Emoji, GuildChannel, Message, TextChannel, User } from 'eris';
+import type { Emoji, Message, User } from 'eris';
+import { GuildChannel, TextChannel } from 'eris';
 import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
 import { EVENT_CONSTANTS, EVENT_NAMES } from '../../constants/EventConstants';
-import LoggingCommandModule from './moduleinfo';
+import type LoggingCommandModule from './moduleinfo';
 
 export default class Logsettings extends BaseCommand {
     parent?: LoggingCommandModule;

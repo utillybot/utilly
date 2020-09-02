@@ -1,11 +1,7 @@
-import {
-    BaseCommand,
-    CommandContext,
-    EmbedBuilder,
-    UtillyClient,
-} from '@utilly/framework';
-import { Member, User } from 'eris';
-import InfoCommandModule from './moduleinfo';
+import type { CommandContext, UtillyClient } from '@utilly/framework';
+import { BaseCommand, EmbedBuilder } from '@utilly/framework';
+import type { Member, User } from 'eris';
+import type InfoCommandModule from './moduleinfo';
 
 export default class Userinfo extends BaseCommand {
     parent?: InfoCommandModule;

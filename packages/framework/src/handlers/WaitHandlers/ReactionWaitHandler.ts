@@ -1,5 +1,5 @@
-import { Emoji, Member, Message } from 'eris';
-import { UtillyClient } from '../../UtillyClient';
+import type { Emoji, Member, Message } from 'eris';
+import type { UtillyClient } from '../../UtillyClient';
 
 export interface ReactionWaitOptions {
     allowedEmotes: string[];

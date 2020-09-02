@@ -4,15 +4,9 @@ import {
     EmbedBuilder,
 } from '@utilly/framework';
 import { secondsToString } from '@utilly/utils';
-import {
-    CategoryChannel,
-    Guild,
-    GuildChannel,
-    OldGuildChannel,
-    TextChannel,
-    VoiceChannel,
-} from 'eris';
-import LoggingModule from './LoggingModule';
+import type { Guild, GuildChannel, OldGuildChannel } from 'eris';
+import { CategoryChannel, TextChannel, VoiceChannel } from 'eris';
+import type LoggingModule from './LoggingModule';
 
 /* eslint-disable no-prototype-builtins */
 

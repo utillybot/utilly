@@ -1,13 +1,16 @@
-import {
-    BaseCommand,
+import type {
     CommandContext,
-    EmbedBuilder,
     MessageWaitFilter,
-    SubcommandHandler,
     UtillyClient,
 } from '@utilly/framework';
-import { GuildChannel, Message, TextChannel } from 'eris';
-import GeneralCommandModule from './moduleinfo';
+import {
+    BaseCommand,
+    EmbedBuilder,
+    SubcommandHandler,
+} from '@utilly/framework';
+import type { Message } from 'eris';
+import { GuildChannel, TextChannel } from 'eris';
+import type GeneralCommandModule from './moduleinfo';
 
 export default class Embed extends BaseCommand {
     parent!: GeneralCommandModule;

@@ -1,4 +1,5 @@
-import { DatabaseModule, UtillyClient } from '@utilly/framework';
+import type { UtillyClient } from '@utilly/framework';
+import { DatabaseModule } from '@utilly/framework';
 
 export default class InfoModule extends DatabaseModule {
     constructor(bot: UtillyClient) {

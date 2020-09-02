@@ -1,10 +1,10 @@
-import { Logger } from '@utilly/utils';
+import type { Logger } from '@utilly/utils';
 import fs from 'fs/promises';
 import path from 'path';
-import { UtillyClient } from '../../UtillyClient';
-import { Module } from './Module/Module';
+import type { UtillyClient } from '../../UtillyClient';
+import type { Module } from './Module/Module';
 import { AttachableModule } from './Submodule/AttachableModule';
-import { Submodule } from './Submodule/Submodule';
+import type { Submodule } from './Submodule/Submodule';
 
 export class ModuleHandler {
     modules: Map<string, Module>;

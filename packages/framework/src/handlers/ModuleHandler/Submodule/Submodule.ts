@@ -1,4 +1,4 @@
-import { UtillyClient } from '../../../UtillyClient';
+import type { UtillyClient } from '../../../UtillyClient';
 import { Module } from '../Module/Module';
 
 /**

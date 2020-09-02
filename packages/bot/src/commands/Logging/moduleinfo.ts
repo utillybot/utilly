@@ -1,5 +1,6 @@
-import { CommandModule, UtillyClient } from '@utilly/framework';
-import LoggingModule from '../../modules/Logging/LoggingModule';
+import type { UtillyClient } from '@utilly/framework';
+import { CommandModule } from '@utilly/framework';
+import type LoggingModule from '../../modules/Logging/LoggingModule';
 
 export default class LoggingCommandModule extends CommandModule {
     parent?: LoggingModule;

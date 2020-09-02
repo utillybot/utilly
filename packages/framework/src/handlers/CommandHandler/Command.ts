@@ -1,6 +1,7 @@
-import { Guild, GuildChannel, Member, Message, MessageContent } from 'eris';
-import { UtillyClient } from '../../UtillyClient';
-import { CommandModule } from './CommandModule';
+import type { Guild, Member, Message, MessageContent } from 'eris';
+import { GuildChannel } from 'eris';
+import type { UtillyClient } from '../../UtillyClient';
+import type { CommandModule } from './CommandModule';
 
 export interface CommandHelp {
     /**

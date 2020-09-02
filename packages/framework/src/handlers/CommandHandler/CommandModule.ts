@@ -1,6 +1,6 @@
-import { UtillyClient } from '../../UtillyClient';
-import { Module } from '../ModuleHandler/Module/Module';
-import { BaseCommand, CommandPermissions } from './Command';
+import type { UtillyClient } from '../../UtillyClient';
+import type { Module } from '../ModuleHandler/Module/Module';
+import type { BaseCommand, CommandPermissions } from './Command';
 
 export interface CommandModuleInfo {
     /**
