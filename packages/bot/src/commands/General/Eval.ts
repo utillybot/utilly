@@ -4,6 +4,7 @@ import {
     EmbedBuilder,
     UtillyClient,
 } from '@utilly/framework';
+import axios from 'axios';
 import GeneralCommandModule from './moduleinfo';
 
 export default class Eval extends BaseCommand {
@@ -38,13 +39,51 @@ export default class Eval extends BaseCommand {
             };
 
             //Eval the code and set the result
-            evaled = eval(code);
+            evaled = await eval(code);
 
             //If it is a string, inspect it
             if (typeof evaled !== 'string')
                 evaled = (await import('util')).default.inspect(evaled);
+
+            //Build the success embed
+            const embed = new EmbedBuilder()
+                .setAuthor('Eval Success')
+                .setDescription("Eval's result")
+                .addField(
+                    ':inbox_tray: Input:',
+                    `\`\`\`js\n${code}\n\`\`\``,
+                    false
+                )
+                .setColor(0x00afff)
+                .setFooter('Eval', this.bot.user.avatarURL)
+                .setTimestamp();
+
+            if (evaled.toString().length > 1024) {
+                const result = await axios.post(
+                    'https://hasteb.in/documents',
+                    evaled,
+                    { headers: { 'content-type': 'application/json' } }
+                );
+                embed.addField(
+                    ':outbox_tray: Output:',
+                    `[Output](https://hasteb.in/${result.data.key})`,
+                    false
+                );
+            } else {
+                embed.addField(
+                    ':outbox_tray: Output:',
+                    `\`\`\`js\n${remove(evaled)}\n\`\`\``,
+                    false
+                );
+            }
+
+            //Send the embed
+            ctx.reply({
+                embed,
+            });
         } catch (err) {
             //If eval has failed setup new embed
+
             const embed = new EmbedBuilder()
                 .setAuthor('Eval Error')
                 .setDescription("Eval's result")
@@ -66,55 +105,6 @@ export default class Eval extends BaseCommand {
                 embed,
             });
             return;
-        }
-
-        //Attempt to build the embeds
-        try {
-            //Build the success embed
-            const embed = new EmbedBuilder()
-                .setAuthor('Eval Success')
-                .setDescription("Eval's result")
-                .addField(
-                    ':inbox_tray: Input:',
-                    `\`\`\`js\n${code}\n\`\`\``,
-                    false
-                )
-                .addField(
-                    ':outbox_tray: Output:',
-                    `\`\`\`js\n${remove(evaled)}\n\`\`\``,
-                    false
-                )
-                .setColor(0x00afff)
-                .setFooter('Eval', this.bot.user.avatarURL)
-                .setTimestamp();
-
-            //Send the embed
-            ctx.reply({
-                embed,
-            });
-        } catch (err) {
-            //If failed, build the failure embed
-            const embed = new EmbedBuilder()
-                .setAuthor('Eval Error')
-                .setDescription("Eval's result")
-                .addField(
-                    ':inbox_tray: Input:',
-                    `\`\`\`js\n${code}\n\`\`\``,
-                    false
-                )
-                .addField(
-                    ':outbox_tray: Output:',
-                    `\`\`\`${err.stack}\`\`\``,
-                    false
-                )
-                .setColor(0xff0000)
-                .setFooter('Eval', this.bot.user.avatarURL)
-                .setTimestamp();
-
-            //And send it
-            ctx.reply({
-                embed,
-            });
         }
     }
 }
