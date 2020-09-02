@@ -1,6 +1,6 @@
 import type { CommandContext, UtillyClient } from '@utilly/framework';
 import { BaseCommand, EmbedBuilder } from '@utilly/framework';
-import axios from 'axios';
+import fetch from 'node-fetch';
 import type GeneralCommandModule from './moduleinfo';
 
 export default class Eval extends BaseCommand {
@@ -18,7 +18,15 @@ export default class Eval extends BaseCommand {
     }
 
     async execute(ctx: CommandContext): Promise<void> {
-        const code = ctx.args.join(' ');
+        let code = '';
+
+        if (ctx.args[0] == 'async') {
+            ctx.args.shift();
+
+            code = `(async() => {\n${ctx.args.join(' ')}\n})()`;
+        } else {
+            code = ctx.args.join(' ');
+        }
 
         let evaled;
         let remove;
@@ -55,14 +63,17 @@ export default class Eval extends BaseCommand {
                 .setTimestamp();
 
             if (evaled.toString().length > 1024) {
-                const result = await axios.post(
-                    'https://hasteb.in/documents',
-                    evaled,
-                    { headers: { 'content-type': 'application/json' } }
-                );
+                const result = await (
+                    await fetch('https://hasteb.in/documents', {
+                        method: 'post',
+                        body: evaled,
+                        headers: { 'content-type': 'application/json' },
+                    })
+                ).json();
+
                 embed.addField(
                     ':outbox_tray: Output:',
-                    `[Output](https://hasteb.in/${result.data.key})`,
+                    `[Output](https://hasteb.in/${result.key})`,
                     false
                 );
             } else {
