@@ -51,8 +51,8 @@ export class MessageWaitHandler {
                 timeoutID = setTimeout(() => {
                     const handler = this._handlers.get(authorID);
                     if (!handler) return;
-                    handler.reject();
                     this._handlers.delete(authorID);
+                    handler.reject();
                 }, timeout * 1000);
             }
             this._handlers.set(authorID, {
@@ -69,13 +69,18 @@ export class MessageWaitHandler {
 
     private async _messageCreate(message: Message): Promise<void> {
         if (message.author.bot) return;
+
         const options = this._handlers.get(message.author.id);
+
         if (options == undefined) return;
+
         if (message.channel.id != options.channelID) return;
+
         if (!options.filter(message)) {
             if (options.errors.includes('filter')) {
                 options.reject();
                 this._handlers.delete(message.author.id);
+                if (options.timeout) clearTimeout(options.timeout);
                 return;
             } else if (options.deleteOtherMessages) {
                 message.delete();
@@ -84,7 +89,8 @@ export class MessageWaitHandler {
         }
 
         this._handlers.delete(message.author.id);
-        options.resolve(message);
         if (options.timeout) clearTimeout(options.timeout);
+
+        options.resolve(message);
     }
 }

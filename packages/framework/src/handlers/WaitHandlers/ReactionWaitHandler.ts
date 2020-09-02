@@ -50,11 +50,11 @@ export class ReactionWaitHandler {
         emoji: Emoji,
         member: Member
     ): void {
+        if (message.author.bot) return;
+
         const options = this._handlers.get(message.id);
 
         if (options == undefined) return;
-
-        if (member.id == this._bot.user.id) return;
 
         if (
             options.userID != member.id ||
