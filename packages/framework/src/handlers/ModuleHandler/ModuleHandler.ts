@@ -7,7 +7,7 @@ import { AttachableModule } from './Submodule/AttachableModule';
 import type { Submodule } from './Submodule/Submodule';
 
 export class ModuleHandler {
-    modules: Map<string, Module>;
+    readonly modules: Map<string, Module>;
 
     private _bot: UtillyClient;
     private _logger: Logger;

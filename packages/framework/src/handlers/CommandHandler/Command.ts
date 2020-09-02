@@ -59,22 +59,22 @@ export class CommandContext {
     /**
      * The message of this context
      */
-    message: Message;
+    readonly message: Message;
 
     /**
      * The arguments passed into this command
      */
-    args: string[];
+    readonly args: string[];
 
     /**
      * The guild that this command was ran in, if it was run in a guild
      */
-    guild?: Guild;
+    readonly guild?: Guild;
 
     /**
      * The member that ran this command, if there was one
      */
-    member?: Member;
+    readonly member?: Member;
 
     constructor(message: Message, args: string[]) {
         this.message = message;
@@ -104,22 +104,22 @@ export abstract class BaseCommand {
     /**
      * A CommandHelp object of help info for this command
      */
-    help: CommandHelp;
+    readonly help: CommandHelp;
 
     /**
      * A CommandSettings object of settings for this command
      */
-    settings: CommandSettings;
+    readonly settings: CommandSettings;
 
     /**
      * A CommandPermissions object of permissions for this command
      */
-    permissions: CommandPermissions;
+    readonly permissions: CommandPermissions;
 
     /**
      * The parent module of this command
      */
-    parent?: CommandModule;
+    readonly parent?: CommandModule;
 
     protected bot: UtillyClient;
 

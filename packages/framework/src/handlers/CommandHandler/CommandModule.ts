@@ -18,10 +18,12 @@ export interface CommandModuleInfo {
  */
 export abstract class CommandModule {
     info: CommandModuleInfo;
-    commands: Map<string, BaseCommand>;
-    aliases: Map<string, BaseCommand>;
     parent?: Module;
-    permissions: CommandPermissions;
+
+    readonly commands: Map<string, BaseCommand>;
+    readonly aliases: Map<string, BaseCommand>;
+    readonly permissions: CommandPermissions;
+
     private _bot: UtillyClient;
 
     constructor(bot: UtillyClient) {

@@ -16,13 +16,22 @@ import type { CommandModule } from './CommandModule';
  * Handles all incomming commands
  */
 export class CommandHandler {
-    private _aliases: Map<string, BaseCommand>;
+    /**
+     * A map of command aliases
+     */
+    readonly aliases: Map<string, BaseCommand>;
+
+    /**
+     * A map of command modules
+     */
+    readonly commandModules: Map<string, CommandModule>;
+
+    /**
+     * A map of the registered commands
+     */
+    readonly commands: Map<string, BaseCommand>;
 
     private _bot: UtillyClient;
-
-    private _commandModules: Map<string, CommandModule>;
-
-    private _commands: Map<string, BaseCommand>;
 
     private _logger: Logger;
 
@@ -34,30 +43,9 @@ export class CommandHandler {
     constructor(bot: UtillyClient, logger: Logger) {
         this._bot = bot;
         this._logger = logger;
-        this._commandModules = new Map();
-        this._commands = new Map();
-        this._aliases = new Map();
-    }
-
-    /**
-     * A map of the registred aliases to their command
-     */
-    get aliases(): Map<string, BaseCommand> {
-        return this._aliases;
-    }
-
-    /**
-     * A map of the registered command module names to their command module
-     */
-    get commandModules(): Map<string, CommandModule> {
-        return this._commandModules;
-    }
-
-    /**
-     * A map of the registered command names to their command
-     */
-    get commands(): Map<string, BaseCommand> {
-        return this._commands;
+        this.commandModules = new Map();
+        this.commands = new Map();
+        this.aliases = new Map();
     }
 
     /**
@@ -72,7 +60,7 @@ export class CommandHandler {
      * @param modules the modules to link with
      */
     linkModules(modules: Map<string, Module>): void {
-        for (const [commandModuleName, commandModule] of this._commandModules) {
+        for (const [commandModuleName, commandModule] of this.commandModules) {
             commandModule.parent = modules.get(commandModuleName);
             if (commandModule.parent == undefined)
                 throw new Error(
@@ -113,10 +101,10 @@ export class CommandHandler {
                 ).default(this._bot, moduleObj);
 
                 moduleObj.registerCommand(commandObj.help.name, commandObj);
-                this._commands.set(commandObj.help.name, commandObj);
+                this.commands.set(commandObj.help.name, commandObj);
                 if (commandObj.help.aliases != null) {
                     for (const alias of commandObj.help.aliases) {
-                        this._aliases.set(alias, commandObj);
+                        this.aliases.set(alias, commandObj);
                     }
                 }
                 this._logger.handler(
@@ -126,10 +114,10 @@ export class CommandHandler {
             this._logger.handler(
                 `  Finished Loading Module "${moduleObj.info.name}".`
             );
-            this._commandModules.set(moduleObj.info.name, moduleObj);
+            this.commandModules.set(moduleObj.info.name, moduleObj);
         }
         this._logger.handler(
-            `Command Loading is complete. ${this._commandModules.size} command modules have been loaded.`
+            `Command Loading is complete. ${this.commandModules.size} command modules have been loaded.`
         );
     }
 
@@ -178,8 +166,8 @@ export class CommandHandler {
         if (!command) return;
 
         const commandObj: BaseCommand | undefined =
-            this._commands.get(command.toLowerCase()) ||
-            this._aliases.get(command.toLowerCase());
+            this.commands.get(command.toLowerCase()) ||
+            this.aliases.get(command.toLowerCase());
 
         if (commandObj == undefined) return;
         if (!commandObj.parent)
