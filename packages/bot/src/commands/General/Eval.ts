@@ -1,6 +1,7 @@
 import type { CommandContext, UtillyClient } from '@utilly/framework';
 import { BaseCommand, EmbedBuilder } from '@utilly/framework';
 import fetch from 'node-fetch';
+import prettier from 'prettier';
 import type GeneralCommandModule from './moduleinfo';
 
 export default class Eval extends BaseCommand {
@@ -23,10 +24,12 @@ export default class Eval extends BaseCommand {
         if (ctx.args[0] == 'async') {
             ctx.args.shift();
 
-            code = `(async() => {\n${ctx.args.join(' ')}\n})()`;
+            code = `(async() => {${ctx.args.join(' ')}})()`;
         } else {
             code = ctx.args.join(' ');
         }
+
+        code = prettier.format(code);
 
         let evaled;
         let remove;

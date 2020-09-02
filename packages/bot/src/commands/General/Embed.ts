@@ -10,6 +10,8 @@ import {
 } from '@utilly/framework';
 import type { Message } from 'eris';
 import { GuildChannel, TextChannel } from 'eris';
+import fetch from 'node-fetch';
+import prettier from 'prettier';
 import type GeneralCommandModule from './moduleinfo';
 
 export default class Embed extends BaseCommand {
@@ -342,90 +344,140 @@ export default class Embed extends BaseCommand {
                 menu.delete();
                 previewMessage.delete();
                 if (!(message.channel instanceof GuildChannel)) return;
-
-                const embed = new EmbedBuilder();
-                embed.setTitle(
-                    'Which channel would you like to post the embed in? '
+                const optionEmbed = new EmbedBuilder();
+                optionEmbed.setTitle(
+                    'Would you like to get the source or post this embed to a channel. (Type `source` or `channel`) '
                 );
-                const prompt = await message.channel.createMessage({ embed });
-                const regex = /\d{18}/;
 
-                const result = (
-                    await this.bot.messageWaitHandler.addListener(
-                        message.channel.id,
-                        message.author.id,
-                        message => {
-                            if (!(message.channel instanceof GuildChannel))
-                                return false;
-                            const id = message.content.match(regex);
-                            if (id == null) return false;
-                            return (
-                                message.channel.guild.channels.find(
-                                    channel => channel.id == id[0]
-                                ) != undefined
-                            );
-                        },
-                        30
-                    )
-                ).content.match(regex);
-                if (result == null) return;
+                message.channel.createMessage({ embed: optionEmbed });
 
-                const channel = message.channel.guild.channels.find(
-                    channel => channel.id == result[0]
+                const option = await this.bot.messageWaitHandler.addListener(
+                    message.channel.id,
+                    message.author.id,
+                    message => {
+                        return (
+                            message.content.toLowerCase() == 'channel' ||
+                            message.content.toLowerCase() == 'source'
+                        );
+                    },
+                    30
                 );
-                if (
-                    !channel
-                        ?.permissionsOf(message.author.id)
-                        .has('sendMessages')
-                ) {
-                    const noPerms = new EmbedBuilder();
-                    noPerms.setTitle(
-                        "You don't have permissions to send messages in that channel."
+                if (option.content.toLowerCase() == 'source') {
+                    const code = await (
+                        await fetch('https://hasteb.in/documents', {
+                            method: 'post',
+                            body: prettier.format(
+                                JSON.stringify(previewMessage.embeds[0]),
+                                {
+                                    parser: 'json',
+                                }
+                            ),
+                            headers: { 'content-type': 'application/json' },
+                        })
+                    ).json();
+
+                    const codeEmbed = new EmbedBuilder();
+                    codeEmbed.setTitle('Here is the source of your embed:');
+                    codeEmbed.setDescription(
+                        `Source: https://hasteb.in/${code.key}`
                     );
-                    noPerms.addField(
-                        'Here is your current embed code:',
-                        JSON.stringify(previewMessage.embeds[0])
+                    message.channel.createMessage({ embed: codeEmbed });
+                } else {
+                    const embed = new EmbedBuilder();
+                    embed.setTitle(
+                        'Which channel would you like to post the embed in? '
                     );
-                    message.channel.createMessage({ embed: noPerms });
-                    return;
-                } else if (
-                    !channel
-                        ?.permissionsOf(this.bot.user.id)
-                        .has('sendMessages')
-                ) {
-                    const noPerms = new EmbedBuilder();
-                    noPerms.setTitle(
-                        "I don't have permissions to send messages in that channel."
+                    const prompt = await message.channel.createMessage({
+                        embed,
+                    });
+                    const regex = /\d{18}/;
+
+                    const result = (
+                        await this.bot.messageWaitHandler.addListener(
+                            message.channel.id,
+                            message.author.id,
+                            message => {
+                                if (!(message.channel instanceof GuildChannel))
+                                    return false;
+                                const id = message.content.match(regex);
+                                if (id == null) return false;
+                                return (
+                                    message.channel.guild.channels.find(
+                                        channel => channel.id == id[0]
+                                    ) != undefined
+                                );
+                            },
+                            30
+                        )
+                    ).content.match(regex);
+                    if (result == null) return;
+
+                    const channel = message.channel.guild.channels.find(
+                        channel => channel.id == result[0]
                     );
-                    noPerms.addField(
-                        'Here is your current embed code:',
-                        JSON.stringify(previewMessage.embeds[0])
-                    );
-                    message.channel.createMessage({ embed: noPerms });
-                    return;
-                } else if (!(channel instanceof TextChannel)) {
-                    const incorrectChannel = new EmbedBuilder();
-                    incorrectChannel.setTitle(
-                        'The channel you inputted was not a text channel'
-                    );
-                    incorrectChannel.addField(
-                        'Here is your current embed code:',
-                        JSON.stringify(previewMessage.embeds[0])
-                    );
-                    message.channel.createMessage({ embed: incorrectChannel });
-                    return;
+                    if (
+                        !channel
+                            ?.permissionsOf(message.author.id)
+                            .has('sendMessages')
+                    ) {
+                        const noPerms = new EmbedBuilder();
+                        noPerms.setTitle(
+                            "You don't have permissions to send messages in that channel."
+                        );
+                        noPerms.addField(
+                            'Here is your current embed code:',
+                            JSON.stringify(previewMessage.embeds[0])
+                        );
+                        message.channel.createMessage({ embed: noPerms });
+                        return;
+                    } else if (
+                        !channel
+                            ?.permissionsOf(this.bot.user.id)
+                            .has('sendMessages')
+                    ) {
+                        const noPerms = new EmbedBuilder();
+                        noPerms.setTitle(
+                            "I don't have permissions to send messages in that channel."
+                        );
+                        noPerms.addField(
+                            'Here is your current embed code:',
+                            JSON.stringify(previewMessage.embeds[0])
+                        );
+                        message.channel.createMessage({ embed: noPerms });
+                        return;
+                    } else if (!(channel instanceof TextChannel)) {
+                        const incorrectChannel = new EmbedBuilder();
+                        incorrectChannel.setTitle(
+                            'The channel you inputted was not a text channel'
+                        );
+                        incorrectChannel.addField(
+                            'Here is your current embed code:',
+                            JSON.stringify(previewMessage.embeds[0])
+                        );
+                        message.channel.createMessage({
+                            embed: incorrectChannel,
+                        });
+                        return;
+                    }
+
+                    channel.createMessage({ embed: preview });
+                    prompt.delete();
+                    message.channel.createMessage('Done!');
                 }
-
-                channel.createMessage({ embed: preview });
-                prompt.delete();
-                message.channel.createMessage('Done!');
             } else if (option == 'cancel') {
                 const embed = new EmbedBuilder();
                 embed.setTitle('Cancelled');
                 embed.setDescription('You exited out of the embed wizard');
+                const result = await (
+                    await fetch('https://hasteb.in/documents', {
+                        method: 'post',
+                        body: JSON.stringify(previewMessage.embeds[0]),
+                        headers: { 'content-type': 'application/json' },
+                    })
+                ).json();
                 embed.addField(
                     'Here is your current embed code:',
-                    JSON.stringify(previewMessage.embeds[0])
+                    `https://hasteb.in/${result.key}`
                 );
                 previewMessage.delete();
                 menu.edit({ embed });
@@ -687,7 +739,7 @@ export default class Embed extends BaseCommand {
                 );
                 deleteIndex.delete();
                 if (preview.fields.length != 0) {
-                    preview.fields.splice(parseInt(deleteIndex.content) - 1);
+                    preview.fields.splice(parseInt(deleteIndex.content) - 1, 1);
                 }
                 this.handleMainMenu(menu, preview, menu, previewMessage);
             } catch {
@@ -696,13 +748,20 @@ export default class Embed extends BaseCommand {
         }
     }
 
-    handleFailure(menu: Message, previewMessage: Message): void {
+    async handleFailure(menu: Message, previewMessage: Message): Promise<void> {
         const embed = new EmbedBuilder();
         embed.setTitle('Error');
         embed.setDescription('Time ran out or something went wrong');
+        const result = await (
+            await fetch('https://hasteb.in/documents', {
+                method: 'post',
+                body: JSON.stringify(previewMessage.embeds[0]),
+                headers: { 'content-type': 'application/json' },
+            })
+        ).json();
         embed.addField(
             'Here is your current embed code:',
-            JSON.stringify(previewMessage.embeds[0])
+            `https://hasteb.in/${result.key}`
         );
         previewMessage.delete();
         menu.edit({ embed });
@@ -805,9 +864,16 @@ export default class Embed extends BaseCommand {
         const embed = new EmbedBuilder();
         embed.addDefaults(ctx.message.author);
         embed.setTitle(`Here is the embed:`);
-        const description = JSON.stringify(foundMessage.embeds[0]);
-        embed.setDescription(`\`\`\`
-                ${description}\`\`\``);
+        const result = await (
+            await fetch('https://hasteb.in/documents', {
+                method: 'post',
+                body: prettier.format(JSON.stringify(foundMessage.embeds[0]), {
+                    parser: 'json',
+                }),
+                headers: { 'content-type': 'application/json' },
+            })
+        ).json();
+        embed.setDescription(`Embed Link: https://hasteb.in/${result.key}`);
         embed.setColor(0x00ff00);
         ctx.reply({ embed });
     }
