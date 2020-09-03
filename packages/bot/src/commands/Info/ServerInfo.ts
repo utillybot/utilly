@@ -1,7 +1,6 @@
 import type { CommandContext, UtillyClient } from '@utilly/framework';
 import { BaseCommand, EmbedBuilder } from '@utilly/framework';
 import { secondsToString } from '@utilly/utils';
-import { CategoryChannel, TextChannel } from 'eris';
 import type InfoCommandModule from './moduleinfo';
 
 export default class ServerInfo extends BaseCommand {
@@ -71,6 +70,7 @@ export default class ServerInfo extends BaseCommand {
             true
         );
 
+        /*
         embed.addField(
             'Roles',
             server.roles
@@ -101,6 +101,7 @@ export default class ServerInfo extends BaseCommand {
             true
         );
 
+        
         if (server.emojis.length > 0)
             embed.addField(
                 'Emojis',
@@ -115,7 +116,7 @@ export default class ServerInfo extends BaseCommand {
                     .join(''),
                 true
             );
-
+*/
         if (server.afkChannelID)
             embed.addField(
                 'AFK',
