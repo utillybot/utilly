@@ -1,4 +1,5 @@
-import type { Emoji, Member, Message } from 'eris';
+import type { Emoji, Member, PossiblyUncachedMessage } from 'eris';
+import { Message } from 'eris';
 import type { UtillyClient } from '../../UtillyClient';
 
 export interface ReactionWaitOptions {
@@ -46,10 +47,12 @@ export class ReactionWaitHandler {
     }
 
     private _messageReactionAdd(
-        message: Message,
+        message: PossiblyUncachedMessage,
         emoji: Emoji,
-        member: Member
+        member: Member | { id: string }
     ): void {
+        if (!(message instanceof Message)) return;
+
         if (message.author.bot) return;
 
         const options = this._handlers.get(message.id);

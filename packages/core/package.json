@@ -6,6 +6,7 @@
     "typings": "dist/index.d.ts",
     "author": "jtsshieh",
     "dependencies": {
+        "@sentry/node": "^5.22.3",
         "@utilly/bot": "1.0.0",
         "@utilly/database": "1.0.0",
         "@utilly/framework": "1.0.0",

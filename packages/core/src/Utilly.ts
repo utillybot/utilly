@@ -41,6 +41,13 @@ export class Utilly {
             this.logger,
             this.database
         );
+        /*
+        this.bot.on('error', (error: Error) => {
+            sentry.captureException(error);
+        });
+
+        process.on('uncaughtException', sentry.captureException);
+        process.on('unhandledRejection', sentry.captureException);*/
     }
 
     async start(rootDir: string): Promise<void> {

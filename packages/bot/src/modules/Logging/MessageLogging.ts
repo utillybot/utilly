@@ -1,5 +1,12 @@
 import { AttachableModule, EmbedBuilder } from '@utilly/framework';
-import type { Message, TextChannel } from 'eris';
+import type {
+    Attachment,
+    Embed,
+    Guild,
+    OldMessage,
+    PossiblyUncachedMessage,
+} from 'eris';
+import { GuildChannel, Message, TextChannel } from 'eris';
 import type LoggingModule from './LoggingModule';
 
 /**
@@ -38,7 +45,13 @@ export default class MessageLogging extends AttachableModule {
      */
     private _addOtherField(
         embed: EmbedBuilder,
-        message: Message
+        message: {
+            attachments: Attachment[];
+            embeds: Embed[];
+            pinned: boolean;
+            tts: boolean;
+            webhookID?: string;
+        }
     ): EmbedBuilder {
         let otherNotes = '';
         if (message.attachments == null) return embed;
@@ -58,7 +71,7 @@ export default class MessageLogging extends AttachableModule {
         if (message.tts == true) {
             otherNotes += '- This message was TTS\n';
         }
-        if (message.webhookID != null) {
+        if (message.webhookID) {
             otherNotes += `- This message was sent by webhook ${message.webhookID}`;
         }
         if (otherNotes != '') {
@@ -72,10 +85,25 @@ export default class MessageLogging extends AttachableModule {
      * @param messages - the messages deleted
      */
     private async _messageDeleteBulk(
-        messages: Array<Message<TextChannel>>
+        messages: PossiblyUncachedMessage[]
     ): Promise<void> {
+        let cachedMessage: Message | undefined = undefined;
+        let guild: Guild | undefined = undefined;
+
+        for (const message of messages) {
+            if (!(message instanceof Message)) continue;
+            if (!message) continue;
+            if (!(message.channel instanceof TextChannel)) continue;
+            cachedMessage = message;
+            guild = message.channel.guild;
+            break;
+        }
+
+        if (cachedMessage == undefined) return;
+        if (guild == undefined) return;
+
         const guildRow = await this.parentModule.selectGuildRow(
-            messages[0].channel.guild.id,
+            guild.id,
             'messageDeleteBulk'
         );
 
@@ -83,7 +111,7 @@ export default class MessageLogging extends AttachableModule {
             return;
 
         const logChannel: TextChannel | null = this.parentModule.getLogChannel(
-            messages[0].channel.guild,
+            guild,
             guildRow.logging_messageDeleteBulkChannel
         );
         if (logChannel == null) return;
@@ -101,7 +129,12 @@ export default class MessageLogging extends AttachableModule {
      * Handles the event where one message is deleted
      * @param message - the message deleted
      */
-    private async _messageDelete(message: Message<TextChannel>): Promise<void> {
+    private async _messageDelete(
+        message: PossiblyUncachedMessage
+    ): Promise<void> {
+        if (!(message instanceof Message)) return;
+        if (!(message.channel instanceof GuildChannel)) return;
+
         const guildRow = await this.parentModule.selectGuildRow(
             message.channel.guild.id,
             'messageDelete'
@@ -120,7 +153,7 @@ export default class MessageLogging extends AttachableModule {
         embed.setTitle('Deleted Message');
         embed.setDescription(`In channel <#${message.channel.id}>`);
 
-        if (message.content != '' && message.content != null) {
+        if (message.content != '') {
             embed.addField('Message Content', message.content, true);
         }
 
@@ -135,11 +168,11 @@ export default class MessageLogging extends AttachableModule {
      * @param oldMessage - the old message
      */
     private async _messageUpdate(
-        message: Message<TextChannel>,
-        oldMessage: Message<TextChannel>
+        message: Message,
+        oldMessage?: OldMessage
     ): Promise<void> {
-        if (oldMessage == null) return;
-        if (oldMessage.content == message.content) return;
+        if (!(message.channel instanceof GuildChannel)) return;
+        if (oldMessage && oldMessage.content == message.content) return;
         const guildRow = await this.parentModule.selectGuildRow(
             message.channel.guild.id,
             'messageUpdate'
@@ -158,7 +191,7 @@ export default class MessageLogging extends AttachableModule {
         embed.setTitle('Message Edited');
         embed.setDescription(`In channel <#${message.channel.id}>`);
 
-        if (oldMessage.content != '') {
+        if (oldMessage && oldMessage.content != '') {
             embed.addField('Previous Message', oldMessage.content, true);
         }
         if (message.content != '') {
@@ -166,7 +199,8 @@ export default class MessageLogging extends AttachableModule {
         }
 
         embed = this._buildEmbed(embed, message);
-        embed = this._addOtherField(embed, oldMessage);
+        /**@ts-ignore */
+        if (oldMessage) embed = this._addOtherField(embed, oldMessage);
         this.parentModule.sendLogMessage(logChannel, embed);
     }
 }

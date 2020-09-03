@@ -4,8 +4,8 @@ import {
     EmbedBuilder,
 } from '@utilly/framework';
 import { secondsToString } from '@utilly/utils';
-import type { Guild, GuildChannel, OldGuildChannel } from 'eris';
-import { CategoryChannel, TextChannel, VoiceChannel } from 'eris';
+import type { AnyChannel, AnyGuildChannel, Guild, OldGuildChannel } from 'eris';
+import { CategoryChannel, GuildChannel, TextChannel, VoiceChannel } from 'eris';
 import type LoggingModule from './LoggingModule';
 
 /* eslint-disable no-prototype-builtins */
@@ -41,7 +41,7 @@ export default class ChannelLogging extends AttachableModule {
      * @param oldChannel - the old channel
      */
     private async _channelUpdate(
-        newChannel: GuildChannel,
+        newChannel: AnyGuildChannel,
         oldChannel: OldGuildChannel
     ): Promise<void> {
         //#region prep
@@ -366,7 +366,9 @@ export default class ChannelLogging extends AttachableModule {
      * Handles the event where a channel is deleted
      * @param channel - the deleted channel
      */
-    private async _channelDelete(channel: GuildChannel): Promise<void> {
+    private async _channelDelete(channel: AnyChannel): Promise<void> {
+        if (!(channel instanceof GuildChannel)) return;
+
         //#region prep
         const guildRow = await this.parentModule.selectGuildRow(
             channel.guild.id,
@@ -394,7 +396,9 @@ export default class ChannelLogging extends AttachableModule {
      * Handles the event where a channel is created
      * @param channel - the created channel
      */
-    private async _channelCreate(channel: GuildChannel): Promise<void> {
+    private async _channelCreate(channel: AnyChannel): Promise<void> {
+        if (!(channel instanceof GuildChannel)) return;
+
         //#region prep
         const guildRow = await this.parentModule.selectGuildRow(
             channel.guild.id,

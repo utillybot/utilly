@@ -3,7 +3,7 @@ import {
     EmbedBuilder,
     ROLE_PERMISSIONS,
 } from '@utilly/framework';
-import type { Guild, Role, TextChannel } from 'eris';
+import type { Guild, OldRole, Role, TextChannel } from 'eris';
 import type LoggingModule from './LoggingModule';
 
 /* eslint-disable no-prototype-builtins */
@@ -42,7 +42,7 @@ export default class RoleLogging extends AttachableModule {
     private async _guildRoleUpdate(
         guild: Guild,
         role: Role,
-        oldRole: Role
+        oldRole: OldRole
     ): Promise<void> {
         //#region prep
         const guildRow = await this.parentModule.selectGuildRow(
