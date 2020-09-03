@@ -50,7 +50,11 @@ export default class Eval extends BaseCommand {
 
             //If it is a string, inspect it
             if (typeof evaled !== 'string')
-                evaled = (await import('util')).default.inspect(evaled);
+                evaled = (await import('util')).default.inspect(
+                    evaled,
+                    undefined,
+                    1
+                );
 
             //Build the success embed
             const embed = new EmbedBuilder()
