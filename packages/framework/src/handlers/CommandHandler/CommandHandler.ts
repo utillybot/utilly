@@ -191,13 +191,16 @@ export class CommandHandler {
             return;
         }
 
-        const allowedIDs: string[] = [];
+        let allowedIDs: string[] = [];
         let match = false;
         if (commandObj.parent.permissions.userIDs)
-            allowedIDs.concat(commandObj.parent.permissions.userIDs);
+            allowedIDs = allowedIDs.concat(
+                commandObj.parent.permissions.userIDs
+            );
         if (commandObj.permissions.userIDs)
-            allowedIDs.concat(commandObj.permissions.userIDs);
+            allowedIDs = allowedIDs.concat(commandObj.permissions.userIDs);
 
+        console.log(allowedIDs);
         for (const user of allowedIDs) {
             if (message.author.id == user) match = true;
         }
