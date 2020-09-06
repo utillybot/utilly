@@ -1,4 +1,4 @@
-import type { Client } from 'eris';
+import type { Guild } from 'eris';
 
 export const DEFAULT_NOTIFICATION_CONSTANTS: Record<number, string> = {
     0: 'All Messages',
@@ -29,11 +29,11 @@ export const PREMIUM_TIER_CONSTANTS: Record<number, string> = {
 export const GUILD_FEATURES_CONSTANTS: Record<string, string> = {};
 
 export const REGIONS_CONSTANTS = async (
-    bot: Client
+    guild: Guild
 ): Promise<Record<string, string>> => {
     const result: Record<string, string> = {};
 
-    for (const region of await bot.getVoiceRegions()) {
+    for (const region of await guild.getVoiceRegions()) {
         result[region.id] = region.name;
     }
     return result;

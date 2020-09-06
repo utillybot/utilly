@@ -1,5 +1,6 @@
 import { Database } from '@utilly/database';
 import { UtillyClient } from '@utilly/framework';
+import '@utilly/server';
 import { Logger } from '@utilly/utils';
 import dotenv from 'dotenv';
 import path from 'path';

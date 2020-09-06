@@ -10,6 +10,7 @@
         "@utilly/bot": "1.0.0",
         "@utilly/database": "1.0.0",
         "@utilly/framework": "1.0.0",
+        "@utilly/server": "1.0.0",
         "@utilly/utils": "1.0.0",
         "dotenv": "^8.2.0"
     },

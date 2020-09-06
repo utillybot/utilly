@@ -32,7 +32,7 @@ export default class ServerInfo extends BaseCommand {
         embed.addField('ID', server.id, true);
         embed.addField(
             'Region',
-            (await REGIONS_CONSTANTS(this.bot))[server.region]
+            (await REGIONS_CONSTANTS(server))[server.region]
         );
 
         embed.addField(
