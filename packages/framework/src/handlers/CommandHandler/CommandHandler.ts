@@ -1,11 +1,11 @@
+import type { Database } from '@utilly/database';
 import { GuildRepository } from '@utilly/database';
 import type { Logger } from '@utilly/utils';
-import type { Message } from 'eris';
+import type { Client, Message } from 'eris';
 import Eris, { GuildChannel } from 'eris';
 import fs from 'fs/promises';
 import path from 'path';
 import { ROLE_PERMISSIONS } from '../../constants/PermissionConstants';
-import type { UtillyClient } from '../../UtillyClient';
 import { DatabaseModule } from '../ModuleHandler/Module/DatabaseModule';
 import type { Module } from '../ModuleHandler/Module/Module';
 import type { BaseCommand } from './Command';
@@ -31,18 +31,21 @@ export class CommandHandler {
      */
     readonly commands: Map<string, BaseCommand>;
 
-    private _bot: UtillyClient;
+    private _bot: Client;
 
     private _logger: Logger;
+
+    private _database: Database;
 
     /**
      * Creates a new CommandHandler
      * @param bot - the UtillyCLient instance
      * @param logger - the logger
      */
-    constructor(bot: UtillyClient, logger: Logger) {
+    constructor(bot: Client, logger: Logger, database: Database) {
         this._bot = bot;
         this._logger = logger;
+        this._database = database;
         this.commandModules = new Map();
         this.commands = new Map();
         this.aliases = new Map();
@@ -144,7 +147,7 @@ export class CommandHandler {
         ];
 
         if (message.channel instanceof GuildChannel) {
-            const guildRow = await this._bot.database.connection
+            const guildRow = await this._database.connection
                 .getCustomRepository(GuildRepository)
                 .selectOrCreate(message.channel.guild.id, ['prefix']);
             prefixes = prefixes.concat(guildRow.prefix);

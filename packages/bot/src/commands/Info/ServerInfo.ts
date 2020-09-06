@@ -1,6 +1,12 @@
 import type { CommandContext, UtillyClient } from '@utilly/framework';
 import { BaseCommand, EmbedBuilder } from '@utilly/framework';
 import { secondsToString } from '@utilly/utils';
+import {
+    DEFAULT_NOTIFICATION_CONSTANTS,
+    EXPLICIT_LEVEL_CONSTANTS,
+    REGIONS_CONSTANTS,
+    VERIFICATION_LEVEL_CONSTANTS,
+} from '../../constants/ServerConstants';
 import type InfoCommandModule from './moduleinfo';
 
 export default class ServerInfo extends BaseCommand {
@@ -25,16 +31,55 @@ export default class ServerInfo extends BaseCommand {
         embed.addField('Name', server.name, true);
         embed.addField('ID', server.id, true);
         embed.addField(
+            'Region',
+            (await REGIONS_CONSTANTS(this.bot))[server.region]
+        );
+
+        embed.addField(
+            'Inactive Channel',
+            server.afkChannelID
+                ? server.channels.get(server.afkChannelID)?.mention ??
+                      'No Inactive Channel'
+                : 'No Inactive Channel',
+            true
+        );
+        embed.addField(
+            'Inactive Timeout',
+            secondsToString(server.afkTimeout),
+            true
+        );
+
+        if (server.systemChannelID) {
+            embed.addField(
+                'System Messages Channel',
+                server.channels.get(server.systemChannelID)?.mention || '',
+                true
+            );
+            /*embed.addField(
+                'Send a random welcome message when someone joins this server.',
+                'hi'
+            );*/
+        }
+
+        embed.addField(
+            'Default Notifications',
+            DEFAULT_NOTIFICATION_CONSTANTS[server.defaultNotifications],
+            true
+        );
+        embed.addField(
             'Created At',
             new Date(server.createdAt).toUTCString(),
             true
         );
 
         embed.addField(
-            'Default Notifications',
-            server.defaultNotifications == 0
-                ? 'All Messages'
-                : 'Only @mentions',
+            'Verification Level',
+            VERIFICATION_LEVEL_CONSTANTS[server.verificationLevel],
+            true
+        );
+        embed.addField(
+            'Explicit Media Content Filter',
+            EXPLICIT_LEVEL_CONSTANTS[server.explicitContentFilter],
             true
         );
         embed.addField(
@@ -42,28 +87,8 @@ export default class ServerInfo extends BaseCommand {
             server.mfaLevel == 0 ? 'Off' : 'On',
             true
         );
-        let verificationLevel;
-        if (server.verificationLevel == 0) {
-            verificationLevel = 'None\nUnrestricted';
-        } else if (server.verificationLevel == 1) {
-            verificationLevel =
-                'Low\nMust have a verified email on their Discord account.';
-        } else if (server.verificationLevel == 2) {
-            verificationLevel =
-                'Medium\nMust also be registered on Discord for longer than 5 minutes.';
-        } else if (server.verificationLevel == 3) {
-            verificationLevel =
-                'High\nMust also be a member of this server for longer than 10 minutes.';
-        } else if (server.verificationLevel == 4) {
-            verificationLevel =
-                'Highest\nMust have a verified phone on their Discord account.';
-        } else {
-            verificationLevel = 'Unknown';
-        }
-        embed.addField('Verification Level', verificationLevel, true);
 
         embed.addField('Member Count', server.memberCount.toString(), true);
-        embed.addField('Region', server.region, true);
         embed.addField(
             'Owner',
             ctx.guild?.members.get(server.ownerID)?.mention || 'Not found',
@@ -117,14 +142,6 @@ export default class ServerInfo extends BaseCommand {
                 true
             );
 */
-        if (server.afkChannelID)
-            embed.addField(
-                'AFK',
-                `**Channel**: ${
-                    server.channels.get(server.afkChannelID)?.mention
-                }\n**Timeout**: ${secondsToString(server.afkTimeout)}`,
-                true
-            );
 
         if (server.publicUpdatesChannelID)
             embed.addField(
@@ -133,12 +150,7 @@ export default class ServerInfo extends BaseCommand {
                     '',
                 true
             );
-        if (server.systemChannelID)
-            embed.addField(
-                'System Messages Channel',
-                server.channels.get(server.systemChannelID)?.mention || '',
-                true
-            );
+
         if (server.rulesChannelID)
             embed.addField(
                 'Rules Channel',

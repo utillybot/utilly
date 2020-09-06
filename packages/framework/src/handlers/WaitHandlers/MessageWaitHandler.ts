@@ -1,5 +1,4 @@
-import type { Message } from 'eris';
-import type { UtillyClient } from '../../UtillyClient';
+import type { Client, Message } from 'eris';
 
 export type MessageWaitFilter = (message: Message) => boolean;
 
@@ -16,10 +15,10 @@ export interface MessageWaitOptions {
 }
 
 export class MessageWaitHandler {
-    private _bot: UtillyClient;
+    private _bot: Client;
     private _handlers: Map<string, MessageWaitOptions>;
 
-    constructor(bot: UtillyClient) {
+    constructor(bot: Client) {
         this._bot = bot;
         this._handlers = new Map();
     }

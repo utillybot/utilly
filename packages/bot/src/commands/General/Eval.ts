@@ -41,7 +41,12 @@ export default class Eval extends BaseCommand {
                 if (typeof text === 'string')
                     return text
                         .replace(/`/g, '`' + String.fromCharCode(8203))
-                        .replace(/@/g, '@' + String.fromCharCode(8203));
+                        .replace(/@/g, '@' + String.fromCharCode(8203))
+                        .replace(
+                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                            this.bot.token!,
+                            "Utilly's Token"
+                        );
                 else return text;
             };
 

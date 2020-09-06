@@ -1,6 +1,5 @@
-import type { Emoji, Member, PossiblyUncachedMessage } from 'eris';
+import type { Client, Emoji, Member, PossiblyUncachedMessage } from 'eris';
 import { Message } from 'eris';
-import type { UtillyClient } from '../../UtillyClient';
 
 export interface ReactionWaitOptions {
     allowedEmotes: string[];
@@ -10,10 +9,10 @@ export interface ReactionWaitOptions {
 }
 
 export class ReactionWaitHandler {
-    private _bot: UtillyClient;
+    private _bot: Client;
     private _handlers: Map<string, ReactionWaitOptions>;
 
-    constructor(bot: UtillyClient) {
+    constructor(bot: Client) {
         this._bot = bot;
         this._handlers = new Map();
     }

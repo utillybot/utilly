@@ -18,43 +18,27 @@ export default class Userinfo extends BaseCommand {
 
     async execute(ctx: CommandContext): Promise<void> {
         let member: Member | undefined;
-        let user: User | null = null;
+        const user: User = ctx.message.author;
 
         if (ctx.guild) {
             member = ctx.member;
-        } else {
-            user = ctx.message.author;
         }
 
         const embed = new EmbedBuilder();
         embed.setTitle('User Info');
-        if (user) {
-            embed.addField('Username', user.username, true);
-            embed.addField('Discriminator', user.discriminator, true);
-            embed.addField('Bot', user.bot ? 'Yes' : 'No', true);
-            embed.addField('Mention', user.mention, true);
-            embed.addField('ID', user.id, true);
-            embed.addField(
-                'Created At',
-                new Date(user.createdAt).toUTCString()
-            );
-            embed.setThumbnail(user.dynamicAvatarURL('png', 1024));
-        } else if (member) {
-            embed.addField('Username', member.username, true);
+        embed.addField('Username', user.username, true);
+        embed.addField('Discriminator', user.discriminator, true);
+        embed.addField('Bot', user.bot ? 'Yes' : 'No', true);
+        embed.addField('Mention', user.mention, true);
+        embed.addField('ID', user.id, true);
+        embed.addField('Created At', new Date(user.createdAt).toUTCString());
+        embed.setThumbnail(user.dynamicAvatarURL('png', 1024));
+        if (member) {
             if (member.nick) embed.addField('Nickname', member.nick, true);
-            embed.addField('Discriminator', member.discriminator, true);
-            embed.addField('Bot', member.bot ? 'Yes' : 'No', true);
-            embed.addField('Mention', member.mention, true);
-            embed.addField('ID', member.id, true);
-            embed.addField(
-                'Created At',
-                new Date(member.createdAt).toUTCString()
-            );
             embed.addField(
                 'Joined At',
                 new Date(member.joinedAt).toUTCString()
             );
-            embed.setThumbnail(member.user.dynamicAvatarURL('png', 1024));
         }
 
         ctx.reply({ embed });

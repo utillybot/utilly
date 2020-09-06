@@ -7,7 +7,7 @@
     "author": "jtsshieh",
     "dependencies": {
         "chalk": "^4.1.0",
-        "eris": "abalabahaha/eris#dev"
+        "eris": "bsian03/eris#typings"
     },
     "scripts": {
         "build": "tsc"

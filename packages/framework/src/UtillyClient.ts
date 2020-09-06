@@ -27,7 +27,11 @@ export class UtillyClient extends Client {
         this.database = database;
 
         this.moduleHandler = new ModuleHandler(this, this.logger);
-        this.commandHandler = new CommandHandler(this, this.logger);
+        this.commandHandler = new CommandHandler(
+            this,
+            this.logger,
+            this.database
+        );
         this.messageWaitHandler = new MessageWaitHandler(this);
         this.reactionWaitHandler = new ReactionWaitHandler(this);
 

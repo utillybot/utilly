@@ -5,7 +5,7 @@ import { Module } from '../Module/Module';
  * A module that has a parent of another module
  */
 export abstract class Submodule extends Module {
-    parentModule!: Module;
+    parentModule: Module;
 
     constructor(bot: UtillyClient, parentModule: Module) {
         super(bot);

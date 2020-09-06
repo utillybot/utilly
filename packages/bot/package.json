@@ -6,17 +6,18 @@
     "typings": "dist/index.d.ts",
     "author": "jtsshieh",
     "dependencies": {
-        "@types/node-fetch": "^2.5.7",
-        "@types/prettier": "^2.1.0",
         "@utilly/database": "1.0.0",
         "@utilly/framework": "1.0.0",
         "@utilly/utils": "1.0.0",
-        "eris": "abalabahaha/eris#dev",
+        "eris": "bsian03/eris#typings",
         "node-fetch": "^2.6.0",
         "prettier": "^2.1.1"
     },
+    "devDependencies": {
+        "@types/node-fetch": "^2.5.7",
+        "@types/prettier": "^2.1.0"
+    },
     "scripts": {
         "build": "tsc"
-    },
-    "devDependencies": {}
+    }
 }

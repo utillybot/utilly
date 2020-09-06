@@ -1,16 +1,16 @@
-const MESSAGE_NAMES: { [string: string]: string } = {
+const MESSAGE_NAMES: Record<string, string> = {
     'message deleted': 'messageDelete',
     'message edited': 'messageUpdate',
     'message bulk deleted': 'messageDeleteBulk',
 };
 
-const CHANNEL_NAMES: { [string: string]: string } = {
+const CHANNEL_NAMES: Record<string, string> = {
     'channel created': 'channelCreate',
     'channel updated': 'channelUpdate',
     'channel deleted': 'channelDelete',
 };
 
-const ROLE_NAMES: { [string: string]: string } = {
+const ROLE_NAMES: Record<string, string> = {
     'role created': 'guildRoleCreate',
     'role deleted': 'guildRoleDelete',
     'role updated': 'guildRoleUpdate',
@@ -27,7 +27,7 @@ export const EVENT_CONSTANTS: {
     role: ROLE_NAMES,
 };
 
-export const EVENT_NAMES: { [string: string]: string } = {
+export const EVENT_NAMES: Record<string, string> = {
     'message deleted': 'messageDelete',
     'message edited': 'messageUpdate',
     'message bulk deleted': 'messageDeleteBulk',
