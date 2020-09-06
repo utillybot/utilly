@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
+import type { RouteComponentProps } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import './Navbar.css';
 
-interface NavbarProps {
-    selected: string;
-}
-
-class Navbar extends Component<NavbarProps> {
+class Navbar extends Component<RouteComponentProps> {
     render(): JSX.Element {
         const pages = new Map();
         pages.set('Home', '/');
@@ -14,23 +12,20 @@ class Navbar extends Component<NavbarProps> {
 
         const navbarElements: JSX.Element[] = [];
         for (const [page, pageRoute] of pages) {
-            if (this.props.selected == page) {
-                navbarElements.push(
-                    <li>
-                        <a href={pageRoute} className="navitem selected">
-                            {page}
-                        </a>
-                    </li>
-                );
-            } else {
-                navbarElements.push(
-                    <li>
-                        <a href={pageRoute} className="navitem">
-                            {page}
-                        </a>
-                    </li>
-                );
-            }
+            navbarElements.push(
+                <li>
+                    <Link
+                        to={pageRoute}
+                        className={`navitem ${
+                            this.props.location.pathname === pageRoute
+                                ? 'selected'
+                                : ''
+                        }`}
+                    >
+                        {page}
+                    </Link>
+                </li>
+            );
         }
         return (
             <div className="nav">
@@ -40,4 +35,4 @@ class Navbar extends Component<NavbarProps> {
     }
 }
 
-export default Navbar;
+export default withRouter(Navbar);

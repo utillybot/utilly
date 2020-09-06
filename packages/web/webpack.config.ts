@@ -42,7 +42,7 @@ const config: webpack.Configuration = {
         new ForkTsCheckerWebpackPlugin({
             async: false,
             eslint: {
-                files: './src/**/*.{ts,tsx,js,jsx}', // required - same as command `eslint ./src/**/*.{ts,tsx,js,jsx} --ext .ts,.tsx,.js,.jsx`
+                files: './**/*.{ts,tsx,js,jsx}', // required - same as command `eslint ./src/**/*.{ts,tsx,js,jsx} --ext .ts,.tsx,.js,.jsx`
             },
         }),
     ],

@@ -24,10 +24,7 @@
     color: white;
 }
 
-.selected {
-    color: #cccccc;
-}
-
+.selected,
 .navitem:hover {
-    color: #cccccc;
+    color: #9e9e9e;
 }
