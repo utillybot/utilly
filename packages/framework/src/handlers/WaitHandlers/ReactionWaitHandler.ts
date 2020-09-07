@@ -52,7 +52,7 @@ export class ReactionWaitHandler {
     ): void {
         if (!(message instanceof Message)) return;
 
-        if (message.author.bot) return;
+        if (member.id == this._bot.user.id) return;
 
         const options = this._handlers.get(message.id);
 

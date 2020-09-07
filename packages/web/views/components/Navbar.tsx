@@ -1,28 +1,24 @@
 import React, { Component } from 'react';
 import type { RouteComponentProps } from 'react-router-dom';
 import { Link, withRouter } from 'react-router-dom';
+import { ROUTE_CONSTANTS } from '../ROUTE_CONSTANTS';
 import './Navbar.css';
 
 class Navbar extends Component<RouteComponentProps> {
     render(): JSX.Element {
-        const pages = new Map();
-        pages.set('Home', '/');
-        pages.set('Commands', '/commands');
-        pages.set('About', '/about');
-
         const navbarElements: JSX.Element[] = [];
-        for (const [page, pageRoute] of pages) {
+        for (const pageRoute of ROUTE_CONSTANTS) {
             navbarElements.push(
                 <li>
                     <Link
-                        to={pageRoute}
+                        to={pageRoute.path}
                         className={`navitem ${
-                            this.props.location.pathname === pageRoute
+                            this.props.location.pathname === pageRoute.path
                                 ? 'selected'
                                 : ''
                         }`}
                     >
-                        {page}
+                        {pageRoute.name}
                     </Link>
                 </li>
             );
