@@ -25,22 +25,22 @@ export default class Module extends BaseCommand {
         this.subCommandHandler.registerSubcommand('enable', {
             description: 'Enable a module.',
             usage: '(module name)',
-            execute: this.enable,
+            execute: this.enable.bind(this),
         });
         this.subCommandHandler.registerSubcommand('disable', {
             description: 'Disable a module.',
             usage: '(module name)',
-            execute: this.disable,
+            execute: this.disable.bind(this),
         });
         this.subCommandHandler.registerSubcommand('toggle', {
             description: 'Toggle a module.',
             usage: '(module name)',
-            execute: this.toggle,
+            execute: this.toggle.bind(this),
         });
         this.subCommandHandler.registerSubcommand('info', {
             description: 'View info about a module.',
             usage: '(module name)',
-            execute: this.info,
+            execute: this.info.bind(this),
         });
 
         this.subCommandHandler.registerPrecheck(this.precheck);
