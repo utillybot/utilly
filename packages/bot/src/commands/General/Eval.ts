@@ -1,6 +1,6 @@
 import type { CommandContext, UtillyClient } from '@utilly/framework';
 import { BaseCommand, EmbedBuilder } from '@utilly/framework';
-import fetch from 'node-fetch';
+import centra from 'centra';
 import prettier from 'prettier';
 import type GeneralCommandModule from './moduleinfo';
 
@@ -76,11 +76,10 @@ export default class Eval extends BaseCommand {
 
             if (evaled.toString().length > 1024) {
                 const result = await (
-                    await fetch('https://hasteb.in/documents', {
-                        method: 'post',
-                        body: evaled,
-                        headers: { 'content-type': 'application/json' },
-                    })
+                    await centra('https://hasteb.in/documents', 'POST')
+                        .body(prettier.format(remove(evaled)))
+                        .header('content-type', 'application/json')
+                        .send()
                 ).json();
 
                 embed.addField(

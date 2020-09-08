@@ -8,9 +8,9 @@ import {
     EmbedBuilder,
     SubcommandHandler,
 } from '@utilly/framework';
+import centra from 'centra';
 import type { Message } from 'eris';
 import { GuildChannel, TextChannel } from 'eris';
-import fetch from 'node-fetch';
 import prettier from 'prettier';
 import type GeneralCommandModule from './moduleinfo';
 
@@ -232,7 +232,7 @@ export default class Embed extends BaseCommand {
                     filter,
                     30
                 );
-                console.log(result.content.length);
+
                 if (option == 'title') {
                     preview.setTitle(
                         result.content.toLowerCase() == 'clear'
@@ -364,16 +364,17 @@ export default class Embed extends BaseCommand {
                 );
                 if (option.content.toLowerCase() == 'source') {
                     const code = await (
-                        await fetch('https://hasteb.in/documents', {
-                            method: 'post',
-                            body: prettier.format(
-                                JSON.stringify(previewMessage.embeds[0]),
-                                {
-                                    parser: 'json',
-                                }
-                            ),
-                            headers: { 'content-type': 'application/json' },
-                        })
+                        await centra('https://hasteb.in/documents', 'POST')
+                            .body(
+                                prettier.format(
+                                    JSON.stringify(previewMessage.embeds[0]),
+                                    {
+                                        parser: 'json',
+                                    }
+                                )
+                            )
+                            .header('content-type', 'application/json')
+                            .send()
                     ).json();
 
                     const codeEmbed = new EmbedBuilder();
@@ -469,11 +470,10 @@ export default class Embed extends BaseCommand {
                 embed.setTitle('Cancelled');
                 embed.setDescription('You exited out of the embed wizard');
                 const result = await (
-                    await fetch('https://hasteb.in/documents', {
-                        method: 'post',
-                        body: JSON.stringify(previewMessage.embeds[0]),
-                        headers: { 'content-type': 'application/json' },
-                    })
+                    await centra('https://hasteb.in/documents', 'POST')
+                        .body(JSON.stringify(previewMessage.embeds[0]))
+                        .header('content-type', 'application/json')
+                        .send()
                 ).json();
                 embed.addField(
                     'Here is your current embed code:',
@@ -753,11 +753,10 @@ export default class Embed extends BaseCommand {
         embed.setTitle('Error');
         embed.setDescription('Time ran out or something went wrong');
         const result = await (
-            await fetch('https://hasteb.in/documents', {
-                method: 'post',
-                body: JSON.stringify(previewMessage.embeds[0]),
-                headers: { 'content-type': 'application/json' },
-            })
+            await centra('https://hasteb.in/documents', 'POST')
+                .body(JSON.stringify(previewMessage.embeds[0]))
+                .header('content-type', 'application/json')
+                .send()
         ).json();
         embed.addField(
             'Here is your current embed code:',
@@ -865,13 +864,14 @@ export default class Embed extends BaseCommand {
         embed.addDefaults(ctx.message.author);
         embed.setTitle(`Here is the embed:`);
         const result = await (
-            await fetch('https://hasteb.in/documents', {
-                method: 'post',
-                body: prettier.format(JSON.stringify(foundMessage.embeds[0]), {
-                    parser: 'json',
-                }),
-                headers: { 'content-type': 'application/json' },
-            })
+            await centra('https://hasteb.in/documents', 'POST')
+                .body(
+                    prettier.format(JSON.stringify(foundMessage.embeds[0]), {
+                        parser: 'json',
+                    })
+                )
+                .header('content-type', 'application/json')
+                .send()
         ).json();
         embed.setDescription(`Embed Link: https://hasteb.in/${result.key}`);
         embed.setColor(0x00ff00);

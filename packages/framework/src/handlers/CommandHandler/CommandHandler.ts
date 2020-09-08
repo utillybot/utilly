@@ -200,7 +200,6 @@ export class CommandHandler {
         if (commandObj.permissions.userIDs)
             allowedIDs = allowedIDs.concat(commandObj.permissions.userIDs);
 
-        console.log(allowedIDs);
         for (const user of allowedIDs) {
             if (message.author.id == user) match = true;
         }
