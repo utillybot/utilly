@@ -27,6 +27,7 @@ export class UtillyWeb {
 
     load(): void {
         const pages = ['commands', 'about', ''];
+        this._app.disable('x-powered-by');
 
         this._app.use((req, res, next) => {
             const test = /\?[^]*\//.test(req.url);
