@@ -7,7 +7,10 @@
     "dependencies": {
         "@utilly/database": "1.0.0",
         "@utilly/utils": "1.0.0",
+        "class-transformer": "^0.3.1",
+        "class-validator": "^0.12.2",
         "express": "^4.17.1",
+        "reflect-metadata": "^0.1.13",
         "routing-controllers": "^0.9.0-alpha.6"
     },
     "devDependencies": {
