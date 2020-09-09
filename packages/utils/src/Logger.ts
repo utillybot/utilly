@@ -15,6 +15,10 @@ export class Logger {
         if (!this._off) console.log(chalk.green.bold(`[Handler] `), msg);
     }
 
+    web(msg: string): void {
+        if (!this._off) console.log(chalk.cyan.bold(`[Web] `), msg);
+    }
+
     gateway(msg: string): void {
         if (!this._off) console.log(chalk.blue.bold(`[Gateway] `), msg);
     }

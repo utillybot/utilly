@@ -1,6 +1,6 @@
 import { Database } from '@utilly/database';
 import { UtillyClient } from '@utilly/framework';
-import '@utilly/server';
+import { UtillyWeb } from '@utilly/server';
 import { Logger } from '@utilly/utils';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -9,6 +9,7 @@ export class Utilly {
     protected logger: Logger;
     protected database: Database;
     protected bot: UtillyClient;
+    protected web: UtillyWeb;
 
     constructor() {
         dotenv.config();
@@ -42,6 +43,11 @@ export class Utilly {
             this.logger,
             this.database
         );
+        this.web = new UtillyWeb(
+            parseInt(process.env.PORT ?? '3006'),
+            this.logger,
+            this.database
+        );
         /*
         this.bot.on('error', (error: Error) => {
             sentry.captureException(error);
@@ -57,6 +63,9 @@ export class Utilly {
         this.bot.loadBot(rootDir);
 
         this.bot.connect();
+
+        this.web.load();
+        this.web.listen();
     }
 }
 
