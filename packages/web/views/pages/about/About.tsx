@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import type { RouteComponentProps } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import 'regenerator-runtime/runtime';
-import './About.scss';
+import './About.sass';
 import Stats from './components/Stats';
 
 interface AboutState {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './App.scss';
+import './App.sass';
 
 class App extends Component {
     render(): JSX.Element {

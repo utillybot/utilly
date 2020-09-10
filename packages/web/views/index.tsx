@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import './index.css';
+import './index.sass';
 import { ROUTE_CONSTANTS } from './ROUTE_CONSTANTS';
 
 const routes: JSX.Element[] = [];

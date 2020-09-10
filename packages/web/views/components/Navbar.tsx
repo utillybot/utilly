@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import type { RouteComponentProps } from 'react-router-dom';
 import { Link, withRouter } from 'react-router-dom';
 import { ROUTE_CONSTANTS } from '../ROUTE_CONSTANTS';
-import './Navbar.scss';
+import './Navbar.sass';
 
 class Navbar extends Component<RouteComponentProps> {
     render(): JSX.Element {
