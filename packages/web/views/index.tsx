@@ -16,9 +16,7 @@ ReactDOM.render(
     <React.StrictMode>
         <BrowserRouter>
             <Navbar />
-            <Switch>
-                <div className="app">{routes}</div>
-            </Switch>
+            <Switch>{routes}</Switch>
         </BrowserRouter>
     </React.StrictMode>,
     document.getElementById('root')

@@ -1,22 +1,35 @@
 import type { Database } from '@utilly/database';
+import type { UtillyClient } from '@utilly/framework';
 import type { Logger } from '@utilly/utils';
 import type { Express, Request, Response } from 'express';
 import express from 'express';
 import path from 'path';
 import 'reflect-metadata';
 import { createExpressServer } from 'routing-controllers';
+import { StatsController } from './controllers/StatsController';
 
 export class UtillyWeb {
-    private _database: Database;
+    static database: Database;
+    static bot: UtillyClient;
+
     private _port: number;
     private _app: Express;
     private _logger: Logger;
 
-    constructor(port: number, logger: Logger, database: Database) {
-        this._database = database;
+    constructor(
+        port: number,
+        logger: Logger,
+        database: Database,
+        bot: UtillyClient
+    ) {
+        UtillyWeb.database = database;
+        UtillyWeb.bot = bot;
+
         this._logger = logger;
         this._port = port;
-        this._app = createExpressServer();
+        this._app = createExpressServer({
+            controllers: [StatsController],
+        });
     }
 
     listen(): void {

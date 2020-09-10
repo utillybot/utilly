@@ -46,7 +46,8 @@ export class Utilly {
         this.web = new UtillyWeb(
             parseInt(process.env.PORT ?? '3006'),
             this.logger,
-            this.database
+            this.database,
+            this.bot
         );
         /*
         this.bot.on('error', (error: Error) => {

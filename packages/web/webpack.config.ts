@@ -11,18 +11,15 @@ const config: webpack.Configuration = {
                 exclude: /node_modules/,
                 use: {
                     loader: 'babel-loader',
-                    options: {
-                        presets: [
-                            '@babel/preset-env',
-                            '@babel/preset-react',
-                            '@babel/preset-typescript',
-                        ],
-                    },
                 },
             },
             {
                 test: /\.css$/i,
                 use: ['style-loader', 'css-loader'],
+            },
+            {
+                test: /\.s[ac]ss$/i,
+                use: ['style-loader', 'css-loader', 'sass-loader'],
             },
         ],
     },
@@ -37,6 +34,7 @@ const config: webpack.Configuration = {
         contentBase: path.join(__dirname, 'public'),
         compress: true,
         port: 4000,
+        historyApiFallback: true,
     },
     plugins: [
         new ForkTsCheckerWebpackPlugin({
