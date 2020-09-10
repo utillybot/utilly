@@ -18,7 +18,7 @@ export class Utilly {
         if (!process.env.TOKEN)
             throw new Error('TOKEN env variable not present');
 
-        this.logger = new Logger();
+        this.logger = new Logger({ database: false });
         this.database = new Database(process.env.DATABASE_URL, this.logger);
         this.bot = new UtillyClient(
             'Bot ' + process.env.TOKEN,
@@ -49,11 +49,11 @@ export class Utilly {
             this.database,
             this.bot
         );
-        /*
-        this.bot.on('error', (error: Error) => {
-            sentry.captureException(error);
-        });
 
+        this.bot.on('error', (error: Error) => {
+            this.logger.error(error.message + error.stack);
+        });
+        /*
         process.on('uncaughtException', sentry.captureException);
         process.on('unhandledRejection', sentry.captureException);*/
     }
