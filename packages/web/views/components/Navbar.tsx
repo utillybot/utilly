@@ -62,11 +62,38 @@ class Navbar extends Component<RouteComponentProps, NavbarState> {
                         onClick={this.toggleNavbar.bind(this)}
                     >
                         <button className="hamburger">
-                            <svg viewBox="0 0 10 8" width="40">
+                            <svg viewBox="0 0 10 10" width="40">
                                 <path
-                                    d="M1 1h8M1 4h 8M1 7h8"
+                                    className={`hamburger-line hamburger-line1 ${
+                                        this.state.collapsed
+                                            ? 'collapsed'
+                                            : 'open'
+                                    }`}
+                                    d="M 1,2 h8"
                                     stroke="#fff"
-                                    strokeWidth="2"
+                                    strokeWidth="1"
+                                    strokeLinecap="round"
+                                />
+                                <path
+                                    className={`hamburger-line hamburger-line2 ${
+                                        this.state.collapsed
+                                            ? 'collapsed'
+                                            : 'open'
+                                    }`}
+                                    d="M 1,5 h8"
+                                    stroke="#fff"
+                                    strokeWidth="1"
+                                    strokeLinecap="round"
+                                />
+                                <path
+                                    className={`hamburger-line hamburger-line3 ${
+                                        this.state.collapsed
+                                            ? 'collapsed'
+                                            : 'open'
+                                    }`}
+                                    d="M 1,8 h8"
+                                    stroke="#fff"
+                                    strokeWidth="1"
                                     strokeLinecap="round"
                                 />
                             </svg>
