@@ -22,10 +22,8 @@ class Navbar extends Component<RouteComponentProps, NavbarState> {
             for (const element of elements) {
                 if (prevState.collapsed) {
                     element.classList.remove('collapsed');
-                    element.style.transition = 'max-height 1s ease-in';
                 } else {
                     element.classList.add('collapsed');
-                    element.style.transition = 'max-height 1s ease-out';
                 }
             }
             return { collapsed: !prevState.collapsed };
@@ -64,37 +62,28 @@ class Navbar extends Component<RouteComponentProps, NavbarState> {
                         <button className="hamburger">
                             <svg viewBox="0 0 10 10" width="40">
                                 <path
-                                    className={`hamburger-line hamburger-line1 ${
+                                    className={`hamburger-line ${
                                         this.state.collapsed
                                             ? 'collapsed'
                                             : 'open'
                                     }`}
                                     d="M 1,2 h8"
-                                    stroke="#fff"
-                                    strokeWidth="1"
-                                    strokeLinecap="round"
                                 />
                                 <path
-                                    className={`hamburger-line hamburger-line2 ${
+                                    className={`hamburger-line ${
                                         this.state.collapsed
                                             ? 'collapsed'
                                             : 'open'
                                     }`}
                                     d="M 1,5 h8"
-                                    stroke="#fff"
-                                    strokeWidth="1"
-                                    strokeLinecap="round"
                                 />
                                 <path
-                                    className={`hamburger-line hamburger-line3 ${
+                                    className={`hamburger-line ${
                                         this.state.collapsed
                                             ? 'collapsed'
                                             : 'open'
                                     }`}
                                     d="M 1,8 h8"
-                                    stroke="#fff"
-                                    strokeWidth="1"
-                                    strokeLinecap="round"
                                 />
                             </svg>
                         </button>
