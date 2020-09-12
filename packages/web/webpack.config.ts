@@ -9,17 +9,16 @@ const config: webpack.Configuration = {
             {
                 test: /\.(ts|js)x?$/,
                 exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                },
-            },
-            {
-                test: /\.css$/i,
-                use: ['style-loader', 'css-loader'],
+                use: ['babel-loader'],
             },
             {
                 test: /\.s[ac]ss$/i,
-                use: ['style-loader', 'css-loader', 'sass-loader'],
+                use: [
+                    'style-loader',
+                    'css-loader',
+                    'postcss-loader',
+                    'sass-loader',
+                ],
             },
         ],
     },
