@@ -4442,7 +4442,8 @@ envinfo@^7.3.1:
 
 eris@bsian03/eris#typings:
   version "0.13.3"
-  resolved "https://codeload.github.com/bsian03/eris/tar.gz/e3e7536f81d35552b4e2d196dfa9557976f0e27f"
+  uid "6204e3fac1d47fb2d91cd814c9fb4eccdfccf791"
+  resolved "https://codeload.github.com/bsian03/eris/tar.gz/6204e3fac1d47fb2d91cd814c9fb4eccdfccf791"
   dependencies:
     ws "^7.2.1"
   optionalDependencies:
