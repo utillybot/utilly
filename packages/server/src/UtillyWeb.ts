@@ -77,7 +77,7 @@ export class UtillyWeb {
                         process.cwd(),
                         'packages',
                         'web',
-                        'public',
+                        'dist',
                         'index.html'
                     )
                 );
