@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -6,18 +7,18 @@ import path from 'path';
 import TerserPlugin from 'terser-webpack-plugin';
 import type { Configuration } from 'webpack';
 
-const config = (webpackEnv: string): Configuration => {
-    const devMode = webpackEnv == 'development';
+interface EnvOptions {
+    mode: 'production' | 'development';
+}
 
-    return {
-        devServer: {
-            contentBase: path.join(__dirname, 'public'),
-            compress: true,
-            port: 4000,
-            historyApiFallback: true,
-        },
-        devtool: devMode ? 'source-map' : false,
+const config = (env: EnvOptions): Configuration => {
+    const mode = env.mode == 'production' ? 'production' : 'development';
+
+    const devMode = mode == 'development';
+
+    const baseConfig: Configuration = {
         entry: './views/index.tsx',
+        mode: mode,
         module: {
             rules: [
                 {
@@ -25,36 +26,10 @@ const config = (webpackEnv: string): Configuration => {
                     exclude: /node_modules/,
                     use: ['babel-loader'],
                 },
-                {
-                    test: /\.s[ac]ss$/i,
-                    use: [
-                        devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
-                        {
-                            loader: 'css-loader',
-                            options: { sourceMap: devMode },
-                        },
-                        {
-                            loader: 'postcss-loader',
-                            options: { sourceMap: devMode },
-                        },
-                        {
-                            loader: 'sass-loader',
-                            options: { sourceMap: devMode },
-                        },
-                    ],
-                },
             ],
-        },
-        optimization: {
-            minimize: true,
-            minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
-            splitChunks: {
-                chunks: 'all',
-            },
         },
         output: {
             path: path.resolve(__dirname, 'dist'),
-            filename: '[name].[contenthash].js',
         },
         plugins: [
             new ForkTsCheckerWebpackPlugin({
@@ -62,10 +37,6 @@ const config = (webpackEnv: string): Configuration => {
                 eslint: {
                     files: './**/*.{ts,tsx,js,jsx}',
                 },
-            }),
-            new MiniCssExtractPlugin({
-                filename: '[name].[contenthash].css',
-                chunkFilename: '[id].[contenthash].css',
             }),
             new HtmlWebpackPlugin({
                 inject: true,
@@ -76,5 +47,66 @@ const config = (webpackEnv: string): Configuration => {
             extensions: ['.tsx', '.ts', '.js'],
         },
     };
+
+    if (devMode) {
+        baseConfig.devServer = {
+            contentBase: path.join(__dirname, 'public'),
+            compress: true,
+            port: 4000,
+            historyApiFallback: true,
+        };
+        baseConfig.devtool = 'source-map';
+
+        baseConfig.output!.filename = '[name].js';
+    } else {
+        baseConfig.optimization = {
+            minimize: !devMode,
+            minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
+            splitChunks: {
+                chunks: 'all',
+            },
+        };
+
+        baseConfig.plugins?.push(
+            new MiniCssExtractPlugin({
+                filename: '[name].[contenthash].css',
+                chunkFilename: '[id].[contenthash].css',
+            })
+        );
+        baseConfig.output!.filename = '[name].[contenthash].js';
+    }
+
+    baseConfig.module?.rules?.push(
+        {
+            test: /\.s[ac]ss$/i,
+            use: [
+                devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+                {
+                    loader: 'css-loader',
+                    options: { sourceMap: devMode },
+                },
+                {
+                    loader: 'postcss-loader',
+                    options: { sourceMap: devMode },
+                },
+                {
+                    loader: 'sass-loader',
+                    options: { sourceMap: devMode },
+                },
+            ],
+        },
+        {
+            test: /\.css$/i,
+            use: [
+                devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+                {
+                    loader: 'css-loader',
+                    options: { sourceMap: devMode },
+                },
+            ],
+        }
+    );
+
+    return baseConfig;
 };
 export default config;

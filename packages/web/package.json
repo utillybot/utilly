@@ -44,8 +44,8 @@
         "webpack-dev-server": "^3.11.0"
     },
     "scripts": {
-        "dev": "webpack-dev-server",
-        "dev-build": "webpack",
-        "build": "webpack --mode production"
+        "dev": "webpack-dev-server --env.mode=development",
+        "dev-build": "webpack --env.mode=development",
+        "build": "webpack --env.mode=production"
     }
 }
