@@ -92,7 +92,6 @@ export default class MessageLogging extends AttachableModule {
 
         for (const message of messages) {
             if (!(message instanceof Message)) continue;
-            if (!message) continue;
             if (!(message.channel instanceof TextChannel)) continue;
             cachedMessage = message;
             guild = message.channel.guild;

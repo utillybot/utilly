@@ -75,9 +75,15 @@ export default class Eval extends BaseCommand {
                 .setTimestamp();
 
             if (evaled.toString().length > 1024) {
+                let formatted;
+                try {
+                    formatted = prettier.format(remove(evaled));
+                } catch {
+                    formatted = remove(evaled);
+                }
                 const result = await (
                     await centra('https://hasteb.in/documents', 'POST')
-                        .body(prettier.format(remove(evaled)))
+                        .body(formatted)
                         .header('content-type', 'application/json')
                         .send()
                 ).json();

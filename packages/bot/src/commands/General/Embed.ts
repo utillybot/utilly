@@ -54,7 +54,7 @@ export default class Embed extends BaseCommand {
 
     async execute(ctx: CommandContext): Promise<void> {
         if (ctx.args.length == 0) {
-            ctx.reply({
+            await ctx.reply({
                 embed: await this.subCommandHandler.generateHelp(
                     this,
                     ctx.message
@@ -62,7 +62,7 @@ export default class Embed extends BaseCommand {
             });
         } else {
             if (!(await this.subCommandHandler.handle(ctx))) {
-                ctx.reply(
+                await ctx.reply(
                     'You used the command incorrectly. View the help page to learn how to use this command'
                 );
             }
