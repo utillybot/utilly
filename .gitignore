@@ -2,4 +2,3 @@ node_modules
 dist
 .env
 tsconfig.tsbuildinfo
-.idea/workspace.xml
