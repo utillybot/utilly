@@ -8,7 +8,12 @@ import { ROUTE_CONSTANTS } from './ROUTE_CONSTANTS';
 const routes: JSX.Element[] = [];
 for (const pageRoute of ROUTE_CONSTANTS) {
     routes.push(
-        <Route path={pageRoute.path} exact component={pageRoute.page} />
+        <Route
+            key={pageRoute.name}
+            path={pageRoute.path}
+            exact
+            component={pageRoute.page}
+        />
     );
 }
 

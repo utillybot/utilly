@@ -16,16 +16,6 @@ class Navbar extends Component<RouteComponentProps, NavbarState> {
 
     toggleNavbar() {
         this.setState(prevState => {
-            const elements = document.querySelectorAll(
-                '.nav-collapsable'
-            ) as NodeListOf<HTMLElement>;
-            for (const element of elements) {
-                if (prevState.collapsed) {
-                    element.classList.remove('collapsed');
-                } else {
-                    element.classList.add('collapsed');
-                }
-            }
             return { collapsed: !prevState.collapsed };
         });
     }
@@ -33,11 +23,23 @@ class Navbar extends Component<RouteComponentProps, NavbarState> {
     render(): JSX.Element {
         const navbarElements: JSX.Element[] = [];
         let currentPage;
+        const isCollapsed = this.state.collapsed ? 'collapsed' : 'open';
+
+        const generateSVG = (x: number, y: number, l: number): JSX.Element => {
+            return (
+                <path
+                    key={`${x},${y} ${l}`}
+                    className={`hamburger-line ${isCollapsed}`}
+                    d={`M ${x},${y} h${l}`}
+                />
+            );
+        };
         for (const pageRoute of ROUTE_CONSTANTS) {
             if (this.props.location.pathname == pageRoute.path)
                 currentPage = pageRoute;
             navbarElements.push(
                 <Link
+                    key={pageRoute.name}
                     to={pageRoute.path}
                     className={`nav-item ${
                         this.props.location.pathname === pageRoute.path
@@ -61,45 +63,22 @@ class Navbar extends Component<RouteComponentProps, NavbarState> {
                     >
                         <button className="hamburger">
                             <svg viewBox="0 0 10 10" width="40">
-                                <path
-                                    className={`hamburger-line ${
-                                        this.state.collapsed
-                                            ? 'collapsed'
-                                            : 'open'
-                                    }`}
-                                    d="M 1,2 h8"
-                                />
-                                <path
-                                    className={`hamburger-line ${
-                                        this.state.collapsed
-                                            ? 'collapsed'
-                                            : 'open'
-                                    }`}
-                                    d="M 1,5 h8"
-                                />
-                                <path
-                                    className={`hamburger-line ${
-                                        this.state.collapsed
-                                            ? 'collapsed'
-                                            : 'open'
-                                    }`}
-                                    d="M 1,8 h8"
-                                />
+                                {[
+                                    [1, 2, 8],
+                                    [1, 5, 8],
+                                    [1, 8, 8],
+                                ].map(i => generateSVG(i[0], i[1], i[2]))}
                             </svg>
                         </button>
                     </div>
                 </div>
                 <div
-                    className={`nav-container nav-links nav-collapsable ${
-                        this.state.collapsed ? 'collapsed' : ''
-                    }`}
+                    className={`nav-container nav-links nav-collapsable ${isCollapsed}`}
                 >
                     {navbarElements}
                 </div>
                 <div
-                    className={`nav-container nav-signin nav-collapsable ${
-                        this.state.collapsed ? 'collapsed' : ''
-                    }`}
+                    className={`nav-container nav-signin nav-collapsable ${isCollapsed}`}
                 >
                     <Link to="/" className="nav-item">
                         Sign in with Discord

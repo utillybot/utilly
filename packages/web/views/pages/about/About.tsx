@@ -26,11 +26,15 @@ class About extends Component<RouteComponentProps, AboutState> {
     }
 
     async tick() {
-        const data = await (await fetch('/stats')).json();
-        this.setState({
-            guilds: data.guilds,
-            users: data.users,
-        });
+        const fetchedResult = await fetch('/stats');
+        console.log(fetchedResult);
+        if (fetchedResult.status == 200) {
+            const data = await fetchedResult.json();
+            this.setState({
+                guilds: data.guilds,
+                users: data.users,
+            });
+        }
     }
 
     componentWillUnmount() {
