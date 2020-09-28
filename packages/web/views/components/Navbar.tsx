@@ -61,7 +61,10 @@ class Navbar extends Component<RouteComponentProps, NavbarState> {
                         className="nav-header-hamburger"
                         onClick={this.toggleNavbar.bind(this)}
                     >
-                        <button className="hamburger">
+                        <button
+                            className="hamburger"
+                            aria-label="Toggle Navigation"
+                        >
                             <svg viewBox="0 0 10 10" width="40">
                                 {[
                                     [1, 2, 8],

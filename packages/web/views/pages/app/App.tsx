@@ -6,7 +6,11 @@ class App extends Component {
         return (
             <React.Fragment>
                 <header className="App-header">
-                    <img className="App-logo" src="./logo.png" />
+                    <img
+                        className="App-logo"
+                        src="./logo.png"
+                        alt="Utilly Logo"
+                    />
                     <h1>Utilly</h1>
                     <h2>The tool for the job</h2>
                 </header>

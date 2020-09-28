@@ -9,6 +9,7 @@ interface LoggerOptions {
 
 export class Logger {
     options: LoggerOptions;
+    colors: Record<string, string>;
 
     constructor(options?: LoggerOptions) {
         this.options = Object.assign(
@@ -20,32 +21,45 @@ export class Logger {
             },
             options
         );
+
+        this.colors = {
+            database: '#ff00ff',
+            handler: '#00ff00',
+            web: '#00ffff',
+            gateway: '#007aff',
+            log: '#ffffff',
+        };
     }
 
     database(msg: string): void {
-        if (this.options.database)
-            console.log(chalk.magenta.bold(`[Database] `), msg);
+        if (this.options.database) this._log('database', msg);
     }
 
     handler(msg: string): void {
-        if (this.options.handler)
-            console.log(chalk.green.bold(`[Handler] `), msg);
+        if (this.options.handler) this._log('handler', msg);
     }
 
     web(msg: string): void {
-        if (this.options.web) console.log(chalk.cyan.bold(`[Web] `), msg);
+        if (this.options.web) this._log('web', msg);
     }
 
     gateway(msg: string): void {
-        if (this.options.gateway)
-            console.log(chalk.blue.bold(`[Gateway] `), msg);
+        if (this.options.gateway) this._log('gateway', msg);
     }
 
     error(error: string, ...args: string[]): void {
-        console.error(chalk.red.bold(`[Error] `), error, args);
+        console.error(chalk.red('error'), error, args);
     }
 
     log(msg: string): void {
-        console.log(chalk.white.bold(`[Log] `), msg);
+        this._log('log', msg);
+    }
+
+    _log(header: string, msg: string): void {
+        process.stdout.write(
+            `${chalk.grey('[Utilly]')} ${chalk.bold.underline.hex(
+                this.colors[header]
+            )(header)}${' '.repeat(9 - header.length)}${msg}\n`
+        );
     }
 }

@@ -1,19 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:npm_and_yarn" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:npm_and_yarn" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:typescript-eslint" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="15216c08-634b-45e9-a561-6eb952ff9818" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.vscode/extensions.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/bot/src/commands/General/Embed.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/bot/src/commands/General/Embed.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/bot/src/commands/General/Eval.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/bot/src/commands/General/Eval.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/bot/src/modules/Logging/MessageLogging.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/bot/src/modules/Logging/MessageLogging.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/framework/src/handlers/CommandHandler/CommandHandler.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/framework/src/handlers/CommandHandler/CommandHandler.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/server/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/server/src/UtillyWeb.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/server/src/UtillyWeb.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/utils/src/Logger.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/utils/src/Logger.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/views/components/Navbar.sass" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/views/components/Navbar.sass" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/web/views/components/Navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/views/components/Navbar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/views/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/views/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/views/pages/about/About.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/views/pages/about/About.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/web/views/pages/app/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/views/pages/app/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/webpack.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/webpack.config.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -24,6 +57,17 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="JsBowerSettings">
+    <node-interpreter value="project" />
+    <bower-package value="" />
+    <bower.json value="" />
+  </component>
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
+  </component>
   <component name="ProjectId" id="1hhH1Z1z87YHcCcQ35b0s7Unsjp" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -31,14 +75,52 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.standard" value="true" />
+    <property name="node.js.detected.package.stylelint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.standard" value="project" />
+    <property name="node.js.path.for.package.stylelint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
-    <property name="ts.external.directory.path" value="C:\Users\jtssh\Projects\Utilly\node_modules\typescript\lib" />
+    <property name="node.js.selected.package.standard" value="" />
+    <property name="node.js.selected.package.stylelint" value="" />
+    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="prettierjs.PrettierConfiguration.Package" value="C:\Users\jtssh\Projects\Web Development\Utilly\node_modules\prettier" />
+    <property name="run.prettier.on.save" value="true" />
+    <property name="settings.editor.selected.configurable" value="settings.javascript.linters.eslint" />
+    <property name="ts.external.directory.path" value="C:\Users\jtssh\Projects\Web Development\Utilly\node_modules\typescript\lib" />
     <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RunManager" selected="npm.start">
+    <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/packages/web/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="start" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.start" />
+        <item itemvalue="npm.dev" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -49,20 +131,87 @@
       <option name="presentableId" value="Default" />
       <updated>1600456191146</updated>
       <workItem from="1600456193707" duration="729000" />
+      <workItem from="1600458824830" duration="261000" />
+      <workItem from="1600459383606" duration="11359000" />
+      <workItem from="1600547278284" duration="1969000" />
+      <workItem from="1600558427642" duration="1356000" />
+      <workItem from="1600561689989" duration="507000" />
+      <workItem from="1600563318470" duration="1974000" />
+      <workItem from="1600565376759" duration="4406000" />
+      <workItem from="1600641139021" duration="4165000" />
+      <workItem from="1600691950879" duration="514000" />
+      <workItem from="1600729928858" duration="3107000" />
+      <workItem from="1601253052234" duration="299000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
   <component name="WindowStateProjectService">
-    <state x="414" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1600456292743">
+    <state x="542" y="208" key="#Web_Browsers" timestamp="1600562198454">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="414" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1600456292743" />
-    <state x="698" y="146" key="SettingsEditor" timestamp="1600456458101">
+    <state x="542" y="208" key="#Web_Browsers/0.0.1920.1040@0.0.1920.1040" timestamp="1600562198454" />
+    <state x="414" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1600547811060">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="698" y="146" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1600456458101" />
+    <state x="414" y="174" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1600547811060" />
+    <state x="885" y="261" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1600564303741">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="885" y="261" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1600564303741" />
+    <state x="977" y="256" key="FileChooserDialogImpl" timestamp="1600692426044">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="977" y="256" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1600692426044" />
+    <state width="1362" height="243" key="GridCell.Tab.0.bottom" timestamp="1601253271602">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1362" height="243" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1601253271602" />
+    <state width="1362" height="243" key="GridCell.Tab.0.center" timestamp="1601253271602">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1362" height="243" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1601253271602" />
+    <state width="1362" height="243" key="GridCell.Tab.0.left" timestamp="1601253271602">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1362" height="243" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1601253271602" />
+    <state width="1362" height="243" key="GridCell.Tab.0.right" timestamp="1601253271602">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1362" height="243" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1601253271602" />
+    <state x="83" y="54" key="SettingsEditor" timestamp="1600565545290">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="83" y="54" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1600565545290" />
+    <state x="615" y="344" key="cloudConfig.SelfSettingsDialog" timestamp="1600561662906">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="615" y="344" key="cloudConfig.SelfSettingsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1600561662906" />
+    <state x="92" y="92" width="1736" height="856" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1600558880080">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="92" y="92" width="1736" height="856" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1600558880080" />
+    <state x="356" y="276" width="555" height="283" key="org.intellij.images.editor.actions.BackgroundImageDialog" timestamp="1600561774929">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="356" y="276" width="555" height="283" key="org.intellij.images.editor.actions.BackgroundImageDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1600561774929" />
+    <state x="821" y="248" key="run.anything.popup" timestamp="1600459472543">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="821" y="248" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1600459472543" />
   </component>
 </project>

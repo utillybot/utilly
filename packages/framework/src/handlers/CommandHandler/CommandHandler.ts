@@ -13,7 +13,7 @@ import { CommandContext } from './Command';
 import type { CommandModule } from './CommandModule';
 
 /**
- * Handles all incomming commands
+ * Handles all incoming commands
  */
 export class CommandHandler {
     /**
@@ -31,7 +31,7 @@ export class CommandHandler {
      */
     readonly commands: Map<string, BaseCommand>;
 
-    private _bot: Client;
+    private readonly _bot: Client;
 
     private _logger: Logger;
 
@@ -39,8 +39,9 @@ export class CommandHandler {
 
     /**
      * Creates a new CommandHandler
-     * @param bot - the UtillyCLient instance
+     * @param bot - the UtillyClient instance
      * @param logger - the logger
+     * @param database - the database instance
      */
     constructor(bot: Client, logger: Logger, database: Database) {
         this._bot = bot;
@@ -59,7 +60,7 @@ export class CommandHandler {
     }
 
     /**
-     * Link the command modules with their corrosponding backend modules
+     * Link the command modules with their corresponding backend modules
      * @param modules the modules to link with
      */
     linkModules(modules: Map<string, Module>): void {
