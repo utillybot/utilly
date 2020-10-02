@@ -1,5 +1,10 @@
 import type { CommandContext, UtillyClient } from '@utilly/framework';
-import { BaseCommand, EmbedBuilder } from '@utilly/framework';
+import {
+    BaseCommand,
+    ChannelValidatorHook,
+    EmbedBuilder,
+    UserIdValidatorHook,
+} from '@utilly/framework';
 import centra from 'centra';
 import prettier from 'prettier';
 import type GeneralCommandModule from './moduleinfo';
@@ -13,9 +18,12 @@ export default class Eval extends BaseCommand {
         this.help.description =
             'View all the modules, or commands in a specific module';
         this.help.usage = '(command/module)';
-        this.settings.guildOnly = true;
 
-        this.permissions.userIDs = ['236279900728721409'];
+        this.preHooks.push(
+            new UserIdValidatorHook({
+                allowedIds: ['236279900728721409'],
+            })
+        );
     }
 
     async execute(ctx: CommandContext): Promise<void> {
@@ -38,16 +46,14 @@ export default class Eval extends BaseCommand {
         try {
             //Remove all discord things
             remove = (text: string) => {
-                if (typeof text === 'string')
-                    return text
-                        .replace(/`/g, '`' + String.fromCharCode(8203))
-                        .replace(/@/g, '@' + String.fromCharCode(8203))
-                        .replace(
-                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                            this.bot.token!,
-                            "Utilly's Token"
-                        );
-                else return text;
+                return text
+                    .replace(/`/g, '`' + String.fromCharCode(8203))
+                    .replace(/@/g, '@' + String.fromCharCode(8203))
+                    .replace(
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        this.bot.token!,
+                        "Utilly's Token"
+                    );
             };
 
             //Eval the code and set the result
@@ -64,7 +70,7 @@ export default class Eval extends BaseCommand {
             //Build the success embed
             const embed = new EmbedBuilder()
                 .setAuthor('Eval Success')
-                .setDescription("Eval's result")
+                .setDescription('Eval result')
                 .addField(
                     ':inbox_tray: Input:',
                     `\`\`\`js\n${code}\n\`\`\``,
@@ -110,7 +116,7 @@ export default class Eval extends BaseCommand {
 
             const embed = new EmbedBuilder()
                 .setAuthor('Eval Error')
-                .setDescription("Eval's result")
+                .setDescription('Eval result')
                 .addField(
                     ':inbox_tray: Input:',
                     `\`\`\`js\n${code}\n\`\`\``,

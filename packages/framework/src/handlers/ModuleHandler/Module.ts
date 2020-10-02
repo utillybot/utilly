@@ -1,5 +1,5 @@
-import type { UtillyClient } from '../../../UtillyClient';
-import type { Submodule } from '../Submodule/Submodule';
+import type { UtillyClient } from '../../UtillyClient';
+import type { Submodule } from './Submodule';
 
 /**
  * Base Module
@@ -8,7 +8,7 @@ export abstract class Module {
     bot: UtillyClient;
     subModules: Map<string, Submodule>;
 
-    constructor(bot: UtillyClient) {
+    protected constructor(bot: UtillyClient) {
         this.bot = bot;
         this.subModules = new Map();
     }

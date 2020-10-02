@@ -1,6 +1,12 @@
 import { Guild, GuildRepository } from '@utilly/database';
 import type { CommandContext, UtillyClient } from '@utilly/framework';
-import { BaseCommand, EmbedBuilder } from '@utilly/framework';
+import {
+    BaseCommand,
+    BotPermsValidatorHook,
+    ChannelValidatorHook,
+    EmbedBuilder,
+    UserPermsValidatorHook,
+} from '@utilly/framework';
 import { parseChannel } from '@utilly/utils';
 import type { Emoji, Message, User } from 'eris';
 import { GuildChannel, TextChannel } from 'eris';
@@ -16,18 +22,24 @@ export default class Logsettings extends BaseCommand {
         this.help.name = 'logsettings';
         this.help.description = 'Modify settings for the logging plugin';
         this.help.usage = '';
-        this.help.permission =
-            'Server Owner, Administrator, or Manage Server permission';
 
-        this.settings.guildOnly = true;
-        this.permissions.botPerms = [
-            'embedLinks',
-            'externalEmojis',
-            'addReactions',
-            'manageMessages',
-            'readMessageHistory',
-        ];
-        this.permissions.userPerms = ['manageGuild'];
+        this.preHooks.push(
+            new ChannelValidatorHook({
+                channel: ['guild'],
+            }),
+            new BotPermsValidatorHook({
+                permissions: [
+                    'embedLinks',
+                    'externalEmojis',
+                    'addReactions',
+                    'manageMessages',
+                    'readMessageHistory',
+                ],
+            }),
+            new UserPermsValidatorHook({
+                permissions: ['manageGuild'],
+            })
+        );
     }
 
     async execute(ctx: CommandContext): Promise<void> {

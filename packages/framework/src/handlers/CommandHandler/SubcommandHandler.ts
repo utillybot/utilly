@@ -27,12 +27,12 @@ export class SubcommandHandler {
     /**
      * An array of registered prechecks to run before a subcommand
      */
-    private _preChecks: Precheck[];
+    private readonly _preChecks: Precheck[];
 
     /**
      * A map of registered subcommand names to their subcommand
      */
-    private _subCommandMap: Map<string, Subcommand>;
+    private readonly _subCommandMap: Map<string, Subcommand>;
 
     private _bot: UtillyClient;
 
@@ -48,9 +48,8 @@ export class SubcommandHandler {
     }
 
     /**
-     * Handles an incomming command and translates it to a subcommand
-     * @param message - the message
-     * @param args - the arguments
+     * Handles an incoming command and translates it to a subcommand
+     * @param ctx - the command context
      * @returns a boolean telling whether a subcommand was found
      */
     async handle(ctx: CommandContext): Promise<boolean> {

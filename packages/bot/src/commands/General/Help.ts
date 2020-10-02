@@ -3,12 +3,14 @@ import { GuildRepository } from '@utilly/database';
 import type { CommandContext, UtillyClient } from '@utilly/framework';
 import {
     BaseCommand,
+    BotPermsValidatorHook,
+    ChannelValidatorHook,
     DatabaseModule,
     EmbedBuilder,
     ROLE_PERMISSIONS,
 } from '@utilly/framework';
 import type { Message } from 'eris';
-import { Constants } from 'eris';
+import { Constants, GuildChannel } from 'eris';
 import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
 import type GeneralCommandModule from './moduleinfo';
 
@@ -22,8 +24,15 @@ export default class Help extends BaseCommand {
             'View all the modules, or commands in a specific module';
         this.help.usage = '(command/module)';
         this.help.aliases = ['h'];
-        this.settings.guildOnly = true;
-        this.permissions.botPerms = ['embedLinks'];
+
+        this.preHooks.push(
+            new ChannelValidatorHook({
+                channel: ['guild'],
+            }),
+            new BotPermsValidatorHook({
+                permissions: ['embedLinks'],
+            })
+        );
     }
 
     async execute(ctx: CommandContext): Promise<void> {
@@ -152,46 +161,6 @@ export default class Help extends BaseCommand {
         if (aliases.length != 0)
             embed.addField('Aliases', aliases.join(', '), true);
 
-        embed.addField(
-            'Guild Only',
-            command.settings.guildOnly ? 'Yes' : 'No',
-            true
-        );
-
-        if (command.help.permission) {
-            embed.addField(
-                'Permission Required',
-                command.help.permission,
-                true
-            );
-        }
-
-        if (command.permissions.botPerms.length > 0) {
-            embed.addField(
-                'Bot Permissions Required',
-                command.permissions.botPerms
-                    .map(perm =>
-                        /**@ts-ignore */
-                        ROLE_PERMISSIONS.get(Constants.Permissions[perm])
-                    )
-                    .join(', '),
-                true
-            );
-        }
-
-        if (command.permissions.userPerms.length > 0) {
-            embed.addField(
-                'User Permissions Required',
-                command.permissions.userPerms
-                    .map(perm =>
-                        /**@ts-ignore */
-
-                        ROLE_PERMISSIONS.get(Constants.Permissions[perm])
-                    )
-                    .join(', '),
-                true
-            );
-        }
         embed.addField(
             'Parent Module',
             `${command.parent.info.name} : ${

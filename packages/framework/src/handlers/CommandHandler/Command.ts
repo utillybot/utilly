@@ -2,6 +2,7 @@ import type { Guild, Member, Message, MessageContent } from 'eris';
 import { GuildChannel } from 'eris';
 import type { UtillyClient } from '../../UtillyClient';
 import type { CommandModule } from './CommandModule';
+import type { CommandHook } from './CommandHook';
 
 export interface CommandHelp {
     /**
@@ -20,39 +21,14 @@ export interface CommandHelp {
      * An array of aliases for this command
      */
     aliases: string[];
-    /**
-     * A sentence describing which permissions the user needs to run this command
-     */
-    permission?: string;
 }
 
-export interface CommandSettings {
-    /**
-     * Whether or not this command can only be executed in a guild
-     */
-    guildOnly: boolean;
-}
-
-export interface CommandPermissions {
-    /**
-     * The necesary permissions for the bot to run this command
-     */
-    botPerms: string[];
-
-    /**
-     * The necesary permissions for a user to run this command
-     */
-    userPerms: string[];
-
-    /**
-     * A list of user ids that can run this command
-     */
-    userIDs?: string[];
-
-    /**
-     * A function returning weather the command can be executed
-     */
-    checkPermission: (message: Message) => Promise<boolean> | boolean;
+export interface CommandArgument {
+    name: string;
+    description: string;
+    example: string;
+    optional: boolean;
+    type: unknown;
 }
 
 export class CommandContext {
@@ -75,6 +51,8 @@ export class CommandContext {
      * The member that ran this command, if there was one
      */
     readonly member?: Member;
+
+    readonly command!: BaseCommand;
 
     constructor(message: Message, args: string[]) {
         this.message = message;
@@ -106,15 +84,7 @@ export abstract class BaseCommand {
      */
     readonly help: CommandHelp;
 
-    /**
-     * A CommandSettings object of settings for this command
-     */
-    readonly settings: CommandSettings;
-
-    /**
-     * A CommandPermissions object of permissions for this command
-     */
-    readonly permissions: CommandPermissions;
+    readonly preHooks: CommandHook[];
 
     /**
      * The parent module of this command
@@ -132,15 +102,8 @@ export abstract class BaseCommand {
             aliases: [],
         };
 
-        this.settings = {
-            guildOnly: false,
-        };
+        this.preHooks = [];
 
-        this.permissions = {
-            botPerms: [],
-            userPerms: [],
-            checkPermission: () => true,
-        };
         this.parent = parent;
     }
 

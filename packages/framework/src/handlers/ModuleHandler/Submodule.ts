@@ -1,5 +1,5 @@
-import type { UtillyClient } from '../../../UtillyClient';
-import { Module } from '../Module/Module';
+import type { UtillyClient } from '../../UtillyClient';
+import { Module } from './Module';
 
 /**
  * A module that has a parent of another module
@@ -7,7 +7,7 @@ import { Module } from '../Module/Module';
 export abstract class Submodule extends Module {
     parentModule: Module;
 
-    constructor(bot: UtillyClient, parentModule: Module) {
+    protected constructor(bot: UtillyClient, parentModule: Module) {
         super(bot);
         this.parentModule = parentModule;
     }

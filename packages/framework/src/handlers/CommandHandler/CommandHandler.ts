@@ -2,12 +2,10 @@ import type { Database } from '@utilly/database';
 import { GuildRepository } from '@utilly/database';
 import type { Logger } from '@utilly/utils';
 import type { Client, Message } from 'eris';
-import Eris, { GuildChannel } from 'eris';
+import { GuildChannel } from 'eris';
 import fs from 'fs/promises';
 import path from 'path';
-import { ROLE_PERMISSIONS } from '../../constants/PermissionConstants';
-import { DatabaseModule } from '../ModuleHandler/Module/DatabaseModule';
-import type { Module } from '../ModuleHandler/Module/Module';
+import type { Module } from '../ModuleHandler/Module';
 import type { BaseCommand } from './Command';
 import { CommandContext } from './Command';
 import type { CommandModule } from './CommandModule';
@@ -33,9 +31,9 @@ export class CommandHandler {
 
     private readonly _bot: Client;
 
-    private _logger: Logger;
+    private readonly _logger: Logger;
 
-    private _database: Database;
+    private readonly _database: Database;
 
     /**
      * Creates a new CommandHandler
@@ -73,6 +71,8 @@ export class CommandHandler {
             this._logger.handler(
                 `Linking Command Module "${commandModuleName}" with module "${commandModule.parent.constructor.name}"`
             );
+
+            if (commandModule.moduleLinked) commandModule.moduleLinked();
         }
     }
 
@@ -126,7 +126,7 @@ export class CommandHandler {
     }
 
     /**
-     * Processes a message when it reaches the botou
+     * Processes a message when it reaches the bot
      * @param message - the message
      */
     private async _messageCreate(message: Message): Promise<void> {
@@ -169,7 +169,7 @@ export class CommandHandler {
         const command = args.shift();
         if (!command) return;
 
-        const commandObj: BaseCommand | undefined =
+        const commandObj =
             this.commands.get(command.toLowerCase()) ||
             this.aliases.get(command.toLowerCase());
 
@@ -180,105 +180,29 @@ export class CommandHandler {
             );
         //#endregion
 
-        //#region permission checking
+        let i = 0;
+        let j = 0;
+        const module = commandObj.parent;
+        let onModule = false;
+        const next = async () => {
+            const hook = !onModule
+                ? module.preHooks[i++]
+                : commandObj.preHooks[j++];
+
+            if (hook) {
+                await hook.run({ client: this._bot, message, args }, next);
+            } else if (!onModule) {
+                onModule = true;
+                next();
+            }
+        };
+        await next();
 
         if (
-            !(await commandObj.parent.permissions.checkPermission(message)) ||
-            !(await commandObj.permissions.checkPermission(message))
-        ) {
-            message.channel.createMessage(
-                "Uh oh, it looks like you don't have permission to run this command"
-            );
+            i != module.preHooks.length + 1 ||
+            j != commandObj.preHooks.length + 1
+        )
             return;
-        }
-
-        let allowedIDs: string[] = [];
-        let match = false;
-        if (commandObj.parent.permissions.userIDs)
-            allowedIDs = allowedIDs.concat(
-                commandObj.parent.permissions.userIDs
-            );
-        if (commandObj.permissions.userIDs)
-            allowedIDs = allowedIDs.concat(commandObj.permissions.userIDs);
-
-        for (const user of allowedIDs) {
-            if (message.author.id == user) match = true;
-        }
-
-        if (!match && allowedIDs.length != 0) {
-            message.channel.createMessage(
-                "Uh oh, it looks like you don't have permission to run this command"
-            );
-            return;
-        }
-
-        if (message.channel instanceof GuildChannel) {
-            if (commandObj.parent.parent instanceof DatabaseModule) {
-                if (
-                    !(await commandObj.parent.parent.isEnabled(
-                        message.channel.guild.id
-                    ))
-                )
-                    return;
-            }
-            const missingBotPerms = [];
-            for (const permission of commandObj.permissions.botPerms) {
-                if (
-                    !message.channel
-                        .permissionsOf(this._bot.user.id)
-                        .has(permission)
-                ) {
-                    missingBotPerms.push(
-                        ROLE_PERMISSIONS.get(
-                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                            // @ts-ignore
-                            Eris.Constants.Permissions[permission]
-                        )
-                    );
-                }
-            }
-
-            if (missingBotPerms.length > 0) {
-                await message.channel.createMessage(
-                    `The bot is missing the permissions: ${missingBotPerms.join(
-                        ', '
-                    )}`
-                );
-                return;
-            }
-
-            const missingUserPerms = [];
-            for (const permission of commandObj.permissions.userPerms) {
-                if (
-                    !message.channel
-                        .permissionsOf(message.author.id)
-                        .has(permission)
-                ) {
-                    missingUserPerms.push(
-                        ROLE_PERMISSIONS.get(
-                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                            // @ts-ignore
-                            Eris.Constants.Permissions[permission]
-                        )
-                    );
-                }
-            }
-
-            if (missingUserPerms.length > 0) {
-                await message.channel.createMessage(
-                    `You are missing the permissions: ${missingBotPerms.join(
-                        ', '
-                    )}`
-                );
-                return;
-            }
-        } else if (commandObj.settings.guildOnly) {
-            await message.channel.createMessage(
-                'This command can only be ran in a guild.'
-            );
-            return;
-        }
-        //#endregion
 
         try {
             await commandObj.execute(new CommandContext(message, args));

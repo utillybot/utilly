@@ -27,7 +27,6 @@
         "@typescript-eslint/consistent-type-imports": ["warn"],
         "@typescript-eslint/member-delimiter-style": ["warn"],
         "@typescript-eslint/member-ordering": ["warn"],
-        "@typescript-eslint/method-signature-style": ["warn"],
         "@typescript-eslint/naming-convention": [
             "warn",
             {

@@ -2,15 +2,15 @@ import type { Logger } from '@utilly/utils';
 import fs from 'fs/promises';
 import path from 'path';
 import type { UtillyClient } from '../../UtillyClient';
-import type { Module } from './Module/Module';
-import { AttachableModule } from './Submodule/AttachableModule';
-import type { Submodule } from './Submodule/Submodule';
+import type { Module } from './Module';
+import { AttachableModule } from './AttachableModule';
+import type { Submodule } from './Submodule';
 
 export class ModuleHandler {
     readonly modules: Map<string, Module>;
 
-    private _bot: UtillyClient;
-    private _logger: Logger;
+    private readonly _bot: UtillyClient;
+    private readonly _logger: Logger;
 
     constructor(bot: UtillyClient, logger: Logger) {
         this._bot = bot;

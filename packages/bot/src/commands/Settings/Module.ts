@@ -2,8 +2,11 @@ import { Guild, GuildRepository } from '@utilly/database';
 import type { CommandContext, UtillyClient } from '@utilly/framework';
 import {
     BaseCommand,
+    BotPermsValidatorHook,
+    ChannelValidatorHook,
     EmbedBuilder,
     SubcommandHandler,
+    UserPermsValidatorHook,
 } from '@utilly/framework';
 import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
 import type SettingsCommandModule from './moduleinfo';
@@ -17,9 +20,17 @@ export default class Module extends BaseCommand {
         this.help.description = 'Enable, disable, or view info about a module.';
         this.help.usage = '(enable, disable, toggle, info) (module name)';
 
-        this.settings.guildOnly = true;
-        this.permissions.botPerms = ['embedLinks'];
-        this.permissions.userPerms = ['manageGuild'];
+        this.preHooks.push(
+            new ChannelValidatorHook({
+                channel: ['guild'],
+            }),
+            new BotPermsValidatorHook({
+                permissions: ['embedLinks'],
+            }),
+            new UserPermsValidatorHook({
+                permissions: ['manageGuild'],
+            })
+        );
         this.subCommandHandler = new SubcommandHandler(bot.logger, bot);
 
         this.subCommandHandler.registerSubcommand('enable', {

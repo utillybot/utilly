@@ -1,5 +1,10 @@
 import type { CommandContext, UtillyClient } from '@utilly/framework';
-import { BaseCommand, EmbedBuilder } from '@utilly/framework';
+import {
+    BaseCommand,
+    BotPermsValidatorHook,
+    ChannelValidatorHook,
+    EmbedBuilder,
+} from '@utilly/framework';
 import type GeneralCommandModule from './moduleinfo';
 
 export default class Ping extends BaseCommand {
@@ -8,10 +13,14 @@ export default class Ping extends BaseCommand {
     constructor(bot: UtillyClient, parent: GeneralCommandModule) {
         super(bot, parent);
         this.help.name = 'ping';
-        this.help.description = "Checks the bot's ping";
+        this.help.description = "Checks the bots' ping";
         this.help.usage = '';
-        this.settings.guildOnly = false;
-        this.permissions.botPerms = ['embedLinks'];
+
+        this.preHooks.push(
+            new BotPermsValidatorHook({
+                permissions: ['embedLinks'],
+            })
+        );
     }
 
     async execute(ctx: CommandContext): Promise<void> {

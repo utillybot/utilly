@@ -1,5 +1,10 @@
 import type { CommandContext, UtillyClient } from '@utilly/framework';
-import { BaseCommand, EmbedBuilder } from '@utilly/framework';
+import {
+    BaseCommand,
+    BotPermsValidatorHook,
+    ChannelValidatorHook,
+    EmbedBuilder,
+} from '@utilly/framework';
 import type GeneralCommandModule from './moduleinfo';
 
 export default class Privacy extends BaseCommand {
@@ -8,10 +13,14 @@ export default class Privacy extends BaseCommand {
     constructor(bot: UtillyClient, parent: GeneralCommandModule) {
         super(bot, parent);
         this.help.name = 'privacy';
-        this.help.description = "Shows the bot's privacy policy";
+        this.help.description = "Shows the bots' privacy policy";
         this.help.usage = '';
-        this.settings.guildOnly = true;
-        this.permissions.botPerms = ['embedLinks'];
+
+        this.preHooks.push(
+            new BotPermsValidatorHook({
+                permissions: ['embedLinks'],
+            })
+        );
     }
 
     async execute(ctx: CommandContext): Promise<void> {

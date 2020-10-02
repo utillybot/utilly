@@ -5,6 +5,8 @@ import type {
 } from '@utilly/framework';
 import {
     BaseCommand,
+    BotPermsValidatorHook,
+    ChannelValidatorHook,
     EmbedBuilder,
     SubcommandHandler,
 } from '@utilly/framework';
@@ -25,12 +27,18 @@ export default class Embed extends BaseCommand {
             'Create, edit, or view the contents of an embed.';
         this.help.usage = '(create/edit/view) (message id)';
 
-        this.settings.guildOnly = true;
-        this.permissions.botPerms = [
-            'embedLinks',
-            'manageMessages',
-            'readMessageHistory',
-        ];
+        this.preHooks.push(
+            new ChannelValidatorHook({
+                channel: ['guild'],
+            }),
+            new BotPermsValidatorHook({
+                permissions: [
+                    'embedLinks',
+                    'manageMessages',
+                    'readMessageHistory',
+                ],
+            })
+        );
 
         this.subCommandHandler = new SubcommandHandler(bot.logger, bot);
 
@@ -714,7 +722,7 @@ export default class Embed extends BaseCommand {
                     preview.addField(
                         name.content,
                         value.content,
-                        inline.content.toLowerCase() == 'yes' ? true : false
+                        inline.content.toLowerCase() == 'yes'
                     );
                     this.handleMainMenu(message, preview, menu, previewMessage);
                 } catch {
@@ -835,9 +843,7 @@ export default class Embed extends BaseCommand {
             if (!(channel instanceof TextChannel)) continue;
             try {
                 foundMessage = await channel.getMessage(ctx.args[0]);
-            } catch (ex) {
-                continue;
-            }
+            } catch (ex) {}
         }
 
         if (!foundMessage) {

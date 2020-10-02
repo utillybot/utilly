@@ -1,5 +1,10 @@
 import type { CommandContext, UtillyClient } from '@utilly/framework';
-import { BaseCommand, EmbedBuilder } from '@utilly/framework';
+import {
+    BaseCommand,
+    BotPermsValidatorHook,
+    ChannelValidatorHook,
+    EmbedBuilder,
+} from '@utilly/framework';
 import { secondsToString } from '@utilly/utils';
 import {
     DEFAULT_NOTIFICATION_CONSTANTS,
@@ -18,8 +23,15 @@ export default class ServerInfo extends BaseCommand {
         this.help.description = 'View information about a server';
         this.help.usage = '';
         this.help.aliases = ['sinfo'];
-        this.settings.guildOnly = true;
-        this.permissions.botPerms = ['embedLinks'];
+
+        this.preHooks.push(
+            new ChannelValidatorHook({
+                channel: ['guild'],
+            }),
+            new BotPermsValidatorHook({
+                permissions: ['embedLinks'],
+            })
+        );
     }
 
     async execute(ctx: CommandContext): Promise<void> {
@@ -126,7 +138,7 @@ export default class ServerInfo extends BaseCommand {
             true
         );
 
-        
+
         if (server.emojis.length > 0)
             embed.addField(
                 'Emojis',

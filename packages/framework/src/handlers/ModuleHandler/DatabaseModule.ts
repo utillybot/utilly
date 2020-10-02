@@ -1,14 +1,14 @@
 import { GuildRepository } from '@utilly/database';
-import type { UtillyClient } from '../../../UtillyClient';
+import type { UtillyClient } from '../../UtillyClient';
 import { Module } from './Module';
 
 /**
- * A module that is corrosponding to a database entry
+ * A module that is corresponding to a database entry
  */
 export abstract class DatabaseModule extends Module {
     databaseEntry: string;
 
-    constructor(bot: UtillyClient) {
+    protected constructor(bot: UtillyClient) {
         super(bot);
         this.databaseEntry = 'none';
     }

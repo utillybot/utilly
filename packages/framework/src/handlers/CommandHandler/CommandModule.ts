@@ -1,6 +1,7 @@
 import type { UtillyClient } from '../../UtillyClient';
-import type { Module } from '../ModuleHandler/Module/Module';
-import type { BaseCommand, CommandPermissions } from './Command';
+import type { Module } from '../ModuleHandler/Module';
+import type { BaseCommand } from './Command';
+import type { CommandHook } from './CommandHook';
 
 export interface CommandModuleInfo {
     /**
@@ -13,6 +14,10 @@ export interface CommandModuleInfo {
     description: string;
 }
 
+export interface CommandModule {
+    moduleLinked?(): void;
+}
+
 /**
  * A Command Module
  */
@@ -22,22 +27,19 @@ export abstract class CommandModule {
 
     readonly commands: Map<string, BaseCommand>;
     readonly aliases: Map<string, BaseCommand>;
-    readonly permissions: CommandPermissions;
+
+    readonly preHooks: CommandHook[];
 
     private _bot: UtillyClient;
 
-    constructor(bot: UtillyClient) {
+    protected constructor(bot: UtillyClient) {
         this._bot = bot;
         this.info = {
             name: '',
             description: 'No description provided',
         };
 
-        this.permissions = {
-            botPerms: [],
-            userPerms: [],
-            checkPermission: async () => true,
-        };
+        this.preHooks = [];
 
         this.commands = new Map();
         this.aliases = new Map();
@@ -56,12 +58,5 @@ export abstract class CommandModule {
                 this.aliases.set(alias, command);
             }
         }
-    }
-
-    /**
-     * Returns a list of Commands that have been registered to this module
-     */
-    getCommands(): BaseCommand[] {
-        return Array.from(this.commands.values());
     }
 }
