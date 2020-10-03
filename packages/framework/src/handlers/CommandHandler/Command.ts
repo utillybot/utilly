@@ -4,6 +4,9 @@ import type { UtillyClient } from '../../UtillyClient';
 import type { CommandModule } from './CommandModule';
 import type { CommandHook } from './CommandHook';
 
+/**
+ * Help information for this command
+ */
 export interface CommandHelp {
     /**
      * The name of the command
@@ -31,6 +34,9 @@ export interface CommandArgument {
     type: unknown;
 }
 
+/**
+ * The context the command was run in
+ */
 export class CommandContext {
     /**
      * The message of this context
@@ -52,8 +58,11 @@ export class CommandContext {
      */
     readonly member?: Member;
 
-    readonly command!: BaseCommand;
-
+    /**
+     * Creates a new command context
+     * @param message - the message that invoked this command
+     * @param args - the arguments passed into the command
+     */
     constructor(message: Message, args: string[]) {
         this.message = message;
         this.args = args;
@@ -84,6 +93,9 @@ export abstract class BaseCommand {
      */
     readonly help: CommandHelp;
 
+    /**
+     * An array of command hooks that will be run prior to the execution of this command.
+     */
     readonly preHooks: CommandHook[];
 
     /**
@@ -91,8 +103,17 @@ export abstract class BaseCommand {
      */
     readonly parent?: CommandModule;
 
+    /**
+     * The client that this command belongs to
+     * @protected
+     */
     protected bot: UtillyClient;
 
+    /**
+     * Create a new command
+     * @param bot - the client that this command belongs to
+     * @param parent - the parent command module of this bot
+     */
     constructor(bot: UtillyClient, parent: CommandModule) {
         this.bot = bot;
         this.help = {
@@ -107,5 +128,9 @@ export abstract class BaseCommand {
         this.parent = parent;
     }
 
+    /**
+     * Executes this command with the given command context
+     * @param ctx - the command context this command was run in
+     */
     abstract async execute(ctx: CommandContext): Promise<void>;
 }

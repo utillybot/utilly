@@ -8,6 +8,7 @@ import {
     BotPermsValidatorHook,
     ChannelValidatorHook,
     EmbedBuilder,
+    Subcommand,
     SubcommandHandler,
 } from '@utilly/framework';
 import centra from 'centra';
@@ -42,22 +43,9 @@ export default class Embed extends BaseCommand {
 
         this.subCommandHandler = new SubcommandHandler(bot.logger, bot);
 
-        this.subCommandHandler.registerSubcommand('create', {
-            description:
-                'Creates a embed using the wizard. Optionally load an embed to start with',
-            usage: '(embed)',
-            execute: this.create.bind(this),
-        });
-        this.subCommandHandler.registerSubcommand('edit', {
-            description: 'Edits an embed that the bot sent.',
-            usage: '(message id) (embed)',
-            execute: this.edit.bind(this),
-        });
-        this.subCommandHandler.registerSubcommand('view', {
-            description: 'View the code behind and embed that was sent.',
-            usage: '(message id)',
-            execute: this.view.bind(this),
-        });
+        this.subCommandHandler.registerSubcommand(new EmbedCreate(this.bot));
+        this.subCommandHandler.registerSubcommand(new EmbedEdit(this.bot));
+        this.subCommandHandler.registerSubcommand(new EmbedView(this.bot));
     }
 
     async execute(ctx: CommandContext): Promise<void> {
@@ -76,14 +64,25 @@ export default class Embed extends BaseCommand {
             }
         }
     }
+}
 
-    async create(ctx: CommandContext): Promise<void> {
+class EmbedCreate extends Subcommand {
+    constructor(bot: UtillyClient) {
+        super(bot);
+
+        this.help.name = 'create';
+        this.help.description =
+            'Creates a embed using the wizard. Optionally load an embed to start with';
+        this.help.usage = '(embed)';
+    }
+
+    async execute(ctx: CommandContext): Promise<void> {
         const preview = new EmbedBuilder();
         try {
             if (ctx.args.length > 0)
                 Object.assign(preview, JSON.parse(ctx.args.join(' ')));
         } catch {
-            ctx.reply('Could not parse your JSON.');
+            await ctx.reply('Could not parse your JSON.');
             return;
         }
         const options = [
@@ -128,7 +127,7 @@ export default class Embed extends BaseCommand {
                 previewMessage
             );
         } catch {
-            this.handleFailure(menu, previewMessage);
+            await this.handleFailure(menu, previewMessage);
         }
     }
 
@@ -171,7 +170,7 @@ export default class Embed extends BaseCommand {
         );
         embed.addDefaults(message.author);
 
-        menu.edit({ embed });
+        await menu.edit({ embed });
 
         try {
             const result = await this.bot.messageWaitHandler.addListener(
@@ -188,7 +187,7 @@ export default class Embed extends BaseCommand {
                 previewMessage
             );
         } catch {
-            this.handleFailure(menu, previewMessage);
+            await this.handleFailure(menu, previewMessage);
         }
     }
 
@@ -773,8 +772,77 @@ export default class Embed extends BaseCommand {
         previewMessage.delete();
         menu.edit({ embed });
     }
+}
 
-    async edit(ctx: CommandContext): Promise<void> {
+class EmbedView extends Subcommand {
+    constructor(bot: UtillyClient) {
+        super(bot);
+
+        this.help.name = 'view';
+        this.help.description = 'View the code behind and embed that was sent.';
+        this.help.usage = '(message id)';
+    }
+
+    async execute(ctx: CommandContext): Promise<void> {
+        if (!ctx.guild) return;
+
+        let foundMessage: Message | undefined;
+        for (const channel of ctx.guild.channels.values()) {
+            if (!(channel instanceof TextChannel)) continue;
+            try {
+                foundMessage = await channel.getMessage(ctx.args[0]);
+            } catch (ex) {}
+        }
+
+        if (!foundMessage) {
+            const embed = new EmbedBuilder();
+            embed.addDefaults(ctx.message.author);
+            embed.setTitle(
+                `Error: The specified message was not found in this server.`
+            );
+            embed.setColor(0xff0000);
+            ctx.reply({ embed });
+            return;
+        } else if (foundMessage.embeds.length == 0) {
+            const embed = new EmbedBuilder();
+            embed.addDefaults(ctx.message.author);
+            embed.setTitle(
+                `Error: The specified message did not have an embed.`
+            );
+            embed.setColor(0xff0000);
+            ctx.reply({ embed });
+            return;
+        }
+
+        const embed = new EmbedBuilder();
+        embed.addDefaults(ctx.message.author);
+        embed.setTitle(`Here is the embed:`);
+        const result = await (
+            await centra('https://hasteb.in/documents', 'POST')
+                .body(
+                    prettier.format(JSON.stringify(foundMessage.embeds[0]), {
+                        parser: 'json',
+                    })
+                )
+                .header('content-type', 'application/json')
+                .send()
+        ).json();
+        embed.setDescription(`Embed Link: https://hasteb.in/${result.key}`);
+        embed.setColor(0x00ff00);
+        await ctx.reply({ embed });
+    }
+}
+
+class EmbedEdit extends Subcommand {
+    constructor(bot: UtillyClient) {
+        super(bot);
+
+        this.help.name = 'edit';
+        this.help.description = 'Edits an embed that the bot sent.';
+        this.help.usage = '(message id) (embed)';
+    }
+
+    async execute(ctx: CommandContext): Promise<void> {
         if (!ctx.guild) return;
 
         let foundMessage: Message | undefined;
@@ -832,55 +900,6 @@ export default class Embed extends BaseCommand {
 
         foundMessage.edit({ embed: embedObj });
 
-        ctx.reply('Done!');
-    }
-
-    async view(ctx: CommandContext): Promise<void> {
-        if (!ctx.guild) return;
-
-        let foundMessage: Message | undefined;
-        for (const channel of ctx.guild.channels.values()) {
-            if (!(channel instanceof TextChannel)) continue;
-            try {
-                foundMessage = await channel.getMessage(ctx.args[0]);
-            } catch (ex) {}
-        }
-
-        if (!foundMessage) {
-            const embed = new EmbedBuilder();
-            embed.addDefaults(ctx.message.author);
-            embed.setTitle(
-                `Error: The specified message was not found in this server.`
-            );
-            embed.setColor(0xff0000);
-            ctx.reply({ embed });
-            return;
-        } else if (foundMessage.embeds.length == 0) {
-            const embed = new EmbedBuilder();
-            embed.addDefaults(ctx.message.author);
-            embed.setTitle(
-                `Error: The specified message did not have an embed.`
-            );
-            embed.setColor(0xff0000);
-            ctx.reply({ embed });
-            return;
-        }
-
-        const embed = new EmbedBuilder();
-        embed.addDefaults(ctx.message.author);
-        embed.setTitle(`Here is the embed:`);
-        const result = await (
-            await centra('https://hasteb.in/documents', 'POST')
-                .body(
-                    prettier.format(JSON.stringify(foundMessage.embeds[0]), {
-                        parser: 'json',
-                    })
-                )
-                .header('content-type', 'application/json')
-                .send()
-        ).json();
-        embed.setDescription(`Embed Link: https://hasteb.in/${result.key}`);
-        embed.setColor(0x00ff00);
-        ctx.reply({ embed });
+        await ctx.reply('Done!');
     }
 }

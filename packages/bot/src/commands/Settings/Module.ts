@@ -5,11 +5,20 @@ import {
     BotPermsValidatorHook,
     ChannelValidatorHook,
     EmbedBuilder,
+    Subcommand,
     SubcommandHandler,
     UserPermsValidatorHook,
 } from '@utilly/framework';
 import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
 import type SettingsCommandModule from './moduleinfo';
+import type {
+    CommandHookContext,
+    CommandHookNext,
+} from '@utilly/framework/dist/handlers/CommandHandler/CommandHook';
+import {
+    CommandHook,
+    runCommandHooks,
+} from '@utilly/framework/dist/handlers/CommandHandler/CommandHook';
 
 export default class Module extends BaseCommand {
     subCommandHandler: SubcommandHandler;
@@ -33,28 +42,12 @@ export default class Module extends BaseCommand {
         );
         this.subCommandHandler = new SubcommandHandler(bot.logger, bot);
 
-        this.subCommandHandler.registerSubcommand('enable', {
-            description: 'Enable a module.',
-            usage: '(module name)',
-            execute: this.enable.bind(this),
-        });
-        this.subCommandHandler.registerSubcommand('disable', {
-            description: 'Disable a module.',
-            usage: '(module name)',
-            execute: this.disable.bind(this),
-        });
-        this.subCommandHandler.registerSubcommand('toggle', {
-            description: 'Toggle a module.',
-            usage: '(module name)',
-            execute: this.toggle.bind(this),
-        });
-        this.subCommandHandler.registerSubcommand('info', {
-            description: 'View info about a module.',
-            usage: '(module name)',
-            execute: this.info.bind(this),
-        });
+        this.subCommandHandler.registerSubcommand(new ModuleEnable(this.bot));
+        this.subCommandHandler.registerSubcommand(new ModuleDisable(this.bot));
+        this.subCommandHandler.registerSubcommand(new ModuleToggle(this.bot));
+        this.subCommandHandler.registerSubcommand(new ModuleInfo(this.bot));
 
-        this.subCommandHandler.registerPrecheck(this.precheck);
+        this.subCommandHandler.preHooks.push(new ModuleSubcommandHook());
     }
 
     async execute(ctx: CommandContext): Promise<void> {
@@ -67,13 +60,55 @@ export default class Module extends BaseCommand {
                     ),
                 });
             } else if (ctx.args.length == 1) {
-                if (!(await this.precheck(ctx))) return;
-                this.toggle(ctx);
+                if (
+                    !(await runCommandHooks(
+                        { bot: this.bot, message: ctx.message, args: ctx.args },
+                        [new ModuleSubcommandHook()]
+                    ))
+                )
+                    return;
+                this.subCommandHandler.getCommand('toggle')!.execute(ctx);
             }
         }
     }
+}
 
-    async enable(ctx: CommandContext): Promise<void> {
+class ModuleSubcommandHook extends CommandHook {
+    async execute(
+        ctx: CommandHookContext,
+        next: CommandHookNext
+    ): Promise<void> {
+        const module = ctx.args[0] ? ctx.args[0].toLowerCase() : ctx.args[0];
+        if (!module || !MODULES.includes(module)) {
+            const embed = new EmbedBuilder();
+            embed.addDefaults(ctx.message.author);
+
+            embed.setTitle(`Module ${!module ? 'not specified' : 'not found'}`);
+            embed.setDescription(
+                `${
+                    !module
+                        ? 'A module was not specified'
+                        : `The module \`${module}\` was not found`
+                }.`
+            );
+            embed.setColor(0xff0000);
+            ctx.message.channel.createMessage({ embed });
+            return;
+        }
+        next();
+    }
+}
+
+class ModuleEnable extends Subcommand {
+    constructor(bot: UtillyClient) {
+        super(bot);
+
+        this.help.name = 'enable';
+        this.help.description = 'Enable a module.';
+        this.help.usage = '(module name)';
+    }
+
+    async execute(ctx: CommandContext): Promise<void> {
         const module = ctx.args[0].toLowerCase();
         if (!ctx.guild) return;
         const guildRow = await this.bot.database.connection
@@ -101,8 +136,18 @@ export default class Module extends BaseCommand {
         }
         ctx.reply({ embed });
     }
+}
 
-    async disable(ctx: CommandContext): Promise<void> {
+class ModuleDisable extends Subcommand {
+    constructor(bot: UtillyClient) {
+        super(bot);
+
+        this.help.name = 'disable';
+        this.help.description = 'Disable a module.';
+        this.help.usage = '(module name)';
+    }
+
+    async execute(ctx: CommandContext): Promise<void> {
         const module = ctx.args[0].toLowerCase();
         if (!ctx.guild) return;
         const guildRow = await this.bot.database.connection
@@ -130,8 +175,18 @@ export default class Module extends BaseCommand {
         }
         ctx.reply({ embed });
     }
+}
 
-    async toggle(ctx: CommandContext): Promise<void> {
+class ModuleToggle extends Subcommand {
+    constructor(bot: UtillyClient) {
+        super(bot);
+
+        this.help.name = 'toggle';
+        this.help.description = 'Toggle a module.';
+        this.help.usage = '(module name)';
+    }
+
+    async execute(ctx: CommandContext): Promise<void> {
         const module = ctx.args[0].toLowerCase();
         if (!ctx.guild) return;
         const guildRow = await this.bot.database.connection
@@ -172,8 +227,18 @@ export default class Module extends BaseCommand {
         }
         ctx.reply({ embed });
     }
+}
 
-    async info(ctx: CommandContext): Promise<void> {
+class ModuleInfo extends Subcommand {
+    constructor(bot: UtillyClient) {
+        super(bot);
+
+        this.help.name = 'info';
+        this.help.description = 'View info about a module.';
+        this.help.usage = '(module name)';
+    }
+
+    async execute(ctx: CommandContext): Promise<void> {
         const module = ctx.args[0].toLowerCase();
         if (!ctx.guild) return;
         const guildRow = await this.bot.database.connection
@@ -190,26 +255,5 @@ export default class Module extends BaseCommand {
             `This module is **${guildRow[module] ? 'enabled' : 'disabled'}**.`
         );
         ctx.reply({ embed });
-    }
-
-    async precheck(ctx: CommandContext): Promise<boolean> {
-        const module = ctx.args[0] ? ctx.args[0].toLowerCase() : ctx.args[0];
-        if (!module || !MODULES.includes(module)) {
-            const embed = new EmbedBuilder();
-            embed.addDefaults(ctx.message.author);
-
-            embed.setTitle(`Module ${!module ? 'not specified' : 'not found'}`);
-            embed.setDescription(
-                `${
-                    !module
-                        ? 'A module was not specified'
-                        : `The module \`${module}\` was not found`
-                }.`
-            );
-            embed.setColor(0xff0000);
-            ctx.reply({ embed });
-            return false;
-        }
-        return true;
     }
 }

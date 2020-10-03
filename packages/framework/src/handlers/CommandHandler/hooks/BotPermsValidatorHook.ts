@@ -4,12 +4,29 @@ import { CommandHook } from '../CommandHook';
 import type { PermsValidatorHookSettings } from './PermsValidatorHook';
 import { PermsValidatorHook } from './PermsValidatorHook';
 
+/**
+ * Properties for the bot permission validator hook
+ */
 export interface BotPermValidatorHookProps {
+    /**
+     * A function return an error message if the bot is missing permissions
+     * @param missingBotPerms - the permissions the bot is missing
+     */
     errorMessage?: (missingBotPerms: string[]) => MessageContent;
 }
 
+/**
+ * A hook to validate if the bot has certain permissions
+ */
 export class BotPermsValidatorHook extends CommandHook {
+    /**
+     * The settings for this hook
+     */
     settings: PermsValidatorHookSettings;
+
+    /**
+     * The properties for this hook
+     */
     props: BotPermValidatorHookProps;
 
     constructor(
@@ -28,10 +45,10 @@ export class BotPermsValidatorHook extends CommandHook {
         this.props = props;
     }
 
-    run(ctx: CommandHookContext, next: CommandHookNext): void {
+    execute(ctx: CommandHookContext, next: CommandHookNext): void {
         new PermsValidatorHook(this.settings, {
             errorMessage: this.props.errorMessage,
             id: client => client.user.id,
-        }).run(ctx, next);
+        }).execute(ctx, next);
     }
 }

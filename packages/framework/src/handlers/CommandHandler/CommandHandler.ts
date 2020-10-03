@@ -9,23 +9,24 @@ import type { Module } from '../ModuleHandler/Module';
 import type { BaseCommand } from './Command';
 import { CommandContext } from './Command';
 import type { CommandModule } from './CommandModule';
+import { runCommandHooks } from './CommandHook';
 
 /**
- * Handles all incoming commands
+ * A handler that will handle all incoming commands to the bot
  */
 export class CommandHandler {
     /**
-     * A map of command aliases
+     * A map of command aliases registered to this handler
      */
     readonly aliases: Map<string, BaseCommand>;
 
     /**
-     * A map of command modules
+     * A map of command modules registered to this handler
      */
     readonly commandModules: Map<string, CommandModule>;
 
     /**
-     * A map of the registered commands
+     * A map of the registered commands registered to this handler
      */
     readonly commands: Map<string, BaseCommand>;
 
@@ -45,6 +46,7 @@ export class CommandHandler {
         this._bot = bot;
         this._logger = logger;
         this._database = database;
+
         this.commandModules = new Map();
         this.commands = new Map();
         this.aliases = new Map();
@@ -104,7 +106,7 @@ export class CommandHandler {
                     await import(path.join(directory, module, command))
                 ).default(this._bot, moduleObj);
 
-                moduleObj.registerCommand(commandObj.help.name, commandObj);
+                moduleObj.registerCommand(commandObj);
                 this.commands.set(commandObj.help.name, commandObj);
                 if (commandObj.help.aliases != null) {
                     for (const alias of commandObj.help.aliases) {
@@ -180,27 +182,15 @@ export class CommandHandler {
             );
         //#endregion
 
-        let i = 0;
-        let j = 0;
-        const module = commandObj.parent;
-        let onModule = false;
-        const next = async () => {
-            const hook = !onModule
-                ? module.preHooks[i++]
-                : commandObj.preHooks[j++];
-
-            if (hook) {
-                await hook.run({ client: this._bot, message, args }, next);
-            } else if (!onModule) {
-                onModule = true;
-                next();
-            }
-        };
-        await next();
-
         if (
-            i != module.preHooks.length + 1 ||
-            j != commandObj.preHooks.length + 1
+            !(await runCommandHooks(
+                { bot: this._bot, message, args },
+                commandObj.parent.preHooks
+            )) ||
+            !(await runCommandHooks(
+                { bot: this._bot, message, args },
+                commandObj.preHooks
+            ))
         )
             return;
 

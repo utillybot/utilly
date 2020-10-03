@@ -3,11 +3,23 @@ import { CommandHook } from '../CommandHook';
 import { GuildChannel } from 'eris';
 import type { DatabaseModule } from '../../..';
 
+/**
+ * Settings for the is module enabled hook
+ */
 export interface IsModuleEnabledHookSettings {
+    /**
+     * The backend database module to check if it's enabled
+     */
     databaseModule: DatabaseModule;
 }
 
+/**
+ * A hook to check if a database module is enabled
+ */
 export class IsModuleEnabledHook extends CommandHook {
+    /**
+     * The settings for this hook
+     */
     settings: IsModuleEnabledHookSettings;
 
     constructor(settings: IsModuleEnabledHookSettings) {
@@ -15,7 +27,7 @@ export class IsModuleEnabledHook extends CommandHook {
         this.settings = settings;
     }
 
-    async run(
+    async execute(
         { message }: CommandHookContext,
         next: CommandHookNext
     ): Promise<void> {
