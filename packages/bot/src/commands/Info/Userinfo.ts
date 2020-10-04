@@ -2,7 +2,6 @@ import type { CommandContext, UtillyClient } from '@utilly/framework';
 import {
     BaseCommand,
     BotPermsValidatorHook,
-    ChannelValidatorHook,
     EmbedBuilder,
 } from '@utilly/framework';
 import type { Member, User } from 'eris';

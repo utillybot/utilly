@@ -6,8 +6,8 @@ import type { UtillyClient } from '../../UtillyClient';
 import { EmbedBuilder } from '../../utils/EmbedBuilder';
 import type { BaseCommand, CommandHelp } from './Command';
 import { CommandContext } from './Command';
-import type { CommandHook } from './CommandHook';
-import { runCommandHooks } from './CommandHook';
+import type { CommandHook, CommandHookContext } from './CommandHook';
+import { runHooks } from '../Hook';
 
 /**
  * A sub command
@@ -94,15 +94,15 @@ export class SubcommandHandler {
         newArgs.shift();
 
         const newCtx = new CommandContext(ctx.message, newArgs);
-
+        const hookCtx: CommandHookContext = {
+            bot: this._bot,
+            message: ctx.message,
+            args: newArgs,
+        };
         if (
-            !(await runCommandHooks(
-                { bot: this._bot, message: ctx.message, args: newArgs },
-                subCommand.preHooks
-            )) ||
-            !(await runCommandHooks(
-                { bot: this._bot, message: ctx.message, args: newArgs },
-                this.preHooks
+            !(await runHooks(
+                hookCtx,
+                subCommand.preHooks.concat(this.preHooks)
             ))
         )
             return true;

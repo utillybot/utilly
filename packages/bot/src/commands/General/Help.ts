@@ -7,11 +7,9 @@ import {
     ChannelValidatorHook,
     DatabaseModule,
     EmbedBuilder,
-    ROLE_PERMISSIONS,
 } from '@utilly/framework';
 import type { Message } from 'eris';
-import { Constants, GuildChannel } from 'eris';
-import { MODULES, MODULE_CONSTANTS } from '../../constants/ModuleConstants';
+import { MODULE_CONSTANTS, MODULES } from '../../constants/ModuleConstants';
 import type GeneralCommandModule from './moduleinfo';
 
 export default class Help extends BaseCommand {

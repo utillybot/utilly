@@ -9,7 +9,8 @@ import type { Module } from '../ModuleHandler/Module';
 import type { BaseCommand } from './Command';
 import { CommandContext } from './Command';
 import type { CommandModule } from './CommandModule';
-import { runCommandHooks } from './CommandHook';
+import type { CommandHookContext } from './CommandHook';
+import { runHooks } from '../Hook';
 
 /**
  * A handler that will handle all incoming commands to the bot
@@ -182,14 +183,12 @@ export class CommandHandler {
             );
         //#endregion
 
+        const hookCtx: CommandHookContext = { bot: this._bot, message, args };
+
         if (
-            !(await runCommandHooks(
-                { bot: this._bot, message, args },
-                commandObj.parent.preHooks
-            )) ||
-            !(await runCommandHooks(
-                { bot: this._bot, message, args },
-                commandObj.preHooks
+            !(await runHooks(
+                hookCtx,
+                commandObj.parent.preHooks.concat(commandObj.preHooks)
             ))
         )
             return;

@@ -5,14 +5,14 @@ import { Client } from 'eris';
 import path from 'path';
 import { CommandHandler } from './handlers/CommandHandler/CommandHandler';
 import { ModuleHandler } from './handlers/ModuleHandler/ModuleHandler';
-import { MessageWaitHandler } from './handlers/WaitHandlers/MessageWaitHandler';
-import { ReactionWaitHandler } from './handlers/WaitHandlers/ReactionWaitHandler';
+import { MessageCollectorHandler } from './handlers/CollectorHandlers/MessageCollector/MessageCollectorHandler';
+import { ReactionCollectorHandler } from './handlers/CollectorHandlers/ReactionCollector/ReactionCollectorHandler';
 
 export class UtillyClient extends Client {
     commandHandler: CommandHandler;
     moduleHandler: ModuleHandler;
-    messageWaitHandler: MessageWaitHandler;
-    reactionWaitHandler: ReactionWaitHandler;
+    messageWaitHandler: MessageCollectorHandler;
+    reactionWaitHandler: ReactionCollectorHandler;
     logger: Logger;
     database: Database;
 
@@ -32,8 +32,8 @@ export class UtillyClient extends Client {
             this.logger,
             this.database
         );
-        this.messageWaitHandler = new MessageWaitHandler(this);
-        this.reactionWaitHandler = new ReactionWaitHandler(this);
+        this.messageWaitHandler = new MessageCollectorHandler(this);
+        this.reactionWaitHandler = new ReactionCollectorHandler(this);
 
         this.on('ready', this.readyEvent.bind(this));
     }

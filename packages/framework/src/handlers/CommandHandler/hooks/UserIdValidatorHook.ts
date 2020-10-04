@@ -1,6 +1,7 @@
-import type { CommandHookContext, CommandHookNext } from '../CommandHook';
+import type { CommandHookContext } from '../CommandHook';
 import { CommandHook } from '../CommandHook';
 import type { MessageContent } from 'eris';
+import type { NextFunction } from '../../Hook';
 
 /**
  * Settings for the user id validator hook
@@ -16,22 +17,18 @@ export interface UserIdValidatorHookSettings {
     errorMessage?: MessageContent;
 }
 
-/**
- * A hook to check if a user is in a certain array of users
- */
-export class UserIdValidatorHook extends CommandHook {
+export interface UserIdValidatorHook {
     /**
      * The settings for this hook
      */
     settings: UserIdValidatorHookSettings;
+}
 
-    constructor(settings: UserIdValidatorHookSettings) {
-        super();
-
-        this.settings = settings;
-    }
-
-    execute({ message }: CommandHookContext, next: CommandHookNext): void {
+/**
+ * A hook to check if a user is in a certain array of users
+ */
+export class UserIdValidatorHook extends CommandHook {
+    execute({ message }: CommandHookContext, next: NextFunction): void {
         if (!this.settings.errorMessage)
             this.settings.errorMessage =
                 "You don't have permission to run this command";

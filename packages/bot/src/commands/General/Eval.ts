@@ -1,7 +1,6 @@
 import type { CommandContext, UtillyClient } from '@utilly/framework';
 import {
     BaseCommand,
-    ChannelValidatorHook,
     EmbedBuilder,
     UserIdValidatorHook,
 } from '@utilly/framework';

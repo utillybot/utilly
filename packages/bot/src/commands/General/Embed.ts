@@ -33,11 +33,7 @@ export default class Embed extends BaseCommand {
                 channel: ['guild'],
             }),
             new BotPermsValidatorHook({
-                permissions: [
-                    'embedLinks',
-                    'manageMessages',
-                    'readMessageHistory',
-                ],
+                permissions: ['embedLinks'],
             })
         );
 
@@ -74,6 +70,12 @@ class EmbedCreate extends Subcommand {
         this.help.description =
             'Creates a embed using the wizard. Optionally load an embed to start with';
         this.help.usage = '(embed)';
+
+        this.preHooks.push(
+            new BotPermsValidatorHook({
+                permissions: ['manageMessages', 'readMessageHistory'],
+            })
+        );
     }
 
     async execute(ctx: CommandContext): Promise<void> {
@@ -781,6 +783,12 @@ class EmbedView extends Subcommand {
         this.help.name = 'view';
         this.help.description = 'View the code behind and embed that was sent.';
         this.help.usage = '(message id)';
+
+        this.preHooks.push(
+            new BotPermsValidatorHook({
+                permissions: ['readMessageHistory'],
+            })
+        );
     }
 
     async execute(ctx: CommandContext): Promise<void> {
@@ -791,6 +799,7 @@ class EmbedView extends Subcommand {
             if (!(channel instanceof TextChannel)) continue;
             try {
                 foundMessage = await channel.getMessage(ctx.args[0]);
+                // eslint-disable-next-line no-empty
             } catch (ex) {}
         }
 
@@ -840,6 +849,12 @@ class EmbedEdit extends Subcommand {
         this.help.name = 'edit';
         this.help.description = 'Edits an embed that the bot sent.';
         this.help.usage = '(message id) (embed)';
+
+        this.preHooks.push(
+            new BotPermsValidatorHook({
+                permissions: ['readMessageHistory'],
+            })
+        );
     }
 
     async execute(ctx: CommandContext): Promise<void> {

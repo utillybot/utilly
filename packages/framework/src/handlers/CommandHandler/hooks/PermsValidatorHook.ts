@@ -1,9 +1,10 @@
 import type { MessageContent, Client, Message } from 'eris';
 import { Constants } from 'eris';
 import { GuildChannel } from 'eris';
-import type { CommandHookContext, CommandHookNext } from '../CommandHook';
+import type { CommandHookContext } from '../CommandHook';
 import { ROLE_PERMISSIONS } from '../../..';
 import { CommandHook } from '../CommandHook';
+import type { NextFunction } from '../../Hook';
 
 /**
  * Settings for the permission validator hook
@@ -13,12 +14,6 @@ export interface PermsValidatorHookSettings {
      * A list of permissions to validate
      */
     permissions: string[];
-}
-
-/**
- * Properties for the permission validator hook
- */
-export interface PermsValidatorHookProps {
     /**
      * A function return an error message if the user passed in is missing permissions
      * @param missingPerms - the permissions the user passed in is missing
@@ -32,35 +27,22 @@ export interface PermsValidatorHookProps {
     id: (client: Client, message: Message) => string;
 }
 
-/**
- * A hook to check if a given user contains the permissions passed in
- */
-export class PermsValidatorHook extends CommandHook {
+export interface PermsValidatorHook {
     /**
      * The settings for this hook
      */
     settings: PermsValidatorHookSettings;
+}
 
-    /**
-     * This properties for this hook
-     */
-    props: PermsValidatorHookProps;
+/**
+ * A hook to check if a given user contains the permissions passed in
+ */
+export class PermsValidatorHook extends CommandHook {
+    execute({ bot, message }: CommandHookContext, next: NextFunction): void {
+        const id = this.settings.id(bot, message);
 
-    constructor(
-        settings: PermsValidatorHookSettings,
-        props: PermsValidatorHookProps
-    ) {
-        super();
-
-        this.settings = settings;
-        this.props = props;
-    }
-
-    execute({ bot, message }: CommandHookContext, next: CommandHookNext): void {
-        const id = this.props.id(bot, message);
-
-        if (!this.props.errorMessage)
-            this.props.errorMessage = (missingPerms: string[]) =>
+        if (!this.settings.errorMessage)
+            this.settings.errorMessage = (missingPerms: string[]) =>
                 `Uh oh, ${
                     bot.users.get(id)?.username
                 } is missing these permissions ${missingPerms.join(', ')}`;
@@ -80,7 +62,7 @@ export class PermsValidatorHook extends CommandHook {
 
         if (missingPerms.length > 0) {
             message.channel.createMessage(
-                this.props.errorMessage(missingPerms)
+                this.settings.errorMessage(missingPerms)
             );
         } else {
             next();

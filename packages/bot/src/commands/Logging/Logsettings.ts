@@ -179,6 +179,7 @@ export default class Logsettings extends BaseCommand {
 
         setTimeout(() => menu.delete(), 30000);
     }
+
     //#endregion
 
     //#region channel
@@ -559,5 +560,6 @@ export default class Logsettings extends BaseCommand {
         setTimeout(() => menu.delete(), 30000);
         //#endregion
     }
+
     //#endregion
 }
