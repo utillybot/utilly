@@ -5,34 +5,40 @@ import type {
     ReactionCollectorHook,
     ReactionCollectorHookContext,
 } from './ReactionCollectorHook';
-import { MessageValidatorHook } from '../MessageCollector/hooks/MessageValidatorHook';
-import { MessageFilterHook } from '../../..';
 import { ReactionValidatorHook } from './hooks/ReactionValidatorHook';
 
-export interface ReactionWaitOptions {
-    allowedEmotes: string[];
-    userID: string;
-    resolve: (emote: Emoji) => void;
-    reject: () => void;
-}
-
+/**
+ * A handler for reaction collector
+ */
 export class ReactionCollectorHandler extends CollectorHandler<
     ReactionCollectorHook,
     ReactionCollectorHookContext
 > {
     private readonly _bot: Client;
-    private _handlers: Map<string, ReactionWaitOptions>;
 
+    /**
+     * Creates a new reaction collector handler
+     * @param bot - the client associated with this collector
+     */
     constructor(bot: Client) {
         super();
         this._bot = bot;
-        this._handlers = new Map();
     }
 
+    /**
+     * Attaches this collector handler to the client to start listening for reactions
+     */
     attach(): void {
         this._bot.on('messageReactionAdd', this._messageReactionAdd.bind(this));
     }
 
+    /**
+     * Old method to add a new listener. Returns a promise that will resolve with the emoji reacted.
+     * @param messageId - the id of the message to listen for reactions
+     * @param userId - the is of the user to accept reactions from
+     * @param allowedEmoteIds - an array of emote ids that will not be deleted when added
+     * @param timeout - an optional timout to cancel this listener after
+     */
     addListener(
         messageId: string,
         userId: string,

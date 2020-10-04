@@ -7,39 +7,43 @@ import { MessageCollectorHook } from './MessageCollectorHook';
 
 export type MessageWaitFilter = (message: Message) => boolean;
 
-export type MessageWaitErrors = 'time' | 'filter';
-
+/**
+ * A handler for a message collector
+ */
 export class MessageCollectorHandler extends CollectorHandler<
     MessageCollectorHook,
     MessageCollectorHookContext
 > {
     private readonly _bot: Client;
 
+    /**
+     * Creates a new reaction collector handler
+     * @param bot - the client associated with this collector
+     */
     constructor(bot: Client) {
         super();
         this._bot = bot;
     }
 
+    /**
+     * Attaches this collector handler to the client to start listening for messages
+     */
     attach(): void {
         this._bot.on('messageCreate', this._messageCreate.bind(this));
     }
 
     /**
-     *
+     * Old method to add a new listener. Returns a promise that will resolve with the message collected.
      * @param channelId  - the channel to listen to messages in
      * @param authorId - the person to listen to messages
      * @param filter - a filter accepting a message and returning a boolean
      * @param timeout - the timeout in seconds until this listener expires
-     * @param errors - a list of errors that can cause this handler to reject
-     * @param deleteOtherMessages - whether or not all other messages that don't fit the filter should be deleted
      */
     async addListener(
         channelId: string,
         authorId: string,
         filter: MessageWaitFilter = () => true,
-        timeout = 30,
-        errors: MessageWaitErrors[] = ['time'],
-        deleteOtherMessages = true
+        timeout = 30
     ): Promise<Message> {
         return new Promise((resolve, reject) => {
             const collector = this.createListener([
@@ -71,7 +75,14 @@ export class MessageCollectorHandler extends CollectorHandler<
     }
 }
 
+/**
+ * Settings for the message filter hook
+ */
 export interface MessageFilterHookSettings {
+    /**
+     * A function returning whether or not the message should be collected
+     * @param message - the message to validate
+     */
     checkMessage: (message: Message) => boolean;
 }
 

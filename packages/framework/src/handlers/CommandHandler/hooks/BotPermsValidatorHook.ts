@@ -7,7 +7,7 @@ import type { NextFunction } from '../../Hook';
 import type { Client, Message } from 'eris';
 
 /**
- * Properties for the bot permission validator hook
+ * Settings for the bot permission validator hook
  */
 export interface BotPermValidatorHookSettings
     extends Omit<PermsValidatorHookSettings, 'id'> {

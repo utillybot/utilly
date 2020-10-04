@@ -2,20 +2,43 @@ import type { ReactionCollectorHookContext } from '../ReactionCollectorHook';
 import { ReactionCollectorHook } from '../ReactionCollectorHook';
 import type { NextFunction } from '../../../Hook';
 
+/**
+ * The settings for a reaction validator hook
+ */
 export interface ReactionValidatorHookSettings {
+    /**
+     * The id to accept reactions from
+     */
     messageId?: string;
 
+    /**
+     * An array of user ids that can react to this message
+     */
     allowedReactorIds?: string[];
+
+    /**
+     * An array of emote ids that can be reacted onto the message
+     */
     allowedEmoteIds?: string[];
+
+    /**
+     * Whether or not to remove reactions that were not in the allowed reactor ids/allowed emote ids
+     */
     removeNonValidReactions?: boolean;
 
-    ignoreBot: boolean;
+    /**
+     * Whether or not to ignore the bot user when the bot is adding reactions
+     */
+    ignoreBot?: boolean;
 }
 
 export interface ReactionValidatorHook {
     settings: ReactionValidatorHookSettings;
 }
 
+/**
+ * A hook to validate reactions
+ */
 export class ReactionValidatorHook extends ReactionCollectorHook {
     execute(ctx: ReactionCollectorHookContext, next: NextFunction): void {
         if (this.settings.ignoreBot && ctx.bot.users.get(ctx.reactor)?.bot)
