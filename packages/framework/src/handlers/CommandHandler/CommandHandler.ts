@@ -19,17 +19,17 @@ export class CommandHandler {
     /**
      * A map of command aliases registered to this handler
      */
-    readonly aliases: Map<string, BaseCommand>;
+    readonly aliases: Map<string, BaseCommand> = new Map();
 
     /**
      * A map of command modules registered to this handler
      */
-    readonly commandModules: Map<string, CommandModule>;
+    readonly commandModules: Map<string, CommandModule> = new Map();
 
     /**
      * A map of the registered commands registered to this handler
      */
-    readonly commands: Map<string, BaseCommand>;
+    readonly commands: Map<string, BaseCommand> = new Map();
 
     private readonly _bot: Client;
 
@@ -47,10 +47,6 @@ export class CommandHandler {
         this._bot = bot;
         this._logger = logger;
         this._database = database;
-
-        this.commandModules = new Map();
-        this.commands = new Map();
-        this.aliases = new Map();
     }
 
     /**

@@ -1,28 +1,27 @@
-import type { CommandContext, UtillyClient } from '@utilly/framework';
+import type { CommandContext } from '@utilly/framework';
 import {
     BaseCommand,
     BotPermsValidatorHook,
+    Command,
     EmbedBuilder,
 } from '@utilly/framework';
 import type { Member, User } from 'eris';
 import type InfoCommandModule from './moduleinfo';
 
+@Command(
+    {
+        name: 'userinfo',
+        description: 'View information about yourself',
+        aliases: ['uinfo'],
+    },
+    [
+        new BotPermsValidatorHook({
+            permissions: ['embedLinks'],
+        }),
+    ]
+)
 export default class Userinfo extends BaseCommand {
     parent?: InfoCommandModule;
-
-    constructor(bot: UtillyClient, parent: InfoCommandModule) {
-        super(bot, parent);
-        this.help.name = 'userinfo';
-        this.help.description = 'View information about yourself';
-        this.help.usage = '';
-        this.help.aliases = ['uinfo'];
-
-        this.preHooks.push(
-            new BotPermsValidatorHook({
-                permissions: ['embedLinks'],
-            })
-        );
-    }
 
     async execute(ctx: CommandContext): Promise<void> {
         let member: Member | undefined;

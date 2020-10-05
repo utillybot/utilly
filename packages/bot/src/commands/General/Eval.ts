@@ -1,6 +1,7 @@
-import type { CommandContext, UtillyClient } from '@utilly/framework';
+import type { CommandContext } from '@utilly/framework';
 import {
     BaseCommand,
+    Command,
     EmbedBuilder,
     UserIdValidatorHook,
 } from '@utilly/framework';
@@ -8,22 +9,20 @@ import centra from 'centra';
 import prettier from 'prettier';
 import type GeneralCommandModule from './moduleinfo';
 
+@Command(
+    {
+        name: 'eval',
+        description: 'View all the modules, or commands in a specific module',
+        usage: '(command/module)',
+    },
+    [
+        new UserIdValidatorHook({
+            allowedIds: ['236279900728721409'],
+        }),
+    ]
+)
 export default class Eval extends BaseCommand {
     parent!: GeneralCommandModule;
-
-    constructor(bot: UtillyClient, parent: GeneralCommandModule) {
-        super(bot, parent);
-        this.help.name = 'eval';
-        this.help.description =
-            'View all the modules, or commands in a specific module';
-        this.help.usage = '(command/module)';
-
-        this.preHooks.push(
-            new UserIdValidatorHook({
-                allowedIds: ['236279900728721409'],
-            })
-        );
-    }
 
     async execute(ctx: CommandContext): Promise<void> {
         let code = '';

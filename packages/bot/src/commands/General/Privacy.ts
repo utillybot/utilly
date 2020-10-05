@@ -1,26 +1,25 @@
-import type { CommandContext, UtillyClient } from '@utilly/framework';
+import type { CommandContext } from '@utilly/framework';
 import {
     BaseCommand,
     BotPermsValidatorHook,
+    Command,
     EmbedBuilder,
 } from '@utilly/framework';
 import type GeneralCommandModule from './moduleinfo';
 
+@Command(
+    {
+        name: 'privacy',
+        description: "Shows the bots' privacy policy",
+    },
+    [
+        new BotPermsValidatorHook({
+            permissions: ['embedLinks'],
+        }),
+    ]
+)
 export default class Privacy extends BaseCommand {
     parent?: GeneralCommandModule;
-
-    constructor(bot: UtillyClient, parent: GeneralCommandModule) {
-        super(bot, parent);
-        this.help.name = 'privacy';
-        this.help.description = "Shows the bots' privacy policy";
-        this.help.usage = '';
-
-        this.preHooks.push(
-            new BotPermsValidatorHook({
-                permissions: ['embedLinks'],
-            })
-        );
-    }
 
     async execute(ctx: CommandContext): Promise<void> {
         const embed = new EmbedBuilder();

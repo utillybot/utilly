@@ -9,6 +9,7 @@ import {
     BaseCommand,
     BotPermsValidatorHook,
     ChannelValidatorHook,
+    Command,
     CommandHook,
     EmbedBuilder,
     runHooks,
@@ -19,26 +20,29 @@ import {
 import { MODULE_CONSTANTS, MODULES } from '../../constants/ModuleConstants';
 import type SettingsCommandModule from './moduleinfo';
 
+@Command(
+    {
+        name: 'module',
+        description: 'Enable, disable, or view info about a module.',
+        usage: '(enable, disable, toggle, info) (module name)',
+    },
+    [
+        new ChannelValidatorHook({
+            channel: ['guild'],
+        }),
+        new BotPermsValidatorHook({
+            permissions: ['embedLinks'],
+        }),
+        new UserPermsValidatorHook({
+            permissions: ['manageGuild'],
+        }),
+    ]
+)
 export default class Module extends BaseCommand {
     subCommandHandler: SubcommandHandler;
 
     constructor(bot: UtillyClient, parent: SettingsCommandModule) {
         super(bot, parent);
-        this.help.name = 'module';
-        this.help.description = 'Enable, disable, or view info about a module.';
-        this.help.usage = '(enable, disable, toggle, info) (module name)';
-
-        this.preHooks.push(
-            new ChannelValidatorHook({
-                channel: ['guild'],
-            }),
-            new BotPermsValidatorHook({
-                permissions: ['embedLinks'],
-            }),
-            new UserPermsValidatorHook({
-                permissions: ['manageGuild'],
-            })
-        );
         this.subCommandHandler = new SubcommandHandler(bot.logger, bot);
 
         this.subCommandHandler.registerSubcommand(new ModuleEnable(this.bot));

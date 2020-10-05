@@ -91,12 +91,12 @@ export abstract class BaseCommand {
     /**
      * A CommandHelp object of help info for this command
      */
-    readonly help: CommandHelp;
+    help: CommandHelp;
 
     /**
      * An array of command hooks that will be run prior to the execution of this command.
      */
-    readonly preHooks: CommandHook[];
+    preHooks: CommandHook[];
 
     /**
      * The parent module of this command

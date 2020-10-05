@@ -1,26 +1,19 @@
-import type { CommandContext, UtillyClient } from '@utilly/framework';
+import type { CommandContext } from '@utilly/framework';
 import {
     BaseCommand,
     BotPermsValidatorHook,
     EmbedBuilder,
+    Command,
 } from '@utilly/framework';
 import type GeneralCommandModule from './moduleinfo';
 
+@Command({ name: 'ping', description: "Check's the bots' ping" }, [
+    new BotPermsValidatorHook({
+        permissions: ['embedLinks'],
+    }),
+])
 export default class Ping extends BaseCommand {
     parent?: GeneralCommandModule;
-
-    constructor(bot: UtillyClient, parent: GeneralCommandModule) {
-        super(bot, parent);
-        this.help.name = 'ping';
-        this.help.description = "Checks the bots' ping";
-        this.help.usage = '';
-
-        this.preHooks.push(
-            new BotPermsValidatorHook({
-                permissions: ['embedLinks'],
-            })
-        );
-    }
 
     async execute(ctx: CommandContext): Promise<void> {
         const ZWS = '​';

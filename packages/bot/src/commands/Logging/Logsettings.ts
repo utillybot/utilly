@@ -1,9 +1,10 @@
 import { Guild, GuildRepository } from '@utilly/database';
-import type { CommandContext, UtillyClient } from '@utilly/framework';
+import type { CommandContext } from '@utilly/framework';
 import {
     BaseCommand,
     BotPermsValidatorHook,
     ChannelValidatorHook,
+    Command,
     EmbedBuilder,
     UserPermsValidatorHook,
 } from '@utilly/framework';
@@ -14,33 +15,31 @@ import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
 import { EVENT_CONSTANTS, EVENT_NAMES } from '../../constants/EventConstants';
 import type LoggingCommandModule from './moduleinfo';
 
+@Command(
+    {
+        name: 'logsettings',
+        description: 'Modify settings for the logging plugin',
+    },
+    [
+        new ChannelValidatorHook({
+            channel: ['guild'],
+        }),
+        new BotPermsValidatorHook({
+            permissions: [
+                'embedLinks',
+                'externalEmojis',
+                'addReactions',
+                'manageMessages',
+                'readMessageHistory',
+            ],
+        }),
+        new UserPermsValidatorHook({
+            permissions: ['manageGuild'],
+        }),
+    ]
+)
 export default class Logsettings extends BaseCommand {
     parent?: LoggingCommandModule;
-
-    constructor(bot: UtillyClient, parent: LoggingCommandModule) {
-        super(bot, parent);
-        this.help.name = 'logsettings';
-        this.help.description = 'Modify settings for the logging plugin';
-        this.help.usage = '';
-
-        this.preHooks.push(
-            new ChannelValidatorHook({
-                channel: ['guild'],
-            }),
-            new BotPermsValidatorHook({
-                permissions: [
-                    'embedLinks',
-                    'externalEmojis',
-                    'addReactions',
-                    'manageMessages',
-                    'readMessageHistory',
-                ],
-            }),
-            new UserPermsValidatorHook({
-                permissions: ['manageGuild'],
-            })
-        );
-    }
 
     async execute(ctx: CommandContext): Promise<void> {
         const embed = new EmbedBuilder();

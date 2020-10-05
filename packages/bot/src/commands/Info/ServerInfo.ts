@@ -1,8 +1,9 @@
-import type { CommandContext, UtillyClient } from '@utilly/framework';
+import type { CommandContext } from '@utilly/framework';
 import {
     BaseCommand,
     BotPermsValidatorHook,
     ChannelValidatorHook,
+    Command,
     EmbedBuilder,
 } from '@utilly/framework';
 import { secondsToString } from '@utilly/utils';
@@ -14,25 +15,23 @@ import {
 } from '../../constants/ServerConstants';
 import type InfoCommandModule from './moduleinfo';
 
+@Command(
+    {
+        name: 'serverinfo',
+        description: 'View information about a server',
+        aliases: ['sinfo'],
+    },
+    [
+        new ChannelValidatorHook({
+            channel: ['guild'],
+        }),
+        new BotPermsValidatorHook({
+            permissions: ['embedLinks'],
+        }),
+    ]
+)
 export default class ServerInfo extends BaseCommand {
     parent?: InfoCommandModule;
-
-    constructor(bot: UtillyClient, parent: InfoCommandModule) {
-        super(bot, parent);
-        this.help.name = 'serverinfo';
-        this.help.description = 'View information about a server';
-        this.help.usage = '';
-        this.help.aliases = ['sinfo'];
-
-        this.preHooks.push(
-            new ChannelValidatorHook({
-                channel: ['guild'],
-            }),
-            new BotPermsValidatorHook({
-                permissions: ['embedLinks'],
-            })
-        );
-    }
 
     async execute(ctx: CommandContext): Promise<void> {
         if (!ctx.guild) return;

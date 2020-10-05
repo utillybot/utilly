@@ -40,11 +40,11 @@ export abstract class CommandModule {
     /**
      * A map of commands that are registered to this module
      */
-    readonly commands: Map<string, BaseCommand>;
+    readonly commands: Map<string, BaseCommand> = new Map();
     /**
      * A map of command aliases that are registered to this module
      */
-    readonly aliases: Map<string, BaseCommand>;
+    readonly aliases: Map<string, BaseCommand> = new Map();
 
     /**
      * A list of global pre hooks that will be run as pre hooks for any sub commands for this module
@@ -66,9 +66,6 @@ export abstract class CommandModule {
         };
 
         this.preHooks = [];
-
-        this.commands = new Map();
-        this.aliases = new Map();
     }
 
     /**

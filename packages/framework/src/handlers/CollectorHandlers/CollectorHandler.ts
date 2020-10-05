@@ -6,15 +6,7 @@ import { runHooks } from '../Hook';
  * An abstract handler for multiple collectors
  */
 export abstract class CollectorHandler<T extends Hook<J>, J> {
-    private readonly _collectors: Array<Collector<T, J>>;
-
-    /**
-     * Creates this collector handler
-     * @protected
-     */
-    protected constructor() {
-        this._collectors = [];
-    }
+    private readonly _collectors: Array<Collector<T, J>> = [];
 
     /**
      * Creates a listener with the given hooks

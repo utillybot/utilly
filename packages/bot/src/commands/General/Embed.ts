@@ -7,6 +7,7 @@ import {
     BaseCommand,
     BotPermsValidatorHook,
     ChannelValidatorHook,
+    Command,
     EmbedBuilder,
     Subcommand,
     SubcommandHandler,
@@ -17,26 +18,27 @@ import { GuildChannel, TextChannel } from 'eris';
 import prettier from 'prettier';
 import type GeneralCommandModule from './moduleinfo';
 
+@Command(
+    {
+        name: 'embed',
+        description: 'Create, edit, or view the contents of an embed.',
+        usage: '(create/edit/view) (message id)',
+    },
+    [
+        new ChannelValidatorHook({
+            channel: ['guild'],
+        }),
+        new BotPermsValidatorHook({
+            permissions: ['embedLinks'],
+        }),
+    ]
+)
 export default class Embed extends BaseCommand {
     parent!: GeneralCommandModule;
     subCommandHandler: SubcommandHandler;
 
     constructor(bot: UtillyClient, parent: GeneralCommandModule) {
         super(bot, parent);
-        this.help.name = 'embed';
-        this.help.description =
-            'Create, edit, or view the contents of an embed.';
-        this.help.usage = '(create/edit/view) (message id)';
-
-        this.preHooks.push(
-            new ChannelValidatorHook({
-                channel: ['guild'],
-            }),
-            new BotPermsValidatorHook({
-                permissions: ['embedLinks'],
-            })
-        );
-
         this.subCommandHandler = new SubcommandHandler(bot.logger, bot);
 
         this.subCommandHandler.registerSubcommand(new EmbedCreate(this.bot));

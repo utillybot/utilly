@@ -1,10 +1,11 @@
 import type { Guild } from '@utilly/database';
 import { GuildRepository } from '@utilly/database';
-import type { CommandContext, UtillyClient } from '@utilly/framework';
+import type { CommandContext } from '@utilly/framework';
 import {
     BaseCommand,
     BotPermsValidatorHook,
     ChannelValidatorHook,
+    Command,
     DatabaseModule,
     EmbedBuilder,
 } from '@utilly/framework';
@@ -12,26 +13,23 @@ import type { Message } from 'eris';
 import { MODULE_CONSTANTS, MODULES } from '../../constants/ModuleConstants';
 import type GeneralCommandModule from './moduleinfo';
 
+@Command(
+    {
+        name: 'help',
+        description: 'View all the modules, or commands in a specific module',
+        usage: '(command/module)',
+    },
+    [
+        new ChannelValidatorHook({
+            channel: ['guild'],
+        }),
+        new BotPermsValidatorHook({
+            permissions: ['embedLinks'],
+        }),
+    ]
+)
 export default class Help extends BaseCommand {
     parent!: GeneralCommandModule;
-
-    constructor(bot: UtillyClient, parent: GeneralCommandModule) {
-        super(bot, parent);
-        this.help.name = 'help';
-        this.help.description =
-            'View all the modules, or commands in a specific module';
-        this.help.usage = '(command/module)';
-        this.help.aliases = ['h'];
-
-        this.preHooks.push(
-            new ChannelValidatorHook({
-                channel: ['guild'],
-            }),
-            new BotPermsValidatorHook({
-                permissions: ['embedLinks'],
-            })
-        );
-    }
 
     async execute(ctx: CommandContext): Promise<void> {
         if (ctx.guild) {
