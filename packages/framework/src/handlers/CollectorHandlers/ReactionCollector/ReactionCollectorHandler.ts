@@ -58,17 +58,17 @@ export class ReactionCollectorHandler extends CollectorHandler<
             let timer: NodeJS.Timeout | undefined;
             if (timeout) {
                 timer = setTimeout(() => {
-                    collector.destroy();
+                    collector.end('time');
                     reject();
                 }, timeout * 1000);
             }
 
             collector.on('collect', ctx => {
-                collector.destroy();
+                collector.end('collected');
                 resolve(ctx.emoji);
             });
 
-            collector.on('destroy', () => {
+            collector.on('end', () => {
                 if (timer) clearTimeout(timer);
             });
         });

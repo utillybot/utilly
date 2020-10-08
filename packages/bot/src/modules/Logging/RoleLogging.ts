@@ -23,8 +23,7 @@ export default class RoleLogging extends AttachableModule {
     /**
      * Adds a timestamp for partial builds and a guild info and guild id for full builds
      * @param embed - the embed builder
-     * @param message - the message
-     * @param partial - if the embed build will be partial
+     * @param guild - the guild this belongs to.
      */
     private _buildEmbed(embed: EmbedBuilder, guild: Guild): EmbedBuilder {
         embed.setTimestamp();
@@ -87,7 +86,7 @@ export default class RoleLogging extends AttachableModule {
             }` +
             `${
                 role.hoist != oldRole.hoist
-                    ? `**Displayed Seperately**: ${
+                    ? `**Displayed Separately**: ${
                           oldRole.hoist ? check : xmark
                       } ` + `➜ ${role.hoist ? check : xmark}\n`
                     : ''

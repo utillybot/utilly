@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 
+export * from './abstractions/ReactionPaginator';
 export * from './constants/PermissionConstants';
 export * from './handlers/CommandHandler/Command';
 export * from './handlers/CommandHandler/CommandHandler';

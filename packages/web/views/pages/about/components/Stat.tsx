@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './Stats.sass';
+import './Stat.sass';
 
 interface StatsProps {
     statName: string;
@@ -7,7 +7,7 @@ interface StatsProps {
     units: string;
 }
 
-class Stats extends Component<StatsProps> {
+class Stat extends Component<StatsProps> {
     render(): JSX.Element {
         return (
             <div className="stat">
@@ -20,4 +20,4 @@ class Stats extends Component<StatsProps> {
     }
 }
 
-export default Stats;
+export default Stat;

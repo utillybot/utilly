@@ -188,7 +188,7 @@ export default class Logsettings extends BaseCommand {
         const settingsEmbed = new EmbedBuilder();
         settingsEmbed.setTitle('Log Channel Settings');
         settingsEmbed.setDescription(
-            'Type a list of event names or thier categories that you would like to change the log channel of.\n' +
+            'Type a list of event names or their categories that you would like to change the log channel of.\n' +
                 'eg: `message edited, message deleted, channel`'
         );
 

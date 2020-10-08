@@ -43,11 +43,7 @@ export default class LoggingModule extends DatabaseModule {
 
         const logChannel = guild.channels.get(logChannelID);
 
-        if (
-            logChannel != null &&
-            logChannel != undefined &&
-            logChannel instanceof Eris.TextChannel
-        ) {
+        if (logChannel != null && logChannel instanceof Eris.TextChannel) {
             return logChannel;
         } else {
             return null;
@@ -76,14 +72,14 @@ export default class LoggingModule extends DatabaseModule {
             const everyoneRole = channel.guild.roles.get(channel.guild.id);
             if (!everyoneRole) return { check, xmark, empty };
 
-            // If the @everyone role doesn't allow pexternal emojis, use the fallback
+            // If the @everyone role doesn't allow external emojis, use the fallback
             if (!(everyoneRole.permissions.allow & 0x00040000)) notice = true;
         } else if (everyoneOverwrites && everyoneOverwrites.deny & 0x00040000) {
             // If the @everyone overwrite exists and denies external emojis, use the fallback
             notice = true;
         }
 
-        if (notice == false) {
+        if (!notice) {
             check = EMOTE_CONSTANTS.check;
             xmark = EMOTE_CONSTANTS.xmark;
             empty = EMOTE_CONSTANTS.empty;

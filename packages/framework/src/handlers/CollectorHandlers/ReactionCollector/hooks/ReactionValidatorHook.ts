@@ -22,6 +22,11 @@ export interface ReactionValidatorHookSettings {
     allowedEmoteIds?: string[];
 
     /**
+     * An array of emote names that can be reacted onto the message
+     */
+    allowedEmoteNames?: string[];
+
+    /**
      * Whether or not to remove reactions that were not in the allowed reactor ids/allowed emote ids
      */
     removeNonValidReactions?: boolean;
@@ -68,6 +73,14 @@ export class ReactionValidatorHook extends ReactionCollectorHook {
                     }`,
                     ctx.reactor
                 );
+            return;
+        }
+        if (
+            this.settings.allowedEmoteNames &&
+            !this.settings.allowedEmoteNames.includes(ctx.emoji.name)
+        ) {
+            if (this.settings.removeNonValidReactions)
+                ctx.message.removeReaction(ctx.emoji.name, ctx.reactor);
             return;
         }
 

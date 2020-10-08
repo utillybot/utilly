@@ -9,7 +9,7 @@
         "@utilly/database": "1.0.0",
         "@utilly/utils": "1.0.0",
         "bufferutil": "^4.0.1",
-        "eris": "bsian03/eris#typings",
+        "eris": "jtsshieh/eris#utilly",
         "erlpack": "^0.1.3",
         "zlib-sync": "^0.1.7"
     },

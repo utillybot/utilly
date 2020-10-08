@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import './App.sass';
+import './Home.sass';
 
-class App extends Component {
+class Home extends Component {
     render(): JSX.Element {
         return (
             <React.Fragment>
-                <header className="App-header">
+                <header className="home-header">
                     <img
-                        className="App-logo"
+                        className="home-logo"
                         src="./logo.png"
                         alt="Utilly Logo"
                     />
@@ -19,4 +19,4 @@ class App extends Component {
     }
 }
 
-export default App;
+export default Home;

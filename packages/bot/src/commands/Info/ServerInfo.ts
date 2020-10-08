@@ -5,6 +5,7 @@ import {
     ChannelValidatorHook,
     Command,
     EmbedBuilder,
+    ReactionPaginator,
 } from '@utilly/framework';
 import { secondsToString } from '@utilly/utils';
 import {
@@ -36,17 +37,19 @@ export default class ServerInfo extends BaseCommand {
     async execute(ctx: CommandContext): Promise<void> {
         if (!ctx.guild) return;
         const server = ctx.guild;
-        const embed = new EmbedBuilder();
-        embed.setTitle('Server Info');
 
-        embed.addField('Name', server.name, true);
-        embed.addField('ID', server.id, true);
-        embed.addField(
-            'Region',
-            (await REGIONS_CONSTANTS(server))[server.region]
+        const overviewPage = new EmbedBuilder();
+        overviewPage.setTitle('Server Info');
+        overviewPage.setDescription('**Server Overview**');
+        overviewPage.addField('Server Name', server.name, true);
+        overviewPage.addField('Server ID', server.id, true);
+        overviewPage.addField(
+            'Server Region',
+            (await REGIONS_CONSTANTS(server))[server.region],
+            true
         );
 
-        embed.addField(
+        overviewPage.addField(
             'Inactive Channel',
             server.afkChannelID
                 ? server.channels.get(server.afkChannelID)?.mention ??
@@ -54,56 +57,55 @@ export default class ServerInfo extends BaseCommand {
                 : 'No Inactive Channel',
             true
         );
-        embed.addField(
+        overviewPage.addField(
             'Inactive Timeout',
             secondsToString(server.afkTimeout),
             true
         );
+        overviewPage.addField('​', '​', true);
 
-        if (server.systemChannelID) {
-            embed.addField(
-                'System Messages Channel',
-                server.channels.get(server.systemChannelID)?.mention || '',
-                true
-            );
-            /*embed.addField(
-                'Send a random welcome message when someone joins this server.',
-                'hi'
-            );*/
-        }
+        overviewPage.addField(
+            'System Messages Channel',
+            server.systemChannelID
+                ? server.channels.get(server.systemChannelID)?.mention ??
+                      'No System Messages'
+                : 'No System Messages'
+        );
+        overviewPage.addField(
+            'Send a random welcome message when someone joins this server.',
+            server.systemChannelFlags & 1 ? 'No' : 'Yes'
+        );
 
-        embed.addField(
-            'Default Notifications',
+        overviewPage.addField(
+            'Send a message when someone boosts this server.',
+            server.systemChannelFlags & 2 ? 'No' : 'Yes'
+        );
+
+        overviewPage.addField(
+            'Default Notification Settings',
             DEFAULT_NOTIFICATION_CONSTANTS[server.defaultNotifications],
             true
         );
-        embed.addField(
+        overviewPage.addField(
             'Created At',
             new Date(server.createdAt).toUTCString(),
             true
         );
 
-        embed.addField(
+        const moderationPage = new EmbedBuilder();
+        moderationPage.setTitle('Server Info');
+        moderationPage.setDescription('**Moderation**');
+        moderationPage.addField(
             'Verification Level',
-            VERIFICATION_LEVEL_CONSTANTS[server.verificationLevel],
-            true
+            VERIFICATION_LEVEL_CONSTANTS[server.verificationLevel]
         );
-        embed.addField(
+        moderationPage.addField(
             'Explicit Media Content Filter',
-            EXPLICIT_LEVEL_CONSTANTS[server.explicitContentFilter],
-            true
+            EXPLICIT_LEVEL_CONSTANTS[server.explicitContentFilter]
         );
-        embed.addField(
+        moderationPage.addField(
             '2FA Requirement For Moderation',
-            server.mfaLevel == 0 ? 'Off' : 'On',
-            true
-        );
-
-        embed.addField('Member Count', server.memberCount.toString(), true);
-        embed.addField(
-            'Owner',
-            ctx.guild?.members.get(server.ownerID)?.mention || 'Not found',
-            true
+            server.mfaLevel == 0 ? 'Off' : 'On'
         );
 
         /*
@@ -153,37 +155,61 @@ export default class ServerInfo extends BaseCommand {
                 true
             );
 */
+        const communityPage = new EmbedBuilder();
+        communityPage.setTitle('Server Info');
+        communityPage.setDescription('**Community**');
+        if (server.rulesChannelID)
+            communityPage.addField(
+                'Rules Channel',
+                server.channels.get(server.rulesChannelID)?.mention || '',
+                true
+            );
 
         if (server.publicUpdatesChannelID)
-            embed.addField(
+            communityPage.addField(
                 'Community Updates Channel',
                 server.channels.get(server.publicUpdatesChannelID)?.mention ||
                     '',
                 true
             );
 
-        if (server.rulesChannelID)
-            embed.addField(
-                'Rules Channel',
-                server.channels.get(server.rulesChannelID)?.mention || '',
+        if (server.maxMembers)
+            communityPage.addField(
+                'Max Members',
+                server.maxMembers.toString(),
                 true
             );
 
-        if (server.maxMembers)
-            embed.addField('Max Members', server.maxMembers.toString(), true);
-
         if (server.maxVideoChannelUsers)
-            embed.addField(
+            communityPage.addField(
                 'Max Video Channel Users',
                 server.maxVideoChannelUsers.toString(),
                 true
             );
 
         if (server.description)
-            embed.addField('Description', server.description, true);
-        if (server.bannerURL) embed.setImage(server.bannerURL);
-        if (server.iconURL) embed.setThumbnail(server.iconURL);
+            communityPage.addField('Description', server.description, true);
+        if (server.bannerURL) communityPage.setImage(server.bannerURL);
+        if (server.iconURL) communityPage.setThumbnail(server.iconURL);
 
-        ctx.reply({ embed });
+        const otherPage = new EmbedBuilder();
+        otherPage.setTitle('Server Info');
+        otherPage.setDescription('**Other Info**');
+        otherPage.addField('Member Count', server.memberCount.toString(), true);
+        otherPage.addField(
+            'Owner',
+            ctx.guild?.members.get(server.ownerID)?.mention || 'Not found',
+            true
+        );
+        const reply = await ctx.reply({ embed: overviewPage });
+
+        this.bot.reactionWaitHandler.addCollector(
+            new ReactionPaginator(reply, ctx.message.author.id, [
+                { embed: overviewPage },
+                { embed: moderationPage },
+                { embed: communityPage },
+                { embed: otherPage },
+            ])
+        );
     }
 }

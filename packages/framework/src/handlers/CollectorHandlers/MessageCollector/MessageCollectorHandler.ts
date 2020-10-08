@@ -55,16 +55,16 @@ export class MessageCollectorHandler extends CollectorHandler<
                 new MessageFilterHook({ checkMessage: filter }),
             ]);
             const timer = setTimeout(() => {
-                collector.destroy();
+                collector.end('time');
                 reject();
             }, timeout * 1000);
 
             collector.on('collect', ctx => {
-                collector.destroy();
+                collector.end('collect');
                 resolve(ctx.message);
             });
 
-            collector.on('destroy', () => {
+            collector.on('end', () => {
                 clearTimeout(timer);
             });
         });

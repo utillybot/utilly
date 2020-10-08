@@ -4,7 +4,13 @@ import {
     EmbedBuilder,
 } from '@utilly/framework';
 import { secondsToString } from '@utilly/utils';
-import type { AnyChannel, AnyGuildChannel, Guild, OldGuildChannel } from 'eris';
+import type {
+    AnyChannel,
+    AnyGuildChannel,
+    Guild,
+    OldGuildChannel,
+    OldGroupChannel,
+} from 'eris';
 import { CategoryChannel, GuildChannel, TextChannel, VoiceChannel } from 'eris';
 import type LoggingModule from './LoggingModule';
 
@@ -25,8 +31,7 @@ export default class ChannelLogging extends AttachableModule {
     /**
      * Adds a timestamp for partial builds and a guild info and guild id for full builds
      * @param embed - the embed builder
-     * @param message - the message
-     * @param partial - if the embed build will be partial
+     * @param guild - the guild this belongs to.
      */
     private _buildEmbed(embed: EmbedBuilder, guild: Guild): EmbedBuilder {
         embed.setTimestamp();
@@ -38,12 +43,15 @@ export default class ChannelLogging extends AttachableModule {
     /**
      * Handles the event where a channel is updated
      * @param newChannel - the new channel
-     * @param oldChannel - the old channel
+     * @param oldCh - the old channel
      */
     private async _channelUpdate(
-        newChannel: AnyGuildChannel,
-        oldChannel: OldGuildChannel
+        newChannel: AnyChannel,
+        oldCh: OldGuildChannel | OldGroupChannel
     ): Promise<void> {
+        if (!(newChannel instanceof GuildChannel)) return;
+        const oldChannel = oldCh as OldGuildChannel;
+
         //#region prep
         const guildRow = await this.parentModule.selectGuildRow(
             newChannel.guild.id,

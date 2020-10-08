@@ -1,6 +1,6 @@
 import type { Component } from 'react';
 import About from './pages/about/About';
-import App from './pages/app/App';
+import Home from './pages/home/Home';
 import Commands from './pages/commands/Commands';
 
 export interface RouteData {
@@ -13,7 +13,7 @@ export const ROUTE_CONSTANTS: RouteData[] = [
     {
         path: '/',
         name: 'Home',
-        page: App,
+        page: Home,
     },
 
     {

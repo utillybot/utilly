@@ -78,6 +78,13 @@ export class Guild {
     @Column({ nullable: false, default: false })
     public logging_guildRoleUpdateEvent!: boolean;
 
+    //Guild Update
+    @Column('numeric', { nullable: true, precision: 18 })
+    public logging_guildUpdateChannel!: string | null;
+
+    @Column({ nullable: false, default: false })
+    public logging_guildUpdateEvent!: boolean;
+
     // Info Module
     @Column({ nullable: false, default: false })
     public info!: boolean;

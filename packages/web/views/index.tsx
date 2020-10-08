@@ -1,27 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import Navbar from './components/Navbar';
 import './index.sass';
-import { ROUTE_CONSTANTS } from './ROUTE_CONSTANTS';
-
-const routes: JSX.Element[] = [];
-for (const pageRoute of ROUTE_CONSTANTS) {
-    routes.push(
-        <Route
-            key={pageRoute.name}
-            path={pageRoute.path}
-            exact
-            component={pageRoute.page}
-        />
-    );
-}
+import { BrowserRouter } from 'react-router-dom';
+import Navbar from './components/Navbar/Navbar';
+import Routes from './components/Routes/Routes';
 
 ReactDOM.render(
     <React.StrictMode>
         <BrowserRouter>
             <Navbar />
-            <Switch>{routes}</Switch>
+            <Routes />
         </BrowserRouter>
     </React.StrictMode>,
     document.getElementById('root')

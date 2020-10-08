@@ -1,12 +1,20 @@
-import { EventEmitter } from 'events';
 import type { Hook } from '../Hook';
 import { runHooks } from '../Hook';
+import { EventListener } from '../../utils/EventListener';
 
 /**
  * An abstract handler for multiple collectors
  */
 export abstract class CollectorHandler<T extends Hook<J>, J> {
     private readonly _collectors: Array<Collector<T, J>> = [];
+
+    addCollector(collector: Collector<T, J>): Collector<T, J> {
+        this._collectors.push(collector);
+        collector.on('end', () => {
+            this._collectors.splice(this._collectors.indexOf(collector), 1);
+        });
+        return collector;
+    }
 
     /**
      * Creates a listener with the given hooks
@@ -15,7 +23,7 @@ export abstract class CollectorHandler<T extends Hook<J>, J> {
     createListener(hooks?: T[]): Collector<T, J> {
         const collector = new Collector<T, J>(hooks);
         this._collectors.push(collector);
-        collector.on('destroy', () => {
+        collector.on('end', () => {
             this._collectors.splice(this._collectors.indexOf(collector), 1);
         });
         return collector;
@@ -26,16 +34,11 @@ export abstract class CollectorHandler<T extends Hook<J>, J> {
      * @param ctx - the command run the hooks with
      */
     checkCollectors(ctx: J): void {
-        for (const collector of this._collectors) collector.check(ctx);
+        for (const collector of this._collectors) collector.process(ctx);
     }
 }
 
 export interface Collector<T extends Hook<J>, J> {
-    /**
-     * An array of collected items from this collector
-     */
-    collected: J[];
-
     /**
      * Handles when an item is collected
      * @event collect
@@ -43,37 +46,51 @@ export interface Collector<T extends Hook<J>, J> {
     on(event: 'collect', listener: (ctx: J) => void): this;
 
     /**
-     * Handles when this collector is destroy
-     * @event collect
+     * Handles when the collector starts collected
+     * @event start
      */
-    on(event: 'destroy', listener: () => void): this;
+    on(event: 'start', listener: () => void): this;
+
+    /**
+     * Handles when the collector stops collecting
+     * @event end
+     */
+    on(event: 'end', listener: (reason: string) => void): this;
 }
 
 /**
  * A collector for a bunch of objects
  */
-export class Collector<T extends Hook<J>, J> extends EventEmitter {
+export class Collector<T extends Hook<J>, J> extends EventListener {
+    /**
+     * Whether or not this collector was started
+     */
+    started = false;
+
+    /**
+     * An array of collected items from this collector
+     */
+    collected: J[] = [];
+
     private readonly _hooks?: T[];
-    private _destroyed: boolean;
 
     /**
      * Creates a new collector with an array of hooks to run
      * @param hooks - the array of hooks
+     * @param startStarted - whether or not to start this collector in the "started" state
      */
-    constructor(hooks?: T[]) {
+    constructor(hooks?: T[], startStarted = true) {
         super();
         this._hooks = hooks;
-        this._destroyed = false;
-
-        this.collected = [];
+        if (startStarted) this.start();
     }
 
     /**
      * Checks if a given context is valid according to the hooks
      * @param ctx - the context to check on
      */
-    async check(ctx: J): Promise<void> {
-        if (this._destroyed) return;
+    async process(ctx: J): Promise<void> {
+        if (!this.started) return;
         if (this._hooks && !(await runHooks(ctx, this._hooks))) return;
 
         this.emit('collect', ctx);
@@ -81,26 +98,81 @@ export class Collector<T extends Hook<J>, J> extends EventEmitter {
     }
 
     /**
-     * A promise wrapper to collect the next item.
-     * The returned promise will resolve with the collected context and immediately destroy itself
-     * If it was destroyed before something was collected, it'll reject
+     * Collect the next entity.
+     * Optionally specify a timeout to end if the timeout is reached.
+     * The resulting promise will resolve with the collected entity or reject if the listener was destroyed/ended.
+     *
+     * End reasons
+     * - collectNext:time
+     *   The timer completed before an entity was collected
+     * - collectNext:collect
+     *   An entity was collected
+     *
+     * @param timeout - the timeout to end this listener
+     * @return a promise resolving with the collected entity or rejecting with an end reason
      */
-    async collectNext(): Promise<J> {
+    async collectNext(timeout?: number): Promise<J> {
         return new Promise((resolve, reject) => {
-            this.on('collect', (ctx: J) => {
+            let time: NodeJS.Timeout;
+
+            if (timeout) {
+                time = setTimeout(() => {
+                    this.end('collectNext:time');
+                    clearTimeout(time);
+                }, timeout * 1000);
+            }
+
+            const disposeListeners = () => {
+                this.removeListener('collect', collectListener);
+                this.removeListener('end', endListener);
+            };
+
+            const collectListener = (ctx: J) => {
+                disposeListeners();
                 resolve(ctx);
-                this.destroy();
-            });
-            this.on('destroy', reject);
+                if (time) clearTimeout(time);
+                this.end('collectNext:collect');
+            };
+
+            const endListener = (reason: string) => {
+                disposeListeners();
+                reject(reason);
+            };
+
+            this.on('collect', collectListener);
+            this.on('end', endListener);
         });
     }
 
     /**
-     * Destroys this collector and makes it unavailable for further use
+     * Collect entities for a certain amount of time until the timeout is over
+     *
+     * End reasons
+     * - collectFor: done
+     *   Done collecting entities
+     *
+     * @param timeout - the amount of time to collect in seconds
+     * @return a list of entities collected
      */
-    destroy(): void {
-        this.emit('destroy');
-        this._destroyed = true;
+    async collectFor(timeout: number): Promise<J[]> {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve(this.collected);
+                this.end('collectFor:done');
+            }, timeout * 1000);
+        });
+    }
+
+    start(): void {
+        if (!this.started) {
+            this.started = true;
+            this.emit('start');
+        }
+    }
+
+    end(reason: string): void {
+        this.started = false;
+        this.emit('end', reason);
         this.removeAllListeners();
     }
 }

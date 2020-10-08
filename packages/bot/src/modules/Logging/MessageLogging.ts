@@ -65,10 +65,10 @@ export default class MessageLogging extends AttachableModule {
         if (message.embeds.length > 0) {
             otherNotes += `- This message had ${message.embeds.length} embed(s)\n`;
         }
-        if (message.pinned == true) {
+        if (message.pinned) {
             otherNotes += '- This message was pinned\n';
         }
-        if (message.tts == true) {
+        if (message.tts) {
             otherNotes += '- This message was TTS\n';
         }
         if (message.webhookID) {
@@ -168,7 +168,7 @@ export default class MessageLogging extends AttachableModule {
      */
     private async _messageUpdate(
         message: Message,
-        oldMessage?: OldMessage
+        oldMessage: OldMessage | null
     ): Promise<void> {
         if (!(message.channel instanceof GuildChannel)) return;
         if (oldMessage && oldMessage.content == message.content) return;

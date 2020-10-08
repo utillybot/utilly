@@ -1,5 +1,3 @@
-import set = Reflect.set;
-
 export type NextFunction = () => void;
 
 /**
