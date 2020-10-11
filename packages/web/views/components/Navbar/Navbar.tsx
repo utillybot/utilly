@@ -35,7 +35,7 @@ class Navbar extends Component<RouteComponentProps, NavbarState> {
             );
         };
         for (const pageRoute of ROUTE_CONSTANTS) {
-            if (this.props.location.pathname == pageRoute.path)
+            if (this.props.location.pathname.startsWith(pageRoute.path))
                 currentPage = pageRoute;
             navbarElements.push(
                 <Link

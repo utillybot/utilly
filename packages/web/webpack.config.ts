@@ -6,6 +6,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import path from 'path';
 import TerserPlugin from 'terser-webpack-plugin';
 import type { Configuration } from 'webpack';
+import FaviconsWebpackPlugin from 'favicons-webpack-plugin';
 
 interface EnvOptions {
     mode: 'production' | 'development';
@@ -41,6 +42,18 @@ const config = (env: EnvOptions): Configuration => {
             new HtmlWebpackPlugin({
                 inject: true,
                 template: 'index.html',
+            }),
+            new FaviconsWebpackPlugin({
+                logo: './public/logo.png',
+                prefix: '',
+                favicons: {
+                    appName: 'Utilly',
+                    appDescription: 'The tool for the job',
+                    developerName: 'jtsshieh',
+                    developerURL: null, // prevent retrieving from the nearest package.json
+                    background: '#ddd',
+                    theme_color: '#007aff',
+                },
             }),
         ],
         resolve: {
