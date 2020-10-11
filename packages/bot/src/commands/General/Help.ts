@@ -18,6 +18,7 @@ import type GeneralCommandModule from './moduleinfo';
         name: 'help',
         description: 'View all the modules, or commands in a specific module',
         usage: '(command/module)',
+        aliases: ['commands', 'h'],
     },
     [
         new ChannelValidatorHook({

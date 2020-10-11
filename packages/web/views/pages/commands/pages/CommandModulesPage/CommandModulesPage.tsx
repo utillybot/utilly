@@ -1,42 +1,24 @@
 import React, { Component } from 'react';
 import CommandModuleTile from './components/CommandModuleTile';
 import './CommandModulesPage.sass';
+import type { CommandModule } from '../../Commands';
 
-interface CommandModule {
-    name: string;
-    description: string;
-}
-
-interface CommandModulesPageState {
+interface CommandModulesPageProps {
     commandModules: CommandModule[];
 }
 
-class CommandModulesPage extends Component<unknown, CommandModulesPageState> {
-    constructor(props: unknown) {
-        super(props);
-        this.state = {
-            commandModules: [],
-        };
-    }
-
-    async componentDidMount(): Promise<void> {
-        const result = await (await fetch('/api/commands')).json();
-        this.setState({
-            commandModules: result.commandModules,
-        });
-    }
-
+class CommandModulesPage extends Component<CommandModulesPageProps> {
     render(): JSX.Element {
         return (
             <div
                 className={`command-module-container ${
-                    this.state.commandModules.length == 0 ? 'loading' : ''
+                    this.props.commandModules.length == 0 ? 'loading' : ''
                 }`}
             >
-                {this.state.commandModules.length == 0 ? (
+                {this.props.commandModules.length == 0 ? (
                     <h1 className="loading">Loading...</h1>
                 ) : (
-                    this.state.commandModules.map(module => (
+                    this.props.commandModules.map(module => (
                         <CommandModuleTile
                             key={module.name}
                             commandModule={module}

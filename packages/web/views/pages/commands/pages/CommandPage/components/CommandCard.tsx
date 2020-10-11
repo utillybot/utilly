@@ -1,14 +1,8 @@
 import React, { Component } from 'react';
 import './CommandCard.sass';
+import type { Command } from '../../../Commands';
 
-interface CommandCardProps {
-    name: string;
-    description: string;
-    usage: string;
-    aliases: string[];
-}
-
-class CommandCard extends Component<CommandCardProps> {
+class CommandCard extends Component<Command> {
     render(): JSX.Element {
         return (
             <div className="command-card">
@@ -17,13 +11,19 @@ class CommandCard extends Component<CommandCardProps> {
                     {this.props.description}
                 </h3>
                 <h3 className="command-usage">
+                    <b>Usage: </b>
                     <code>
                         u!{this.props.name} {this.props.usage}
                     </code>
                 </h3>
                 {this.props.aliases.length > 0 ? (
                     <h3>
-                        <b>Aliases:</b> {this.props.aliases.join(', ')}
+                        <b>Aliases:</b>{' '}
+                        <code>
+                            {this.props.aliases
+                                .map(alias => `u!${alias}`)
+                                .join(', ')}
+                        </code>
                     </h3>
                 ) : (
                     ''
