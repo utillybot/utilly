@@ -77,34 +77,38 @@ export default class RoleLogging extends AttachableModule {
         }
 
         // Prepare updates to the role info
-        const updatedRoleInfo =
-            `${
-                role.color != oldRole.color
-                    ? `**Color**: #${oldRole.color.toString(16)}` +
-                      ` ➜ #${role.color.toString(16)}\n`
-                    : ''
-            }` +
-            `${
-                role.hoist != oldRole.hoist
-                    ? `**Displayed Separately**: ${
-                          oldRole.hoist ? check : xmark
-                      } ` + `➜ ${role.hoist ? check : xmark}\n`
-                    : ''
-            }` +
-            `${
-                role.mentionable != oldRole.mentionable
-                    ? `**Mentionable**: ${
-                          oldRole.mentionable ? check : xmark
-                      } ` + `➜ ${role.mentionable ? check : xmark}\n`
-                    : ''
-            }` +
-            `${
-                role.managed != oldRole.managed
-                    ? `**Managed**: ${oldRole.managed ? check : xmark} ` +
-                      `➜ ${role.managed ? check : xmark}`
-                    : ''
-            }`;
-        if (updatedRoleInfo != '') embed.addField('Info', updatedRoleInfo);
+        const updatedRoleInfo = [];
+        if (role.color != oldRole.color)
+            updatedRoleInfo.push({
+                name: 'Color',
+                old: `#${oldRole.color.toString(16)}`,
+                new: `#${role.color.toString(16)}`,
+            });
+        if (role.hoist != role.hoist)
+            updatedRoleInfo.push({
+                name: 'Displayed Separately',
+                old: oldRole.hoist ? check : xmark,
+                new: role.hoist ? check : xmark,
+            });
+        if (role.mentionable != oldRole.mentionable)
+            updatedRoleInfo.push({
+                name: 'Mentionable',
+                old: oldRole.mentionable ? check : xmark,
+                new: role.mentionable ? check : xmark,
+            });
+        if (role.managed != oldRole.managed)
+            updatedRoleInfo.push({
+                name: 'Managed',
+                old: oldRole.managed ? check : xmark,
+                new: role.managed ? check : xmark,
+            });
+        if (updatedRoleInfo.length > 0)
+            embed.addField(
+                'Info',
+                updatedRoleInfo
+                    .map(item => `**${item.name}**: ${item.old} ➜ ${item.new}`)
+                    .join('\n')
+            );
         embed.setFooter(`Role ID: ${role.id}`);
 
         //#endregion
@@ -123,7 +127,7 @@ export default class RoleLogging extends AttachableModule {
                 !(oldRole.permissions.allow & permissionBit) &&
                 role.permissions.allow & permissionBit
             ) {
-                //Permissiongs go from deny to allow
+                //Permissions go from deny to allow
                 permissions.push(`${permission}: ${xmark} ➜ ${check}\n`);
             }
         }
@@ -250,7 +254,7 @@ export default class RoleLogging extends AttachableModule {
         embed.addField(
             'Info',
             `**Color**: #${role.color.toString(16)}\n` +
-                `**Displayed Seperately**: ${role.hoist ? check : xmark}\n` +
+                `**Displayed Separately**: ${role.hoist ? check : xmark}\n` +
                 `**Mentionable**: ${role.mentionable ? check : xmark}\n` +
                 `**Managed**: ${role.managed ? check : xmark}`
         );
@@ -259,45 +263,30 @@ export default class RoleLogging extends AttachableModule {
 
         //#region permissions
         // Prepare permission info
-        const permissions: string[] = [];
+        const generalPermissions: string[] = [];
+        const textPermissions: string[] = [];
+        const voicePermissions: string[] = [];
+        let current = 0;
+
         for (const [permissionBit, permission] of ROLE_PERMISSIONS) {
-            permissions.push(
-                `${permission}: ${
-                    role.permissions.allow & permissionBit ? check : xmark
-                }\n`
-            );
-        }
-        // If any permission has been updated, the map size will be greater than 0
-        if (permissions.length > 0) {
-            // Prepare to have multiple pages of permissions
-            const embedPages = [''];
-            let current = 0;
+            if (permission == 'Send Messages' && current == 0) current = 1;
+            if (permission == 'Connect' && current == 1) current = 2;
 
-            // Loop through the permissions map
-            for (const permission of permissions) {
-                // If current page's length plus the next overwrite's length is greater than 1024 (embed field maximum)
-                // increase the page number
-                if (embedPages[current].length + permission.length > 1024) {
-                    current++;
-                }
-                // If the current page is null, add the page in
-                if (embedPages[current] == null) {
-                    embedPages.push('');
-                }
-                // Add the permission overwrite data to the current page
-                embedPages[current] += permission;
-            }
-
-            // If there is only 1 page, add that page to the embed
-            if (embedPages.length == 1) {
-                embed.addField('Permissions', embedPages[0], true);
-                // Otherwise, loop through the pages and add each one to the embed
-            } else {
-                for (let i = 0; i < embedPages.length; i++) {
-                    embed.addField(`Permissions ${i + 1}`, embedPages[i], true);
-                }
+            const data = `\`${permission}${' '.repeat(
+                40 - permission.length
+            )}:\` ${role.permissions.allow & permissionBit ? check : xmark}`;
+            if (current == 0) {
+                generalPermissions.push(data);
+            } else if (current == 1) {
+                textPermissions.push(data);
+            } else if (current == 2) {
+                voicePermissions.push(data);
             }
         }
+
+        embed.addField('General Permissions', generalPermissions.join('\n'));
+        embed.addField('Text Permissions', textPermissions.join('\n'));
+        embed.addField('Voice Permissions', voicePermissions.join('\n'));
         //#endregion
 
         // Final additions and send

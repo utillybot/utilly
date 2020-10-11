@@ -4,15 +4,15 @@ import {
     EmbedBuilder,
 } from '@utilly/framework';
 import { secondsToString } from '@utilly/utils';
-import type {
-    AnyChannel,
-    AnyGuildChannel,
-    Guild,
-    OldGuildChannel,
-    OldGroupChannel,
-} from 'eris';
+import type { AnyChannel, Guild, OldGuildChannel, OldGroupChannel } from 'eris';
 import { CategoryChannel, GuildChannel, TextChannel, VoiceChannel } from 'eris';
 import type LoggingModule from './LoggingModule';
+
+interface ChangedData {
+    name: string;
+    old: string;
+    new: string;
+}
 
 /* eslint-disable no-prototype-builtins */
 
@@ -72,119 +72,132 @@ export default class ChannelLogging extends AttachableModule {
 
         //#region embed header
         let embed = new EmbedBuilder();
-        let overview = '';
 
-        if (newChannel.name != oldChannel.name) {
-            overview += `**Name**: ${oldChannel.name} ➜ ${newChannel.name}\n`;
-        }
+        const overviewData: ChangedData[] = [];
+        if (newChannel.name != oldChannel.name)
+            overviewData.push({
+                name: 'Name',
+                old: oldChannel.name,
+                new: newChannel.mention,
+            });
 
         //Prepare Embed Header and Overview changes
         if (newChannel instanceof TextChannel) {
             embed.setTitle('Text Channel Updated');
             embed.setDescription(`Channel: <#${newChannel.id}>`);
 
-            if (
-                newChannel.topic != oldChannel.topic &&
-                oldChannel.topic != null
-            )
-                overview +=
-                    `**Topic**: ${
+            if (newChannel.topic != oldChannel.topic)
+                overviewData.push({
+                    name: 'Topic',
+                    old:
                         oldChannel.topic != '' && oldChannel.topic != null
                             ? oldChannel.topic
-                            : '(cleared)'
-                    }` +
-                    ` ➜ ${
+                            : '(cleared)',
+                    new:
                         newChannel.topic != '' && newChannel.topic != null
                             ? newChannel.topic
-                            : '(cleared)'
-                    }\n`;
+                            : '(cleared)',
+                });
 
-            if (
-                newChannel.rateLimitPerUser != oldChannel.rateLimitPerUser &&
-                newChannel.rateLimitPerUser != undefined &&
-                oldChannel.rateLimitPerUser != undefined
-            )
-                overview +=
-                    `**Slowmode**: ${
+            if (newChannel.rateLimitPerUser != oldChannel.rateLimitPerUser)
+                overviewData.push({
+                    name: 'Slowmode',
+                    old:
                         oldChannel.rateLimitPerUser != 0
-                            ? secondsToString(oldChannel.rateLimitPerUser)
-                            : 'Off'
-                    }` +
-                    ` ➜ ${
+                            ? /**@ts-ignore*/
+                              secondsToString(oldChannel.rateLimitPerUser)
+                            : 'Off',
+                    new:
                         newChannel.rateLimitPerUser != 0
                             ? secondsToString(newChannel.rateLimitPerUser)
-                            : 'Off'
-                    }\n`;
+                            : 'Off',
+                });
 
-            if (
-                newChannel.nsfw != oldChannel.nsfw &&
-                oldChannel.nsfw != undefined &&
-                newChannel.nsfw != undefined
-            )
-                overview +=
-                    `**NSFW**: ${oldChannel.nsfw ? check : xmark} ` +
-                    `➜ ${newChannel.nsfw ? check : xmark}\n`;
+            if (newChannel.nsfw != oldChannel.nsfw)
+                overviewData.push({
+                    name: 'NSFW',
+                    old: oldChannel.nsfw ? check : xmark,
+                    new: newChannel.nsfw ? check : xmark,
+                });
 
             if (newChannel.parentID != oldChannel.parentID)
-                overview +=
-                    `**Category**: ${
+                overviewData.push({
+                    name: 'Category',
+                    old:
                         (oldChannel.parentID &&
                             newChannel.guild.channels.get(oldChannel.parentID)
                                 ?.name) ??
-                        '(none)'
-                    }` +
-                    ` ➜ ${
+                        '(none)',
+                    new:
                         (newChannel.parentID &&
                             newChannel.guild.channels.get(newChannel.parentID)
                                 ?.name) ??
-                        '(none)'
-                    }\n`;
+                        '(none)',
+                });
 
-            if (overview != '') embed.addField('Overview', overview);
+            if (overviewData.length > 0)
+                embed.addField(
+                    'Overview',
+                    overviewData
+                        .map(
+                            item =>
+                                `**${item.name}**: ${item.old} ➜ ${item.new}`
+                        )
+                        .join('\n')
+                );
         } else if (newChannel instanceof VoiceChannel) {
             embed.setTitle('Voice Channel Updated');
             embed.setDescription(`Channel: ${newChannel.name}`);
 
             if (
                 newChannel.bitrate != oldChannel.bitrate &&
-                newChannel.bitrate != undefined &&
-                oldChannel.bitrate != undefined
+                oldChannel.bitrate &&
+                newChannel.bitrate
             )
-                overview += `**Bitrate**: ${oldChannel.bitrate / 1000}kbps ➜ ${
-                    newChannel.bitrate / 1000
-                }kbps\n`;
+                overviewData.push({
+                    name: 'Bitrate',
+                    old: `${oldChannel.bitrate / 1000}kbps`,
+                    new: `${newChannel.bitrate / 1000}kbps`,
+                });
 
             if (newChannel.userLimit != oldChannel.userLimit)
-                overview +=
-                    `**User Limit**: ${
-                        oldChannel.userLimit == 0 ||
-                        oldChannel.userLimit == undefined
+                overviewData.push({
+                    name: 'User Limit',
+                    old:
+                        oldChannel.userLimit == 0
                             ? 'No Limit'
-                            : `${oldChannel.userLimit} users`
-                    } ➜ ` +
-                    `${
-                        newChannel.userLimit == 0 ||
-                        newChannel.userLimit == undefined
+                            : `${oldChannel.userLimit} users`,
+                    new:
+                        newChannel.userLimit == 0
                             ? 'No Limit'
-                            : `${newChannel.userLimit} users`
-                    }\n`;
+                            : `${newChannel.userLimit} users`,
+                });
 
             if (newChannel.parentID != oldChannel.parentID)
-                overview +=
-                    `**Category**: ${
+                overviewData.push({
+                    name: 'Category',
+                    old:
                         (oldChannel.parentID &&
                             newChannel.guild.channels.get(oldChannel.parentID)
                                 ?.name) ??
-                        '(none)'
-                    }` +
-                    ` ➜ ${
+                        '(none)',
+                    new:
                         (newChannel.parentID &&
                             newChannel.guild.channels.get(newChannel.parentID)
                                 ?.name) ??
-                        '(none)'
-                    }\n`;
+                        '(none)',
+                });
 
-            if (overview != '') embed.addField('Overview', overview);
+            if (overviewData.length > 0)
+                embed.addField(
+                    'Overview',
+                    overviewData
+                        .map(
+                            item =>
+                                `**${item.name}**: ${item.old} ➜ ${item.new}`
+                        )
+                        .join('\n')
+                );
         } else if (newChannel instanceof CategoryChannel) {
             embed.setTitle('Category Updated');
             embed.setDescription(`**Name**: ${newChannel.name}}`);

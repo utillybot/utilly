@@ -7,6 +7,7 @@ import path from 'path';
 import 'reflect-metadata';
 import { createExpressServer } from 'routing-controllers';
 import { StatsController } from './controllers/StatsController';
+import { CommandsController } from './controllers/CommandsController';
 
 export class UtillyWeb {
     static database: Database;
@@ -28,7 +29,7 @@ export class UtillyWeb {
         this._logger = logger;
         this._port = port;
         this._app = createExpressServer({
-            controllers: [StatsController],
+            controllers: [CommandsController, StatsController],
         });
     }
 
@@ -39,7 +40,6 @@ export class UtillyWeb {
     }
 
     load(): void {
-        const pages = ['commands', 'about', ''];
         this._app.disable('x-powered-by');
 
         this._app.use((req, res, next) => {
@@ -49,8 +49,13 @@ export class UtillyWeb {
             else next();
         });
 
+        this._app.use((req, res, next) => {
+            const url = req.url.split('/');
+            req.url = `/${url[url.length - 1]}`;
+            next();
+        });
+
         this._app.use(
-            pages.map(page => `/${page}`),
             express.static(
                 path.join(process.cwd(), 'packages', 'web', 'public'),
                 {
@@ -60,7 +65,6 @@ export class UtillyWeb {
         );
 
         this._app.use(
-            pages.map(page => `/${page}`),
             express.static(
                 path.join(process.cwd(), 'packages', 'web', 'dist'),
                 {
@@ -69,19 +73,16 @@ export class UtillyWeb {
             )
         );
 
-        this._app.get(
-            pages.map(page => `/${page}`),
-            (req: Request, res: Response) => {
-                res.sendFile(
-                    path.join(
-                        process.cwd(),
-                        'packages',
-                        'web',
-                        'dist',
-                        'index.html'
-                    )
-                );
-            }
-        );
+        this._app.use(`*`, (req: Request, res: Response) => {
+            res.sendFile(
+                path.join(
+                    process.cwd(),
+                    'packages',
+                    'web',
+                    'dist',
+                    'index.html'
+                )
+            );
+        });
     }
 }

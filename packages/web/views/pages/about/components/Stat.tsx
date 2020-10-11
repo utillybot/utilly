@@ -11,8 +11,8 @@ class Stat extends Component<StatsProps> {
     render(): JSX.Element {
         return (
             <div className="stat">
-                <h1 className="stat-name">{this.props.statName}</h1>
-                <h2 className="stat-value">
+                <h1>{this.props.statName}</h1>
+                <h2>
                     {this.props.statValue} {this.props.units}
                 </h2>
             </div>

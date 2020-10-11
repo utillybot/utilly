@@ -7,7 +7,7 @@ class About extends Component {
     render(): JSX.Element {
         return (
             <React.Fragment>
-                <div className="about">
+                <div className="page-about">
                     <header>
                         <h1>
                             Utilly is a modular bot that contains many tools for
@@ -16,10 +16,8 @@ class About extends Component {
                     </header>
                     <div className="stats">
                         <div className="stats-header">
-                            <h2 className="stats-header-title">Statistics</h2>
-                            <h3 className="stats-header-subtitle">
-                                These statistics update every 30 seconds
-                            </h3>
+                            <h2>Statistics</h2>
+                            <h3>These statistics update every 30 seconds</h3>
                         </div>
                         <div className="stats-container">
                             <StatsContainer />

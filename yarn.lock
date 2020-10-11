@@ -4822,7 +4822,7 @@ envinfo@^7.3.1:
 
 eris@jtsshieh/eris#utilly:
   version "0.13.3"
-  resolved "https://codeload.github.com/jtsshieh/eris/tar.gz/30950c681c6fb818137e04f5e2e798954870f798"
+  resolved "https://codeload.github.com/jtsshieh/eris/tar.gz/f6cf7f05123b371dd2c7b925ad6581848009a583"
   dependencies:
     ws "^7.2.1"
   optionalDependencies:

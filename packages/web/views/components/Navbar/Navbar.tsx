@@ -52,7 +52,7 @@ class Navbar extends Component<RouteComponentProps, NavbarState> {
             );
         }
         return (
-            <div className="nav">
+            <nav>
                 <div className="nav-container nav-header">
                     <div className="nav-header-current">
                         <h1>{currentPage?.name}</h1>
@@ -87,7 +87,7 @@ class Navbar extends Component<RouteComponentProps, NavbarState> {
                         Sign in with Discord
                     </Link>
                 </div>
-            </div>
+            </nav>
         );
     }
 }

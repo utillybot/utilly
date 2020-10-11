@@ -1,35 +1,42 @@
 import React, { Component } from 'react';
 import './Commands.sass';
+import type { RouteComponentProps } from 'react-router-dom';
+import { Switch, withRouter, BrowserRouter, Route } from 'react-router-dom';
+import CommandModulesPage from './pages/CommandModulesPage/CommandModulesPage';
+import CommandModulePage from './pages/CommandModulePage/CommandModulePage';
+import CommandPage from './pages/CommandPage/CommandPage';
 
-interface CommandsState {
-    commandModules: string[];
-}
-
-class Commands extends Component<unknown, CommandsState> {
-    constructor(props: unknown) {
-        super(props);
-        this.state = { commandModules: [] };
-    }
-
-    async componentDidMount(): Promise<void> {
-        const result = await (await fetch('/api/commands')).json();
-        this.setState({
-            commandModules: result.commandModules,
-        });
-    }
-
+class Commands extends Component<RouteComponentProps> {
     render(): JSX.Element {
         return (
-            <div className="commands">
-                <div className="header">
+            <div className="page-commands">
+                <header>
                     <h2>View all the commands for Utilly!</h2>{' '}
-                </div>
-                <div className="command-module-container">
-                    <React.Suspense fallback="Loading..."></React.Suspense>
-                </div>
+                </header>
+                <BrowserRouter>
+                    <Switch>
+                        <Route
+                            exact
+                            path={'/commands'}
+                            component={CommandModulesPage}
+                        />
+
+                        <Route
+                            exact
+                            path={'/commands/:module'}
+                            component={CommandModulePage}
+                        />
+
+                        <Route
+                            exact
+                            path={'/commands/:module/:command'}
+                            component={CommandPage}
+                        />
+                    </Switch>
+                </BrowserRouter>
             </div>
         );
     }
 }
 
-export default Commands;
+export default withRouter(Commands);

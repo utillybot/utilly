@@ -10,8 +10,8 @@ class Routes extends Component<RouteComponentProps> {
         for (const pageRoute of ROUTE_CONSTANTS) {
             routes.push(
                 <Route
-                    exact
-                    key={pageRoute.path}
+                    exact={pageRoute.exact ?? true}
+                    key={pageRoute.name}
                     path={pageRoute.path}
                     component={pageRoute.page}
                 />

@@ -61,6 +61,7 @@ export default class Logsettings extends BaseCommand {
         );
         embed.addField(`${EMOTE_CONSTANTS.cancel} Cancel`, 'Close this menu');
         const menu = await ctx.reply({ embed });
+
         menu.addReaction(`channel:${EMOTE_CONSTANTS.channelID}`);
         menu.addReaction(`event:${EMOTE_CONSTANTS.eventID}`);
         menu.addReaction(`info:${EMOTE_CONSTANTS.infoID}`);

@@ -5,10 +5,24 @@ export const DEFAULT_NOTIFICATION_CONSTANTS: Record<number, string> = {
     1: 'Only @mentions',
 };
 
+export const EXPLICIT_LEVEL_CONSTANTS_SHORT: Record<number, string> = {
+    0: "Don't scan any media content.",
+    1: 'Scan media content from members without a role.',
+    2: 'Scan media content from all members.',
+};
+
 export const EXPLICIT_LEVEL_CONSTANTS: Record<number, string> = {
     0: "Don't scan any media content.\nMy friends are nice most of the time.",
     1: 'Scan media content from members without a role.\nRecommended option for servers that use roles for trusted membership.',
     2: 'Scan media content from all members.\nRecommended option for when you want that squeaky clean shine.',
+};
+
+export const VERIFICATION_LEVEL_CONSTANTS_SHORT: Record<number, string> = {
+    0: 'None',
+    1: 'Low',
+    2: 'Medium',
+    3: 'High',
+    4: 'Highest',
 };
 
 export const VERIFICATION_LEVEL_CONSTANTS: Record<number, string> = {

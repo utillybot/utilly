@@ -3,13 +3,18 @@ import type { Request, Response } from 'express';
 import { UtillyWeb } from '../UtillyWeb';
 
 @Controller('/api/commands')
-export class StatsController {
+export class CommandsController {
     @Get()
     getAll(@Res() res: Response): Response {
         return res.send({
             commandModules: Array.from(
-                UtillyWeb.bot.commandHandler.commandModules.keys()
-            ),
+                UtillyWeb.bot.commandHandler.commandModules.values()
+            ).map(mod => {
+                return {
+                    name: mod.info.name,
+                    description: mod.info.description,
+                };
+            }),
         });
     }
     @Get('/:module')
@@ -18,7 +23,15 @@ export class StatsController {
             req.params.module
         );
         if (!module) return res.status(404);
-        return res.send({ commands: Array.from(module.commands.keys()) });
+        return res.send({
+            commands: Array.from(module.commands.values()).map(cmd => {
+                return {
+                    name: cmd.help.name,
+                    description: cmd.help.description,
+                    aliases: cmd.help.aliases,
+                };
+            }),
+        });
     }
 
     @Get('/:module/:command')

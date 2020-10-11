@@ -7,6 +7,7 @@ export interface RouteData {
     path: string;
     name: string;
     page: typeof Component;
+    exact?: boolean;
 }
 
 export const ROUTE_CONSTANTS: RouteData[] = [
@@ -26,5 +27,6 @@ export const ROUTE_CONSTANTS: RouteData[] = [
         path: '/commands',
         name: 'Commands',
         page: Commands,
+        exact: false,
     },
 ];

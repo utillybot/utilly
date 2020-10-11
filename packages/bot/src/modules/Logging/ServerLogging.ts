@@ -3,9 +3,9 @@ import type LoggingModule from './LoggingModule';
 import type { Guild, OldGuild, TextChannel } from 'eris';
 import {
     DEFAULT_NOTIFICATION_CONSTANTS,
-    EXPLICIT_LEVEL_CONSTANTS,
+    EXPLICIT_LEVEL_CONSTANTS_SHORT,
     REGIONS_CONSTANTS,
-    VERIFICATION_LEVEL_CONSTANTS,
+    VERIFICATION_LEVEL_CONSTANTS_SHORT,
 } from '../../constants/ServerConstants';
 import { secondsToString } from '@utilly/utils';
 
@@ -26,101 +26,106 @@ export default class ServerLogging extends AttachableModule {
     }
 
     private async _guildUpdate(
-        guild: Guild,
+        newGuild: Guild,
         oldGuild: OldGuild
     ): Promise<void> {
         //#region prep
         const guildRow = await this.parentModule.selectGuildRow(
-            guild.id,
+            newGuild.id,
             'guildUpdate'
         );
 
         if (!guildRow.logging || !guildRow.logging_guildUpdateEvent) return;
 
         const logChannel: TextChannel | null = this.parentModule.getLogChannel(
-            guild,
+            newGuild,
             guildRow.logging_guildUpdateChannel
         );
         if (logChannel == null) return;
+
+        const { check, xmark } = this.parentModule.getEmotes(logChannel);
 
         const embed = new EmbedBuilder();
         embed.setTitle('Server Updated');
 
         // #region overview
         const overviewData: ChangedData[] = [];
-        if (guild.name != oldGuild.name)
+        if (newGuild.name != oldGuild.name)
             overviewData.push({
                 name: 'Name',
                 old: oldGuild.name,
-                new: guild.name,
+                new: newGuild.name,
             });
-        if (guild.region != oldGuild.region) {
-            const regions = await REGIONS_CONSTANTS(guild);
+        if (newGuild.region != oldGuild.region) {
+            const regions = await REGIONS_CONSTANTS(newGuild);
             overviewData.push({
                 name: 'Region',
                 old: regions[oldGuild.region],
-                new: regions[guild.region],
+                new: regions[newGuild.region],
             });
         }
-        if (guild.afkChannelID != oldGuild.afkChannelID)
+        if (newGuild.afkChannelID != oldGuild.afkChannelID)
             overviewData.push({
                 name: 'Inactive Channel',
                 old: oldGuild.afkChannelID
-                    ? guild.channels.get(oldGuild.afkChannelID)?.mention ??
+                    ? newGuild.channels.get(oldGuild.afkChannelID)?.mention ??
                       'No Inactive Channel'
                     : 'No Inactive Channel',
-                new: guild.afkChannelID
-                    ? guild.channels.get(guild.afkChannelID)?.mention ??
+                new: newGuild.afkChannelID
+                    ? newGuild.channels.get(newGuild.afkChannelID)?.mention ??
                       'No Inactive Channel'
                     : 'No Inactive Channel',
             });
-        if (guild.afkTimeout != oldGuild.afkTimeout)
+        if (newGuild.afkTimeout != oldGuild.afkTimeout)
             overviewData.push({
                 name: 'Inactive Timeout',
                 old: secondsToString(oldGuild.afkTimeout),
-                new: secondsToString(guild.afkTimeout),
+                new: secondsToString(newGuild.afkTimeout),
             });
-        if (guild.systemChannelID != oldGuild.systemChannelID)
+        if (newGuild.systemChannelID != oldGuild.systemChannelID)
             overviewData.push({
                 name: 'System Messages Channel',
                 old: oldGuild.systemChannelID
-                    ? guild.channels.get(oldGuild.systemChannelID)?.mention ??
-                      'No System Messages'
+                    ? newGuild.channels.get(oldGuild.systemChannelID)
+                          ?.mention ?? 'No System Messages'
                     : 'No System Messages',
-                new: guild.systemChannelID
-                    ? guild.channels.get(guild.systemChannelID)?.mention ??
-                      'No System Messages'
+                new: newGuild.systemChannelID
+                    ? newGuild.channels.get(newGuild.systemChannelID)
+                          ?.mention ?? 'No System Messages'
                     : 'No System Messages',
             });
 
-        if (guild.systemChannelFlags != oldGuild.systemChannelFlags) {
+        if (newGuild.systemChannelFlags != oldGuild.systemChannelFlags) {
             if (
-                (guild.systemChannelFlags & 1) !=
+                (newGuild.systemChannelFlags & 1) !=
                 (oldGuild.systemChannelFlags & 1)
             )
                 overviewData.push({
                     name: 'Welcome Message',
-                    old: oldGuild.systemChannelFlags & 1 ? 'No' : 'Yes',
-                    new: guild.systemChannelFlags & 1 ? 'No' : 'Yes',
+                    old: oldGuild.systemChannelFlags & 1 ? xmark : check,
+                    new: newGuild.systemChannelFlags & 1 ? xmark : check,
                 });
             if (
-                (guild.systemChannelFlags & 2) !=
+                (newGuild.systemChannelFlags & 2) !=
                 (oldGuild.systemChannelFlags & 2)
             )
                 overviewData.push({
                     name: 'Boost Message',
-                    old: oldGuild.systemChannelFlags & 2 ? 'No' : 'Yes',
-                    new: guild.systemChannelFlags & 2 ? 'No' : 'Yes',
+                    old: oldGuild.systemChannelFlags & 2 ? xmark : check,
+                    new: newGuild.systemChannelFlags & 2 ? xmark : check,
                 });
         }
-        if (guild.defaultNotifications != oldGuild.defaultNotifications)
+        if (newGuild.defaultNotifications != oldGuild.defaultNotifications)
             overviewData.push({
                 name: 'Default Notification Settings',
                 old:
                     DEFAULT_NOTIFICATION_CONSTANTS[
                         oldGuild.defaultNotifications
                     ],
-                new: DEFAULT_NOTIFICATION_CONSTANTS[guild.defaultNotifications],
+                new:
+                    DEFAULT_NOTIFICATION_CONSTANTS[
+                        newGuild.defaultNotifications
+                    ],
             });
         const overview = overviewData
             .map(item => `**${item.name}**: ${item.old} ➜ ${item.new}`)
@@ -129,23 +134,35 @@ export default class ServerLogging extends AttachableModule {
 
         // #region moderation
         const moderationData: ChangedData[] = [];
-        if (guild.verificationLevel != oldGuild.verificationLevel)
+        if (newGuild.verificationLevel != oldGuild.verificationLevel)
             moderationData.push({
                 name: 'Verification Level',
-                old: VERIFICATION_LEVEL_CONSTANTS[oldGuild.verificationLevel],
-                new: VERIFICATION_LEVEL_CONSTANTS[guild.verificationLevel],
+                old:
+                    VERIFICATION_LEVEL_CONSTANTS_SHORT[
+                        oldGuild.verificationLevel
+                    ],
+                new:
+                    VERIFICATION_LEVEL_CONSTANTS_SHORT[
+                        newGuild.verificationLevel
+                    ],
             });
-        if (guild.explicitContentFilter != oldGuild.explicitContentFilter)
+        if (newGuild.explicitContentFilter != oldGuild.explicitContentFilter)
             moderationData.push({
                 name: 'Explicit Media Content Filter',
-                old: EXPLICIT_LEVEL_CONSTANTS[oldGuild.explicitContentFilter],
-                new: EXPLICIT_LEVEL_CONSTANTS[guild.explicitContentFilter],
+                old:
+                    EXPLICIT_LEVEL_CONSTANTS_SHORT[
+                        oldGuild.explicitContentFilter
+                    ],
+                new:
+                    EXPLICIT_LEVEL_CONSTANTS_SHORT[
+                        newGuild.explicitContentFilter
+                    ],
             });
-        if (guild.mfaLevel != oldGuild.mfaLevel)
+        if (newGuild.mfaLevel != oldGuild.mfaLevel)
             moderationData.push({
                 name: '2FA Requirement For Moderation',
-                old: oldGuild.mfaLevel == 0 ? 'Off' : 'On',
-                new: guild.mfaLevel == 0 ? 'Off' : 'On',
+                old: oldGuild.mfaLevel == 0 ? xmark : check,
+                new: newGuild.mfaLevel == 0 ? xmark : check,
             });
         const moderation = moderationData
             .map(item => `**${item.name}**: ${item.old} ➜ ${item.new}`)
@@ -156,7 +173,11 @@ export default class ServerLogging extends AttachableModule {
         if (moderation != '') embed.addField('Moderation', moderation);
 
         embed.setTimestamp();
-        embed.setAuthor(guild.name, undefined, guild.iconURL ?? undefined);
+        embed.setAuthor(
+            newGuild.name,
+            undefined,
+            newGuild.iconURL ?? undefined
+        );
 
         this.parentModule.sendLogMessage(logChannel, embed);
     }
