@@ -27,7 +27,7 @@ import type InfoCommandModule from './moduleinfo';
             channel: ['guild'],
         }),
         new BotPermsValidatorHook({
-            permissions: ['embedLinks'],
+            permissions: ['embedLinks', 'addReactions', 'readMessageHistory'],
         }),
     ]
 )
