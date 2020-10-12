@@ -4,20 +4,15 @@ import {
     BotPermsValidatorHook,
     Command,
     EmbedBuilder,
+    PreHook,
 } from '@utilly/framework';
 import type GeneralCommandModule from './moduleinfo';
 
-@Command(
-    {
-        name: 'privacy',
-        description: "Shows the bots' privacy policy",
-    },
-    [
-        new BotPermsValidatorHook({
-            permissions: ['embedLinks'],
-        }),
-    ]
-)
+@Command({
+    name: 'privacy',
+    description: "Shows the bots' privacy policy",
+})
+@PreHook(BotPermsValidatorHook({ permissions: ['embedLinks'] }))
 export default class Privacy extends BaseCommand {
     parent?: GeneralCommandModule;
 

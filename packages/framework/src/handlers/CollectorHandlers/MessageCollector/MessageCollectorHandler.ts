@@ -3,7 +3,7 @@ import type { NextFunction } from '../../Hook';
 import { CollectorHandler } from '../CollectorHandler';
 import { MessageValidatorHook } from './hooks/MessageValidatorHook';
 import type { MessageCollectorHookContext } from './MessageCollectorHook';
-import { MessageCollectorHook } from './MessageCollectorHook';
+import type { MessageCollectorHook } from './MessageCollectorHook';
 
 export type MessageWaitFilter = (message: Message) => boolean;
 
@@ -47,12 +47,12 @@ export class MessageCollectorHandler extends CollectorHandler<
     ): Promise<Message> {
         return new Promise((resolve, reject) => {
             const collector = this.createListener([
-                new MessageValidatorHook({
+                MessageValidatorHook({
                     channelId,
                     authorId,
                     allowBots: false,
                 }),
-                new MessageFilterHook({ checkMessage: filter }),
+                MessageFilterHook({ checkMessage: filter }),
             ]);
             const timer = setTimeout(() => {
                 collector.end('time');
@@ -85,20 +85,14 @@ export interface MessageFilterHookSettings {
      */
     checkMessage: (message: Message) => boolean;
 }
-
-export interface MessageFilterHook {
-    settings: MessageFilterHookSettings;
-}
-
-export class MessageFilterHook extends MessageCollectorHook {
-    execute(
-        ctx: MessageCollectorHookContext,
-        next: NextFunction
-    ): void | Promise<void> {
-        if (this.settings.checkMessage(ctx.message)) {
+export const MessageFilterHook = (
+    settings: MessageFilterHookSettings
+): MessageCollectorHook => {
+    return (ctx, next): void => {
+        if (settings.checkMessage(ctx.message)) {
             next();
         } else {
             ctx.message.delete();
         }
-    }
-}
+    };
+};

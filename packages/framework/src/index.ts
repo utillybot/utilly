@@ -8,6 +8,7 @@ export * from './handlers/CommandHandler/CommandHook';
 export * from './handlers/CommandHandler/CommandModule';
 export * from './handlers/CommandHandler/SubcommandHandler';
 export * from './handlers/CommandHandler/decorators/Command';
+export * from './handlers/CommandHandler/decorators/PreHook';
 export * from './handlers/CommandHandler/hooks/BotPermsValidatorHook';
 export * from './handlers/CommandHandler/hooks/ChannelValidatorHook';
 export * from './handlers/CommandHandler/hooks/IsModuleEnabledHook';

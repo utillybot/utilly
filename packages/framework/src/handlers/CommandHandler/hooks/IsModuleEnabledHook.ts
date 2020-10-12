@@ -1,8 +1,6 @@
-import type { CommandHookContext } from '../CommandHook';
-import { CommandHook } from '../CommandHook';
+import type { CommandHook } from '../CommandHook';
 import { GuildChannel } from 'eris';
 import type { DatabaseModule } from '../../..';
-import type { NextFunction } from '../../Hook';
 
 /**
  * Settings for the is module enabled hook
@@ -14,25 +12,20 @@ export interface IsModuleEnabledHookSettings {
     databaseModule: DatabaseModule;
 }
 
-export interface IsModuleEnabledHook {
-    settings: IsModuleEnabledHookSettings;
-}
-
 /**
  * A hook to check if a database module is enabled
+ *
+ * @param settings - the settings for this hook
  */
-export class IsModuleEnabledHook extends CommandHook {
-    async execute(
-        { message }: CommandHookContext,
-        next: NextFunction
-    ): Promise<void> {
+export const IsModuleEnabledHook = (
+    settings: IsModuleEnabledHookSettings
+): CommandHook => {
+    return async ({ message }, next): Promise<void> => {
         if (
             message.channel instanceof GuildChannel &&
-            (await this.settings.databaseModule.isEnabled(
-                message.channel.guild.id
-            ))
+            (await settings.databaseModule.isEnabled(message.channel.guild.id))
         ) {
             next();
         }
-    }
-}
+    };
+};

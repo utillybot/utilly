@@ -13,7 +13,7 @@ export default class LoggingCommandModule extends CommandModule {
 
     moduleLinked(): void {
         this.preHooks.push(
-            new IsModuleEnabledHook({ databaseModule: this.parent })
+            IsModuleEnabledHook({ databaseModule: this.parent })
         );
     }
 }

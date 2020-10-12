@@ -4,14 +4,12 @@ import {
     BotPermsValidatorHook,
     EmbedBuilder,
     Command,
+    PreHook,
 } from '@utilly/framework';
 import type GeneralCommandModule from './moduleinfo';
 
-@Command({ name: 'ping', description: "Check's the bots' ping" }, [
-    new BotPermsValidatorHook({
-        permissions: ['embedLinks'],
-    }),
-])
+@Command({ name: 'ping', description: "Check's the bots' ping" })
+@PreHook(BotPermsValidatorHook({ permissions: ['embedLinks'] }))
 export default class Ping extends BaseCommand {
     parent?: GeneralCommandModule;
 

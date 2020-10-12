@@ -9,6 +9,7 @@ import {
     ChannelValidatorHook,
     Command,
     EmbedBuilder,
+    PreHook,
     Subcommand,
     SubcommandHandler,
 } from '@utilly/framework';
@@ -18,21 +19,13 @@ import { GuildChannel, TextChannel } from 'eris';
 import prettier from 'prettier';
 import type GeneralCommandModule from './moduleinfo';
 
-@Command(
-    {
-        name: 'embed',
-        description: 'Create, edit, or view the contents of an embed.',
-        usage: '(create/edit/view) (message id)',
-    },
-    [
-        new ChannelValidatorHook({
-            channel: ['guild'],
-        }),
-        new BotPermsValidatorHook({
-            permissions: ['embedLinks'],
-        }),
-    ]
-)
+@Command({
+    name: 'embed',
+    description: 'Create, edit, or view the contents of an embed.',
+    usage: '(create/edit/view) (message id)',
+})
+@PreHook(ChannelValidatorHook({ channel: ['guild'] }))
+@PreHook(BotPermsValidatorHook({ permissions: ['embedLinks'] }))
 export default class Embed extends BaseCommand {
     parent!: GeneralCommandModule;
     subCommandHandler: SubcommandHandler;
@@ -47,6 +40,7 @@ export default class Embed extends BaseCommand {
     }
 
     async execute(ctx: CommandContext): Promise<void> {
+        console.log(this);
         if (ctx.args.length == 0) {
             await ctx.reply({
                 embed: await this.subCommandHandler.generateHelp(
@@ -74,7 +68,7 @@ class EmbedCreate extends Subcommand {
         this.help.usage = '(embed)';
 
         this.preHooks.push(
-            new BotPermsValidatorHook({
+            BotPermsValidatorHook({
                 permissions: ['manageMessages', 'readMessageHistory'],
             })
         );
@@ -787,7 +781,7 @@ class EmbedView extends Subcommand {
         this.help.usage = '(message id)';
 
         this.preHooks.push(
-            new BotPermsValidatorHook({
+            BotPermsValidatorHook({
                 permissions: ['readMessageHistory'],
             })
         );
@@ -853,7 +847,7 @@ class EmbedEdit extends Subcommand {
         this.help.usage = '(message id) (embed)';
 
         this.preHooks.push(
-            new BotPermsValidatorHook({
+            BotPermsValidatorHook({
                 permissions: ['readMessageHistory'],
             })
         );

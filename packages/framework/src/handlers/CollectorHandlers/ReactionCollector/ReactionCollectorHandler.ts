@@ -47,7 +47,7 @@ export class ReactionCollectorHandler extends CollectorHandler<
     ): Promise<Emoji> {
         return new Promise((resolve, reject) => {
             const collector = this.createListener([
-                new ReactionValidatorHook({
+                ReactionValidatorHook({
                     messageId,
                     allowedReactorIds: [userId],
                     allowedEmoteIds,

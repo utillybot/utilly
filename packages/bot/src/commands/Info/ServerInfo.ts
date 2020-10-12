@@ -5,6 +5,7 @@ import {
     ChannelValidatorHook,
     Command,
     EmbedBuilder,
+    PreHook,
     ReactionPaginator,
 } from '@utilly/framework';
 import { secondsToString } from '@utilly/utils';
@@ -16,20 +17,16 @@ import {
 } from '../../constants/ServerConstants';
 import type InfoCommandModule from './moduleinfo';
 
-@Command(
-    {
-        name: 'serverinfo',
-        description: 'View information about a server',
-        aliases: ['sinfo'],
-    },
-    [
-        new ChannelValidatorHook({
-            channel: ['guild'],
-        }),
-        new BotPermsValidatorHook({
-            permissions: ['embedLinks', 'addReactions', 'readMessageHistory'],
-        }),
-    ]
+@Command({
+    name: 'serverinfo',
+    description: 'View information about a server',
+    aliases: ['sinfo'],
+})
+@PreHook(ChannelValidatorHook({ channel: ['guild'] }))
+@PreHook(
+    BotPermsValidatorHook({
+        permissions: ['embedLinks', 'addReactions', 'readMessageHistory'],
+    })
 )
 export default class ServerInfo extends BaseCommand {
     parent?: InfoCommandModule;

@@ -1,6 +1,6 @@
 import type { MessageContent } from 'eris';
 import type { CommandHookContext } from '../CommandHook';
-import { CommandHook } from '../CommandHook';
+import type { CommandHook } from '../CommandHook';
 import type { PermsValidatorHookSettings } from './PermsValidatorHook';
 import { PermsValidatorHook } from './PermsValidatorHook';
 import type { NextFunction } from '../../Hook';
@@ -34,20 +34,24 @@ export interface UserPermsValidatorHook {
 
 /**
  * A hook to check if the executor of a command is missing permissions
+ *
+ * @param settings - The settings for this hook
  */
-export class UserPermsValidatorHook extends CommandHook {
-    constructor(settings: UserPermsValidatorHookSettings) {
-        super(settings);
-        if (!this.settings.errorMessage)
-            this.settings.errorMessage = missingUserPerms =>
-                `You are missing the following permissions necessary to execute this command: ${missingUserPerms.join(
-                    ', '
-                )}`;
-        if (!this.settings.id)
-            this.settings.id = (client, message) => message.author.id;
-    }
+export const UserPermsValidatorHook = (
+    settings: UserPermsValidatorHookSettings
+): CommandHook => {
+    return (ctx, next): void => {
+        const newSettings = Object.assign(
+            {
+                errorMessage: (missingUserPerms: string[]) =>
+                    `You are missing the following permissions necessary to execute this command: ${missingUserPerms.join(
+                        ', '
+                    )}`,
+                id: (client: Client, message: Message) => message.author.id,
+            },
+            settings
+        );
 
-    execute(ctx: CommandHookContext, next: NextFunction): void {
-        new PermsValidatorHook(this.settings).execute(ctx, next);
-    }
-}
+        PermsValidatorHook(newSettings)(ctx, next);
+    };
+};

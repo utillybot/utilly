@@ -4,22 +4,17 @@ import {
     BotPermsValidatorHook,
     Command,
     EmbedBuilder,
+    PreHook,
 } from '@utilly/framework';
 import type { Member, User } from 'eris';
 import type InfoCommandModule from './moduleinfo';
 
-@Command(
-    {
-        name: 'userinfo',
-        description: 'View information about yourself',
-        aliases: ['uinfo'],
-    },
-    [
-        new BotPermsValidatorHook({
-            permissions: ['embedLinks'],
-        }),
-    ]
-)
+@Command({
+    name: 'userinfo',
+    description: 'View information about yourself',
+    aliases: ['uinfo'],
+})
+@PreHook(BotPermsValidatorHook({ permissions: ['embedLinks'] }))
 export default class Userinfo extends BaseCommand {
     parent?: InfoCommandModule;
 

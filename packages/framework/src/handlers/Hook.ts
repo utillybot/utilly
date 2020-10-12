@@ -1,6 +1,11 @@
 export type NextFunction = () => void;
 
 /**
+ * Generates a hook from a settings object
+ */
+export type HookGenerator<T> = (settings: unknown) => Hook<T>;
+
+/**
  * Hooks are functions that execute before or after another is run.
  * It can inhibit the execution of the other function.
  * It can change the results passed into that other function.
@@ -11,21 +16,11 @@ export type NextFunction = () => void;
  * If it does not want to move on, it should do nothing or return out of the execute function.
  *
  * It is possible to not use the default implementation and create your own implementation of the next function.
+ *
+ * @param ctx - the hook context to execute this hook with
+ * @param next - a function that will allow the next hook to be executed
  */
-export abstract class Hook<T> {
-    settings: unknown;
-
-    constructor(settings: unknown) {
-        this.settings = settings;
-    }
-
-    /**
-     * Executes this hook
-     * @param ctx - the hook context to execute this hook with
-     * @param next - a function that will allow the next hook to be executed
-     */
-    abstract execute(ctx: T, next: NextFunction): void | Promise<void>;
-}
+export type Hook<T> = (ctx: T, next: NextFunction) => void | Promise<void>;
 
 /**
  * Runs the hooks in the list and returns if any failed as a boolean
@@ -39,7 +34,7 @@ export const runHooks = async <T extends Hook<J>, J>(
     let i = 0;
     const next = async () => {
         const hook = hooks[i++];
-        if (hook) await hook.execute(ctx, next);
+        if (hook) await hook(ctx, next);
     };
     await next();
 

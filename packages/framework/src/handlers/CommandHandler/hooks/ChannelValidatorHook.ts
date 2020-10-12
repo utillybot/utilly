@@ -1,7 +1,5 @@
-import type { CommandHookContext } from '../CommandHook';
-import { CommandHook } from '../CommandHook';
+import type { CommandHook } from '../CommandHook';
 import { GuildChannel, PrivateChannel } from 'eris';
-import type { NextFunction } from '../../Hook';
 
 type ChannelType = 'guild' | 'dm';
 
@@ -15,19 +13,16 @@ export interface ChannelValidatorHookSettings {
     channel: ChannelType[];
 }
 
-export interface ChannelValidatorHook {
-    /**
-     * The settings for this hook
-     */
-    settings: ChannelValidatorHookSettings;
-}
-
 /**
  * A hook to validate if a channel is a certain type
+ *
+ * @param settings - The settings for this hook
  */
-export class ChannelValidatorHook extends CommandHook {
-    execute({ message }: CommandHookContext, next: NextFunction): void {
-        for (const channel of this.settings.channel) {
+export const ChannelValidatorHook = (
+    settings: ChannelValidatorHookSettings
+): CommandHook => {
+    return ({ message }, next): void => {
+        for (const channel of settings.channel) {
             if (
                 channel == 'guild'
                     ? message.channel instanceof GuildChannel
@@ -38,5 +33,5 @@ export class ChannelValidatorHook extends CommandHook {
                 next();
             }
         }
-    }
-}
+    };
+};

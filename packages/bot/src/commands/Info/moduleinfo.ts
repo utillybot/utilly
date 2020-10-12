@@ -13,7 +13,7 @@ export default class InfoCommandModule extends CommandModule {
 
     moduleLinked() {
         this.preHooks.push(
-            new IsModuleEnabledHook({ databaseModule: this.parent })
+            IsModuleEnabledHook({ databaseModule: this.parent })
         );
     }
 }

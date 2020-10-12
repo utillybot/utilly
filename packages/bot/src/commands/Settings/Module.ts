@@ -4,14 +4,15 @@ import type {
     CommandHookContext,
     NextFunction,
     UtillyClient,
+    CommandHook,
 } from '@utilly/framework';
 import {
     BaseCommand,
     BotPermsValidatorHook,
     ChannelValidatorHook,
     Command,
-    CommandHook,
     EmbedBuilder,
+    PreHook,
     runHooks,
     Subcommand,
     SubcommandHandler,
@@ -20,24 +21,14 @@ import {
 import { MODULE_CONSTANTS, MODULES } from '../../constants/ModuleConstants';
 import type SettingsCommandModule from './moduleinfo';
 
-@Command(
-    {
-        name: 'module',
-        description: 'Enable, disable, or view info about a module.',
-        usage: '(enable, disable, toggle, info) (module name)',
-    },
-    [
-        new ChannelValidatorHook({
-            channel: ['guild'],
-        }),
-        new BotPermsValidatorHook({
-            permissions: ['embedLinks'],
-        }),
-        new UserPermsValidatorHook({
-            permissions: ['manageGuild'],
-        }),
-    ]
-)
+@Command({
+    name: 'module',
+    description: 'Enable, disable, or view info about a module.',
+    usage: '(enable, disable, toggle, info) (module name)',
+})
+@PreHook(ChannelValidatorHook({ channel: ['guild'] }))
+@PreHook(BotPermsValidatorHook({ permissions: ['embedLinks'] }))
+@PreHook(UserPermsValidatorHook({ permissions: ['manageGuild'] }))
 export default class Module extends BaseCommand {
     subCommandHandler: SubcommandHandler;
 
@@ -50,7 +41,7 @@ export default class Module extends BaseCommand {
         this.subCommandHandler.registerSubcommand(new ModuleToggle(this.bot));
         this.subCommandHandler.registerSubcommand(new ModuleInfo(this.bot));
 
-        this.subCommandHandler.preHooks.push(new ModuleSubcommandHook({}));
+        this.subCommandHandler.preHooks.push(ModuleSubcommandHook());
     }
 
     async execute(ctx: CommandContext): Promise<void> {
@@ -68,7 +59,7 @@ export default class Module extends BaseCommand {
                     message: ctx.message,
                     args: ctx.args,
                 };
-                if (!(await runHooks(hookCtx, [new ModuleSubcommandHook({})])))
+                if (!(await runHooks(hookCtx, [ModuleSubcommandHook()])))
                     return;
                 this.subCommandHandler.getCommand('toggle')!.execute(ctx);
             }
@@ -76,8 +67,8 @@ export default class Module extends BaseCommand {
     }
 }
 
-class ModuleSubcommandHook extends CommandHook {
-    async execute(ctx: CommandHookContext, next: NextFunction): Promise<void> {
+const ModuleSubcommandHook = (): CommandHook => {
+    return async (ctx, next): Promise<void> => {
         const module = ctx.args[0] ? ctx.args[0].toLowerCase() : ctx.args[0];
         if (!module || !MODULES.includes(module)) {
             const embed = new EmbedBuilder();
@@ -96,8 +87,8 @@ class ModuleSubcommandHook extends CommandHook {
             return;
         }
         next();
-    }
-}
+    };
+};
 
 class ModuleEnable extends Subcommand {
     constructor(bot: UtillyClient) {

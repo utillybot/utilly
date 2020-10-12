@@ -6,6 +6,7 @@ import {
     ChannelValidatorHook,
     Command,
     EmbedBuilder,
+    PreHook,
     UserPermsValidatorHook,
 } from '@utilly/framework';
 import { parseChannel } from '@utilly/utils';
@@ -15,29 +16,23 @@ import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
 import { EVENT_CONSTANTS, EVENT_NAMES } from '../../constants/EventConstants';
 import type LoggingCommandModule from './moduleinfo';
 
-@Command(
-    {
-        name: 'logsettings',
-        description: 'Modify settings for the logging plugin',
-    },
-    [
-        new ChannelValidatorHook({
-            channel: ['guild'],
-        }),
-        new BotPermsValidatorHook({
-            permissions: [
-                'embedLinks',
-                'externalEmojis',
-                'addReactions',
-                'manageMessages',
-                'readMessageHistory',
-            ],
-        }),
-        new UserPermsValidatorHook({
-            permissions: ['manageGuild'],
-        }),
-    ]
+@Command({
+    name: 'logsettings',
+    description: 'Modify settings for the logging plugin',
+})
+@PreHook(ChannelValidatorHook({ channel: ['guild'] }))
+@PreHook(
+    BotPermsValidatorHook({
+        permissions: [
+            'embedLinks',
+            'externalEmojis',
+            'addReactions',
+            'manageMessages',
+            'readMessageHistory',
+        ],
+    })
 )
+@PreHook(UserPermsValidatorHook({ permissions: ['manageGuild'] }))
 export default class Logsettings extends BaseCommand {
     parent?: LoggingCommandModule;
 

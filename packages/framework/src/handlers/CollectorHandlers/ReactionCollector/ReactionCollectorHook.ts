@@ -1,5 +1,5 @@
 import type { Client, Emoji, Message } from 'eris';
-import { Hook } from '../../Hook';
+import type { Hook } from '../../Hook';
 
 /**
  * An object containing the client, message, emoji, and reactor id for a reaction collector hook
@@ -27,6 +27,4 @@ export interface ReactionCollectorHookContext {
 /**
  * A hook for a reaction collector
  */
-export abstract class ReactionCollectorHook extends Hook<
-    ReactionCollectorHookContext
-> {}
+export type ReactionCollectorHook = Hook<ReactionCollectorHookContext>;

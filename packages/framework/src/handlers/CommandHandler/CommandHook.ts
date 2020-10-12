@@ -1,5 +1,5 @@
 import type { Client, Message } from 'eris';
-import { Hook } from '../Hook';
+import type { Hook } from '../Hook';
 
 /**
  * An object containing the client, message, and arguments for a command hook
@@ -22,4 +22,4 @@ export interface CommandHookContext {
 /**
  * A function that is run somewhere during a command lifecycle that can inhibit the command from being executed or modify the message/args passed into the command.
  */
-export abstract class CommandHook extends Hook<CommandHookContext> {}
+export type CommandHook = Hook<CommandHookContext>;

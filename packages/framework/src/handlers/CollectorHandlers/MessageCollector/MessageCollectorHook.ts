@@ -1,5 +1,5 @@
 import type { Client, Message } from 'eris';
-import { Hook } from '../../Hook';
+import type { Hook } from '../../Hook';
 
 /**
  * An object containing the client and message when a message gets collected by the message collector
@@ -18,6 +18,4 @@ export interface MessageCollectorHookContext {
 /**
  * A hook for a message collector
  */
-export abstract class MessageCollectorHook extends Hook<
-    MessageCollectorHookContext
-> {}
+export type MessageCollectorHook = Hook<MessageCollectorHookContext>;

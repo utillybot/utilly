@@ -1,9 +1,7 @@
 import type { MessageContent } from 'eris';
-import type { CommandHookContext } from '../CommandHook';
-import { CommandHook } from '../CommandHook';
+import type { CommandHook } from '../CommandHook';
 import type { PermsValidatorHookSettings } from './PermsValidatorHook';
 import { PermsValidatorHook } from './PermsValidatorHook';
-import type { NextFunction } from '../../Hook';
 import type { Client, Message } from 'eris';
 
 /**
@@ -25,28 +23,25 @@ export interface BotPermValidatorHookSettings
     id?: (client: Client, message: Message) => string;
 }
 
-export interface BotPermsValidatorHook {
-    /**
-     * The settings for this hook
-     */
-    settings: BotPermValidatorHookSettings;
-}
-
 /**
  * A hook to validate if the bot has certain permissions
+ *
+ * @param settings - The settings for this hook
  */
-export class BotPermsValidatorHook extends CommandHook {
-    constructor(settings: BotPermValidatorHookSettings) {
-        super(settings);
-        if (!this.settings.errorMessage)
-            settings.errorMessage = missingBotPerms =>
-                `The bot is missing the following permissions necessary to execute this command: ${missingBotPerms.join(
-                    ', '
-                )}`;
-        if (!this.settings.id) this.settings.id = bot => bot.user.id;
-    }
-
-    execute(ctx: CommandHookContext, next: NextFunction): void {
-        new PermsValidatorHook(this.settings).execute(ctx, next);
-    }
-}
+export const BotPermsValidatorHook = (
+    settings: BotPermValidatorHookSettings
+): CommandHook => {
+    return (ctx, next): void => {
+        const newSettings: PermsValidatorHookSettings = Object.assign(
+            {
+                errorMessage: (missingBotPerms: string[]) =>
+                    `The bot is missing the following permissions necessary to execute this command: ${missingBotPerms.join(
+                        ', '
+                    )}`,
+                id: (bot: Client) => bot.user.id,
+            },
+            settings
+        );
+        PermsValidatorHook(newSettings)(ctx, next);
+    };
+};

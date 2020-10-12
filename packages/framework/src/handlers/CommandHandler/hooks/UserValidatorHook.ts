@@ -1,6 +1,6 @@
 import type { Message, MessageContent } from 'eris';
 import type { CommandHookContext } from '../CommandHook';
-import { CommandHook } from '../CommandHook';
+import type { CommandHook } from '../CommandHook';
 import type { NextFunction } from '../../Hook';
 
 /**
@@ -18,26 +18,23 @@ interface UserValidatorHookSettings {
     checkPermission: (message: Message) => boolean;
 }
 
-export interface UserValidatorHook {
-    /**
-     * The settings for this hook
-     */
-    settings: UserValidatorHookSettings;
-}
-
 /**
  * A hook to check if the author of a command passes a check permission function
+ *
+ * @param settings - The settings for this hook
  */
-export class UserValidatorHook extends CommandHook {
-    execute({ message }: CommandHookContext, next: NextFunction): void {
-        if (!this.settings.errorMessage)
-            this.settings.errorMessage =
+export const UserValidatorHook = (
+    settings: UserValidatorHookSettings
+): CommandHook => {
+    return ({ message }, next): void => {
+        if (!settings.errorMessage)
+            settings.errorMessage =
                 'You do not have permission to run this command.';
 
-        if (this.settings.checkPermission(message)) {
+        if (settings.checkPermission(message)) {
             next();
         } else {
-            message.channel.createMessage(this.settings.errorMessage);
+            message.channel.createMessage(settings.errorMessage);
         }
-    }
-}
+    };
+};

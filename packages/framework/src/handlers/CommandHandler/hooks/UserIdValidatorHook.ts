@@ -1,5 +1,5 @@
 import type { CommandHookContext } from '../CommandHook';
-import { CommandHook } from '../CommandHook';
+import type { CommandHook } from '../CommandHook';
 import type { MessageContent } from 'eris';
 import type { NextFunction } from '../../Hook';
 
@@ -17,31 +17,28 @@ export interface UserIdValidatorHookSettings {
     errorMessage?: MessageContent;
 }
 
-export interface UserIdValidatorHook {
-    /**
-     * The settings for this hook
-     */
-    settings: UserIdValidatorHookSettings;
-}
-
 /**
  * A hook to check if a user is in a certain array of users
+ *
+ * @param settings - The settings for this hook
  */
-export class UserIdValidatorHook extends CommandHook {
-    execute({ message }: CommandHookContext, next: NextFunction): void {
-        if (!this.settings.errorMessage)
-            this.settings.errorMessage =
+export const UserIdValidatorHook = (
+    settings: UserIdValidatorHookSettings
+): CommandHook => {
+    return ({ message }, next): void => {
+        if (!settings.errorMessage)
+            settings.errorMessage =
                 "You don't have permission to run this command";
         let match = false;
 
-        for (const user of this.settings.allowedIds) {
+        for (const user of settings.allowedIds) {
             if (message.author.id == user) match = true;
         }
 
-        if (!match && this.settings.allowedIds.length != 0) {
-            message.channel.createMessage(this.settings.errorMessage);
+        if (!match && settings.allowedIds.length != 0) {
+            message.channel.createMessage(settings.errorMessage);
         } else {
             next();
         }
-    }
-}
+    };
+};

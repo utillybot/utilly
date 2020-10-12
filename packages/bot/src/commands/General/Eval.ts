@@ -3,24 +3,19 @@ import {
     BaseCommand,
     Command,
     EmbedBuilder,
+    PreHook,
     UserIdValidatorHook,
 } from '@utilly/framework';
 import centra from 'centra';
 import prettier from 'prettier';
 import type GeneralCommandModule from './moduleinfo';
 
-@Command(
-    {
-        name: 'eval',
-        description: 'View all the modules, or commands in a specific module',
-        usage: '(command/module)',
-    },
-    [
-        new UserIdValidatorHook({
-            allowedIds: ['236279900728721409'],
-        }),
-    ]
-)
+@Command({
+    name: 'eval',
+    description: 'View all the modules, or commands in a specific module',
+    usage: '(command/module)',
+})
+@PreHook(UserIdValidatorHook({ allowedIds: ['236279900728721409'] }))
 export default class Eval extends BaseCommand {
     parent!: GeneralCommandModule;
 

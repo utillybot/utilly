@@ -8,27 +8,20 @@ import {
     Command,
     DatabaseModule,
     EmbedBuilder,
+    PreHook,
 } from '@utilly/framework';
 import type { Message } from 'eris';
 import { MODULE_CONSTANTS, MODULES } from '../../constants/ModuleConstants';
 import type GeneralCommandModule from './moduleinfo';
 
-@Command(
-    {
-        name: 'help',
-        description: 'View all the modules, or commands in a specific module',
-        usage: '(command/module)',
-        aliases: ['commands', 'h'],
-    },
-    [
-        new ChannelValidatorHook({
-            channel: ['guild'],
-        }),
-        new BotPermsValidatorHook({
-            permissions: ['embedLinks'],
-        }),
-    ]
-)
+@Command({
+    name: 'help',
+    description: 'View all the modules, or commands in a specific module',
+    usage: '(command/module)',
+    aliases: ['commands', 'h'],
+})
+@PreHook(ChannelValidatorHook({ channel: ['guild'] }))
+@PreHook(BotPermsValidatorHook({ permissions: ['embedLinks'] }))
 export default class Help extends BaseCommand {
     parent!: GeneralCommandModule;
 

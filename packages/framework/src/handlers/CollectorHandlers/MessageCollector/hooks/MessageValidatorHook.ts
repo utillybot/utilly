@@ -1,6 +1,4 @@
-import type { NextFunction } from '../../../Hook';
-import type { MessageCollectorHookContext } from '../MessageCollectorHook';
-import { MessageCollectorHook } from '../MessageCollectorHook';
+import type { MessageCollectorHook } from '../MessageCollectorHook';
 
 /**
  * The settings for this message validator hook
@@ -22,30 +20,22 @@ export interface MessageValidatorHookSettings {
     allowBots?: boolean;
 }
 
-export interface MessageValidatorHook {
-    settings: MessageValidatorHookSettings;
-}
-
 /**
  * A hook to validate messages
  */
-export class MessageValidatorHook extends MessageCollectorHook {
-    execute(ctx: MessageCollectorHookContext, next: NextFunction): void {
+export const MessageValidatorHook = (
+    settings: MessageValidatorHookSettings
+): MessageCollectorHook => {
+    return (ctx, next): void => {
         if (
-            this.settings.allowBots != undefined &&
-            ctx.message.author.bot != this.settings.allowBots
+            settings.allowBots != undefined &&
+            ctx.message.author.bot != settings.allowBots
         )
             return;
-        if (
-            this.settings.channelId &&
-            ctx.message.channel.id != this.settings.channelId
-        )
+        if (settings.channelId && ctx.message.channel.id != settings.channelId)
             return;
-        if (
-            this.settings.authorId &&
-            ctx.message.author.id != this.settings.authorId
-        )
+        if (settings.authorId && ctx.message.author.id != settings.authorId)
             return;
         next();
-    }
-}
+    };
+};

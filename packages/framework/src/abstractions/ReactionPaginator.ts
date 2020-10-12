@@ -26,8 +26,8 @@ export class ReactionPaginator extends Collector<
         super(
             hooks
                 ? hooks.concat([
-                      new ReactionValidatorHook({
-                          message: message.id,
+                      ReactionValidatorHook({
+                          messageId: message.id,
                           allowedReactorIds: [userId],
                           allowedEmoteNames: ['➡️', '⬅️', '⏹️'],
                           removeNonValidReactions: true,
@@ -35,8 +35,8 @@ export class ReactionPaginator extends Collector<
                       }),
                   ])
                 : [
-                      new ReactionValidatorHook({
-                          message: message.id,
+                      ReactionValidatorHook({
+                          messageId: message.id,
                           allowedReactorIds: [userId],
                           allowedEmoteNames: ['➡️', '⬅️', '⏹️'],
                           removeNonValidReactions: true,

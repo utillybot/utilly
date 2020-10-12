@@ -1,6 +1,4 @@
-import type { CommandHookContext } from '../CommandHook';
-import { CommandHook } from '../CommandHook';
-import type { NextFunction } from '../../Hook';
+import type { CommandHook } from '../CommandHook';
 
 /**
  * Settings for the or hook
@@ -12,25 +10,17 @@ interface OrHookSettings {
     hooks: CommandHook[];
 }
 
-export interface OrHook {
-    /**
-     * The settings for this hook
-     */
-    settings: OrHookSettings;
-}
-
 /**
  * A hook to check if any of the passed in hooks call the next() function
+ *
+ * @param settings - the settings for this hook
  */
-export class OrHook extends CommandHook {
-    execute(
-        { bot, message, args }: CommandHookContext,
-        next: NextFunction
-    ): void {
+export const OrHook = (settings: OrHookSettings): CommandHook => {
+    return ({ bot, message, args }, next): void => {
         let hit = false;
-        for (const hook of this.settings.hooks) {
-            hook.execute({ bot: bot, message, args }, () => (hit = true));
+        for (const hook of settings.hooks) {
+            hook({ bot: bot, message, args }, () => (hit = true));
             if (hit) next();
         }
-    }
-}
+    };
+};
