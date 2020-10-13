@@ -40,7 +40,6 @@ export default class Embed extends BaseCommand {
     }
 
     async execute(ctx: CommandContext): Promise<void> {
-        console.log(this);
         if (ctx.args.length == 0) {
             await ctx.reply({
                 embed: await this.subCommandHandler.generateHelp(
@@ -58,6 +57,11 @@ export default class Embed extends BaseCommand {
     }
 }
 
+@PreHook(
+    BotPermsValidatorHook({
+        permissions: ['manageMessages', 'readMessageHistory'],
+    })
+)
 class EmbedCreate extends Subcommand {
     constructor(bot: UtillyClient) {
         super(bot);
@@ -66,12 +70,6 @@ class EmbedCreate extends Subcommand {
         this.help.description =
             'Creates a embed using the wizard. Optionally load an embed to start with';
         this.help.usage = '(embed)';
-
-        this.preHooks.push(
-            BotPermsValidatorHook({
-                permissions: ['manageMessages', 'readMessageHistory'],
-            })
-        );
     }
 
     async execute(ctx: CommandContext): Promise<void> {
@@ -772,6 +770,7 @@ class EmbedCreate extends Subcommand {
     }
 }
 
+@PreHook(BotPermsValidatorHook({ permissions: ['readMessageHistory'] }))
 class EmbedView extends Subcommand {
     constructor(bot: UtillyClient) {
         super(bot);
@@ -779,12 +778,6 @@ class EmbedView extends Subcommand {
         this.help.name = 'view';
         this.help.description = 'View the code behind and embed that was sent.';
         this.help.usage = '(message id)';
-
-        this.preHooks.push(
-            BotPermsValidatorHook({
-                permissions: ['readMessageHistory'],
-            })
-        );
     }
 
     async execute(ctx: CommandContext): Promise<void> {
@@ -838,6 +831,7 @@ class EmbedView extends Subcommand {
     }
 }
 
+@PreHook(BotPermsValidatorHook({ permissions: ['readMessageHistory'] }))
 class EmbedEdit extends Subcommand {
     constructor(bot: UtillyClient) {
         super(bot);
@@ -845,12 +839,6 @@ class EmbedEdit extends Subcommand {
         this.help.name = 'edit';
         this.help.description = 'Edits an embed that the bot sent.';
         this.help.usage = '(message id) (embed)';
-
-        this.preHooks.push(
-            BotPermsValidatorHook({
-                permissions: ['readMessageHistory'],
-            })
-        );
     }
 
     async execute(ctx: CommandContext): Promise<void> {
