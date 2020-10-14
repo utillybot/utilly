@@ -31,6 +31,7 @@ const config = (env: EnvOptions): Configuration => {
         },
         output: {
             path: path.resolve(__dirname, 'dist'),
+            publicPath: '/static',
         },
         plugins: [
             new ForkTsCheckerWebpackPlugin({
@@ -40,12 +41,12 @@ const config = (env: EnvOptions): Configuration => {
                 },
             }),
             new HtmlWebpackPlugin({
-                inject: true,
                 template: 'index.html',
             }),
             new FaviconsWebpackPlugin({
                 logo: './public/logo.png',
-                prefix: '',
+                prefix: 'favicons/',
+                outputPath: '/favicons',
                 favicons: {
                     appName: 'Utilly',
                     appDescription: 'The tool for the job',
@@ -93,7 +94,11 @@ const config = (env: EnvOptions): Configuration => {
         {
             test: /\.s[ac]ss$/i,
             use: [
-                devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+                {
+                    loader: devMode
+                        ? 'style-loader'
+                        : MiniCssExtractPlugin.loader,
+                },
                 {
                     loader: 'css-loader',
                     options: { sourceMap: devMode },

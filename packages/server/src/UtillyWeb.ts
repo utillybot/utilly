@@ -49,13 +49,8 @@ export class UtillyWeb {
             else next();
         });
 
-        this._app.use((req, res, next) => {
-            const url = req.url.split('/');
-            req.url = `/${url[url.length - 1]}`;
-            next();
-        });
-
         this._app.use(
+            '/static',
             express.static(
                 path.join(process.cwd(), 'packages', 'web', 'public'),
                 {
@@ -65,6 +60,7 @@ export class UtillyWeb {
         );
 
         this._app.use(
+            '/static',
             express.static(
                 path.join(process.cwd(), 'packages', 'web', 'dist'),
                 {

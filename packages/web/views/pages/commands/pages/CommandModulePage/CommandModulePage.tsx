@@ -4,7 +4,6 @@ import type { RouteComponentProps } from 'react-router-dom';
 import CommandTile from './components/CommandTile';
 import './CommandModulePage.sass';
 import type { CommandModule } from '../../Commands';
-import { Command } from '../../Commands';
 
 interface CommandModulesPageProps extends RouteComponentProps {
     commandModules: CommandModule[];
