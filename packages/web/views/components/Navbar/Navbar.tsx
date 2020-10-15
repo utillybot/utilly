@@ -35,17 +35,17 @@ class Navbar extends Component<RouteComponentProps, NavbarState> {
             );
         };
         for (const pageRoute of ROUTE_CONSTANTS) {
-            if (this.props.location.pathname.startsWith(pageRoute.path))
-                currentPage = pageRoute;
+            const matchedPage =
+                pageRoute.exact == undefined || pageRoute.exact
+                    ? this.props.location.pathname === pageRoute.path
+                    : this.props.location.pathname.startsWith(pageRoute.path);
+
+            if (matchedPage) currentPage = pageRoute;
             navbarElements.push(
                 <Link
                     key={pageRoute.name}
                     to={pageRoute.path}
-                    className={`nav-item ${
-                        this.props.location.pathname === pageRoute.path
-                            ? 'selected'
-                            : ''
-                    }`}
+                    className={`nav-item ${matchedPage ? 'selected' : ''}`}
                 >
                     {pageRoute.name}
                 </Link>

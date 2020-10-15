@@ -6,8 +6,8 @@ import express from 'express';
 import path from 'path';
 import 'reflect-metadata';
 import { createExpressServer } from 'routing-controllers';
-import { StatsController } from './controllers/StatsController';
-import { CommandsController } from './controllers/CommandsController';
+import { APIController } from './controllers/APIController';
+import { RemoveTrailingSlash } from './middlewares/RemoveTrailingSlash';
 
 export class UtillyWeb {
     static database: Database;
@@ -29,7 +29,8 @@ export class UtillyWeb {
         this._logger = logger;
         this._port = port;
         this._app = createExpressServer({
-            controllers: [CommandsController, StatsController],
+            controllers: [APIController],
+            middlewares: [RemoveTrailingSlash],
         });
     }
 
@@ -41,13 +42,6 @@ export class UtillyWeb {
 
     load(): void {
         this._app.disable('x-powered-by');
-
-        this._app.use((req, res, next) => {
-            const test = /\?[^]*\//.test(req.url);
-            if (req.url.substr(-1) === '/' && req.url.length > 1 && !test)
-                res.redirect(301, req.url.slice(0, -1));
-            else next();
-        });
 
         this._app.use(
             '/static',
@@ -69,7 +63,7 @@ export class UtillyWeb {
             )
         );
 
-        this._app.use(`*`, (req: Request, res: Response) => {
+        this._app.get('*', (req, res) => {
             res.sendFile(
                 path.join(
                     process.cwd(),
@@ -80,5 +74,7 @@ export class UtillyWeb {
                 )
             );
         });
+
+        this._app._router.stack;
     }
 }

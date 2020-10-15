@@ -3,10 +3,14 @@ import { Link, withRouter } from 'react-router-dom';
 import type { RouteComponentProps } from 'react-router-dom';
 import CommandTile from './components/CommandTile';
 import './CommandModulePage.sass';
-import type { CommandModule } from '../../Commands';
+import type {
+    CommandModule,
+    CommandsResponse,
+    Resource,
+} from '../../../../API';
 
 interface CommandModulesPageProps extends RouteComponentProps {
-    commandModules: CommandModule[];
+    resource: Resource<CommandsResponse>;
 }
 
 class CommandModulePage extends Component<CommandModulesPageProps> {
@@ -14,7 +18,7 @@ class CommandModulePage extends Component<CommandModulesPageProps> {
         /** @ts-ignore*/
         const mod = this.props.match.params.module;
 
-        for (const module of this.props.commandModules) {
+        for (const module of this.props.resource.read().commandModules) {
             if (mod.toLowerCase() == module.name.toLowerCase()) {
                 return module;
             }

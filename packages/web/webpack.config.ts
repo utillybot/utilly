@@ -31,7 +31,7 @@ const config = (env: EnvOptions): Configuration => {
         },
         output: {
             path: path.resolve(__dirname, 'dist'),
-            publicPath: '/static',
+            publicPath: '/static/',
         },
         plugins: [
             new ForkTsCheckerWebpackPlugin({

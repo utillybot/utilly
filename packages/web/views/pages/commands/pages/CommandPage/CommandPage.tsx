@@ -3,10 +3,15 @@ import { Link, withRouter } from 'react-router-dom';
 import type { RouteComponentProps } from 'react-router-dom';
 import CommandCard from './components/CommandCard';
 import './CommandPage.sass';
-import type { Command, CommandModule } from '../../Commands';
+import type {
+    Command,
+    CommandModule,
+    CommandsResponse,
+    Resource,
+} from '../../../../API';
 
 interface CommandPageProps extends RouteComponentProps {
-    commandModules: CommandModule[];
+    resource: Resource<CommandsResponse>;
 }
 
 class CommandPage extends Component<CommandPageProps> {
@@ -16,7 +21,7 @@ class CommandPage extends Component<CommandPageProps> {
         /** @ts-ignore*/
         const cmd = this.props.match.params.command;
 
-        for (const module of this.props.commandModules) {
+        for (const module of this.props.resource.read().commandModules) {
             if (mod.toLowerCase() == module.name.toLowerCase()) {
                 for (const command of module.commands) {
                     if (cmd.toLowerCase() == command.name.toLowerCase()) {

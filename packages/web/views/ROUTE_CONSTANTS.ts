@@ -1,12 +1,9 @@
-import type { Component } from 'react';
-import About from './pages/about/About';
-import Home from './pages/home/Home';
-import Commands from './pages/commands/Commands';
+import { lazy } from 'react';
 
 export interface RouteData {
     path: string;
     name: string;
-    page: typeof Component;
+    page: ReturnType<typeof lazy>;
     exact?: boolean;
 }
 
@@ -14,19 +11,19 @@ export const ROUTE_CONSTANTS: RouteData[] = [
     {
         path: '/',
         name: 'Home',
-        page: Home,
+        page: lazy(() => import('./pages/home/Home')),
     },
 
     {
         path: '/about',
         name: 'About',
-        page: About,
+        page: lazy(() => import('./pages/about/About')),
     },
 
     {
         path: '/commands',
         name: 'Commands',
-        page: Commands,
+        page: lazy(() => import('./pages/commands/Commands')),
         exact: false,
     },
 ];

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './CommandCard.sass';
-import type { Command } from '../../../Commands';
+import type { Command } from '../../../../../API';
 
 class CommandCard extends Component<Command> {
     render(): JSX.Element {

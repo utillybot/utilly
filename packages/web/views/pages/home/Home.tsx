@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './Home.sass';
 
-class Home extends Component {
+class Home extends Component<unknown, unknown, unknown> {
     render(): JSX.Element {
         return (
             <React.Fragment>

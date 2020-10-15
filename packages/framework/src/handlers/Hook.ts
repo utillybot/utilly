@@ -11,7 +11,7 @@ export type HookGenerator<T> = (settings: unknown) => Hook<T>;
  * It can change the results passed into that other function.
  * It can perform cleanup tasks after the other function is run.
  *
- * Hooks follow a similar pattern to express middleware. The default implementation with the `runHooks` function works as follows:
+ * Hooks follow a similar pattern to express middlewares. The default implementation with the `runHooks` function works as follows:
  * When a hook is finished and wants to move onto the next hook, it should call the `next` function.
  * If it does not want to move on, it should do nothing or return out of the execute function.
  *

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import type { RouteComponentProps } from 'react-router-dom';
 import { Link, withRouter } from 'react-router-dom';
 import './CommandTile.sass';
-import type { Command } from '../../../Commands';
+import type { Command } from '../../../../../API';
 
 interface CommandTileProps extends RouteComponentProps {
     command: Command;

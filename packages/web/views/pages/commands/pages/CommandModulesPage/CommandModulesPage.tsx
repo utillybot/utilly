@@ -1,24 +1,25 @@
 import React, { Component } from 'react';
 import CommandModuleTile from './components/CommandModuleTile';
 import './CommandModulesPage.sass';
-import type { CommandModule } from '../../Commands';
+import type { CommandsResponse, Resource } from '../../../../API';
 
 interface CommandModulesPageProps {
-    commandModules: CommandModule[];
+    resource: Resource<CommandsResponse>;
 }
 
 class CommandModulesPage extends Component<CommandModulesPageProps> {
     render(): JSX.Element {
+        const response = this.props.resource.read();
         return (
             <div
                 className={`command-module-container ${
-                    this.props.commandModules.length == 0 ? 'loading' : ''
+                    response.commandModules.length == 0 ? 'loading' : ''
                 }`}
             >
-                {this.props.commandModules.length == 0 ? (
+                {response.commandModules.length == 0 ? (
                     <h1 className="loading">Loading...</h1>
                 ) : (
-                    this.props.commandModules.map(module => (
+                    response.commandModules.map(module => (
                         <CommandModuleTile
                             key={module.name}
                             commandModule={module}
