@@ -45,8 +45,8 @@ const config = (env: EnvOptions): Configuration => {
             }),
             new FaviconsWebpackPlugin({
                 logo: './public/logo.png',
-                prefix: 'favicons/',
-                outputPath: '/favicons',
+                prefix: 'favicons',
+                outputPath: 'favicons',
                 favicons: {
                     appName: 'Utilly',
                     appDescription: 'The tool for the job',
@@ -71,7 +71,7 @@ const config = (env: EnvOptions): Configuration => {
         };
         baseConfig.devtool = 'source-map';
 
-        baseConfig.output!.filename = '[name].js';
+        baseConfig.output!.filename = 'js/[name].js';
     } else {
         baseConfig.optimization = {
             minimize: !devMode,
@@ -83,11 +83,11 @@ const config = (env: EnvOptions): Configuration => {
 
         baseConfig.plugins?.push(
             new MiniCssExtractPlugin({
-                filename: '[name].[contenthash].css',
-                chunkFilename: '[id].[contenthash].css',
+                filename: 'css/[name].[contenthash].css',
+                chunkFilename: 'css/[id].[contenthash].css',
             })
         );
-        baseConfig.output!.filename = '[name].[contenthash].js';
+        baseConfig.output!.filename = 'js/[name].[contenthash].js';
     }
 
     baseConfig.module?.rules?.push(

@@ -63,7 +63,7 @@ const wrapPromise = <T>(promise: Promise<T>): Resource<T> => {
     };
 };
 
-export const get = () => {
+export const get = (): { commands: Resource<CommandsResponse> } => {
     return {
         commands: wrapPromise(fetchCommands()),
     };

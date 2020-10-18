@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './Stat.sass';
 
 interface StatsProps {
@@ -7,17 +7,15 @@ interface StatsProps {
     units: string;
 }
 
-class Stat extends Component<StatsProps> {
-    render(): JSX.Element {
-        return (
-            <div className="stat">
-                <h1>{this.props.statName}</h1>
-                <h2>
-                    {this.props.statValue} {this.props.units}
-                </h2>
-            </div>
-        );
-    }
-}
+const Stat = ({ statName, statValue, units }: StatsProps): JSX.Element => {
+    return (
+        <div className="stat">
+            <h1>{statName}</h1>
+            <h2>
+                {statValue} {units}
+            </h2>
+        </div>
+    );
+};
 
 export default Stat;

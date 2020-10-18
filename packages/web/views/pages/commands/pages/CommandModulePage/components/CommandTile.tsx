@@ -1,24 +1,22 @@
-import React, { Component } from 'react';
-import type { RouteComponentProps } from 'react-router-dom';
-import { Link, withRouter } from 'react-router-dom';
+import React from 'react';
+import { Link, useRouteMatch } from 'react-router-dom';
 import './CommandTile.sass';
 import type { Command } from '../../../../../API';
 
-interface CommandTileProps extends RouteComponentProps {
+interface CommandTileProps {
     command: Command;
 }
 
-class CommandTile extends Component<CommandTileProps> {
-    render(): JSX.Element {
-        return (
-            <Link to={`${this.props.match.url}/${this.props.command.name}`}>
-                <div className="command">
-                    <h1>u!{this.props.command.name}</h1>
-                    <p>{this.props.command.description}</p>
-                </div>
-            </Link>
-        );
-    }
-}
+const CommandTile = ({ command }: CommandTileProps): JSX.Element => {
+    const match = useRouteMatch();
+    return (
+        <Link to={`${match.url}/${command.name}`}>
+            <div className="command">
+                <h1>u!{command.name}</h1>
+                <p>{command.description}</p>
+            </div>
+        </Link>
+    );
+};
 
-export default withRouter(CommandTile);
+export default CommandTile;

@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
-import type { RouteComponentProps } from 'react-router-dom';
+import React from 'react';
+import { Link, useParams } from 'react-router-dom';
 import CommandTile from './components/CommandTile';
 import './CommandModulePage.sass';
 import type {
@@ -9,47 +8,44 @@ import type {
     Resource,
 } from '../../../../API';
 
-interface CommandModulesPageProps extends RouteComponentProps {
+interface CommandModulesPageProps {
     resource: Resource<CommandsResponse>;
 }
 
-class CommandModulePage extends Component<CommandModulesPageProps> {
-    resolveModule(): CommandModule | undefined {
-        /** @ts-ignore*/
-        const mod = this.props.match.params.module;
+const CommandModulePage = ({
+    resource,
+}: CommandModulesPageProps): JSX.Element => {
+    const params = useParams<{ module: string }>();
 
-        for (const module of this.props.resource.read().commandModules) {
-            if (mod.toLowerCase() == module.name.toLowerCase()) {
-                return module;
-            }
+    let module: CommandModule | undefined = undefined;
+    const moduleParam: string = params.module;
+    for (const mod of resource.read().commandModules) {
+        if (moduleParam.toLowerCase() == mod.name.toLowerCase()) {
+            module = mod;
         }
     }
 
-    render(): JSX.Element {
-        const module = this.resolveModule();
-
-        return (
-            <React.Fragment>
-                <div className="command-module-header">
-                    <div className="command-module-header-button">
-                        <Link to="/commands">ᐸ Back</Link>
-                    </div>
-                    <div className="command-module-header-text">
-                        {module ? <h1>{module.name} Module</h1> : ''}
-                    </div>
+    return (
+        <React.Fragment>
+            <div className="command-module-header">
+                <div className="command-module-header-button">
+                    <Link to="/commands">ᐸ Back</Link>
                 </div>
-                <div className="command-container">
-                    {module ? (
-                        module.commands.map(cmd => (
-                            <CommandTile key={cmd.name} command={cmd} />
-                        ))
-                    ) : (
-                        <h1>Command Module not found</h1>
-                    )}
+                <div className="command-module-header-text">
+                    {module ? <h1>{module.name} Module</h1> : ''}
                 </div>
-            </React.Fragment>
-        );
-    }
-}
+            </div>
+            <div className="command-container">
+                {module ? (
+                    module.commands.map(cmd => (
+                        <CommandTile key={cmd.name} command={cmd} />
+                    ))
+                ) : (
+                    <h1>Command Module not found</h1>
+                )}
+            </div>
+        </React.Fragment>
+    );
+};
 
-export default withRouter(CommandModulePage);
+export default CommandModulePage;

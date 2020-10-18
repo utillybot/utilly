@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
-import type { RouteComponentProps } from 'react-router-dom';
+import React from 'react';
+import { Link, useParams } from 'react-router-dom';
 import CommandCard from './components/CommandCard';
 import './CommandPage.sass';
 import type {
@@ -10,56 +9,49 @@ import type {
     Resource,
 } from '../../../../API';
 
-interface CommandPageProps extends RouteComponentProps {
+interface CommandPageProps {
     resource: Resource<CommandsResponse>;
 }
 
-class CommandPage extends Component<CommandPageProps> {
-    resolveCommand(): [Command, CommandModule] | undefined {
-        /** @ts-ignore*/
-        const mod = this.props.match.params.module;
-        /** @ts-ignore*/
-        const cmd = this.props.match.params.command;
+const CommandPage = ({ resource }: CommandPageProps): JSX.Element => {
+    const params = useParams<{ module: string; command: string }>();
 
-        for (const module of this.props.resource.read().commandModules) {
-            if (mod.toLowerCase() == module.name.toLowerCase()) {
-                for (const command of module.commands) {
-                    if (cmd.toLowerCase() == command.name.toLowerCase()) {
-                        return [command, module];
-                    }
+    const moduleParam = params.module;
+    const commandParam = params.command;
+
+    let command: Command | undefined = undefined;
+    let module: CommandModule | undefined = undefined;
+
+    for (const mod of resource.read().commandModules) {
+        if (moduleParam.toLowerCase() == mod.name.toLowerCase()) {
+            for (const cmd of mod.commands) {
+                if (commandParam.toLowerCase() == cmd.name.toLowerCase()) {
+                    command = cmd;
+                    module = mod;
                 }
             }
         }
     }
 
-    render(): JSX.Element {
-        const result = this.resolveCommand();
-
-        const command = result ? result[0] : undefined;
-        const module = result ? result[1] : undefined;
-
-        return (
-            <div className="command-header">
-                <div className="command-header-button">
-                    <Link to={`/commands${`/${module?.name}` ?? ''}`}>
-                        ᐸ Back
-                    </Link>
-                </div>
-                <div className="command-header-text">
-                    {command ? (
-                        <CommandCard
-                            name={command.name}
-                            description={command.description}
-                            usage={command.usage}
-                            aliases={command.aliases}
-                        />
-                    ) : (
-                        <h1>Command not found</h1>
-                    )}
-                </div>
+    return (
+        <div className="command-header">
+            <div className="command-header-button">
+                <Link to={`/commands${`/${module?.name}` ?? ''}`}>ᐸ Back</Link>
             </div>
-        );
-    }
-}
+            <div className="command-header-text">
+                {command ? (
+                    <CommandCard
+                        name={command.name}
+                        description={command.description}
+                        usage={command.usage}
+                        aliases={command.aliases}
+                    />
+                ) : (
+                    <h1>Command not found</h1>
+                )}
+            </div>
+        </div>
+    );
+};
 
-export default withRouter(CommandPage);
+export default CommandPage;
