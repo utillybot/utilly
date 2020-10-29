@@ -7,6 +7,7 @@ import path from 'path';
 import TerserPlugin from 'terser-webpack-plugin';
 import type { Configuration } from 'webpack';
 import FaviconsWebpackPlugin from 'favicons-webpack-plugin';
+import 'webpack-dev-server';
 
 interface EnvOptions {
     mode: 'production' | 'development';

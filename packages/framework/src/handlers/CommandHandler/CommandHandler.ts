@@ -111,7 +111,7 @@ export class CommandHandler {
                     }
                 }
                 this._logger.handler(
-                    `    Finished Loading Command "${commandObj.constructor.name}".`
+                    `    Finished Loading Command "${commandObj.help.name}".`
                 );
             }
             this._logger.handler(
