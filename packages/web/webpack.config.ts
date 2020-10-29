@@ -48,6 +48,7 @@ const config = (env: EnvOptions): Configuration => {
                 logo: './public/logo.png',
                 prefix: 'favicons',
                 outputPath: 'favicons',
+                cache: true,
                 favicons: {
                     appName: 'Utilly',
                     appDescription: 'The tool for the job',

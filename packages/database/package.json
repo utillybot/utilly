@@ -7,9 +7,9 @@
     "author": "jtsshieh",
     "dependencies": {
         "@utilly/utils": "1.0.0",
-        "pg": "^8.3.3",
+        "pg": "^8.4.2",
         "reflect-metadata": "^0.1.13",
-        "typeorm": "^0.2.25"
+        "typeorm": "^0.2.28"
     },
     "scripts": {
         "build": "tsc"

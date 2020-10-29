@@ -20,6 +20,7 @@ class StatsContainer extends Component<unknown, StatsContainerState> {
 
     componentDidMount(): void {
         this.tick();
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         /*@ts-ignore*/
         this.timerID = setInterval(() => this.tick(), 15 * 1000);
     }

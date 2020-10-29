@@ -1,7 +1,7 @@
 import type { Database } from '@utilly/database';
 import type { UtillyClient } from '@utilly/framework';
 import type { Logger } from '@utilly/utils';
-import type { Express, Request, Response } from 'express';
+import type { Express } from 'express';
 import express from 'express';
 import path from 'path';
 import 'reflect-metadata';

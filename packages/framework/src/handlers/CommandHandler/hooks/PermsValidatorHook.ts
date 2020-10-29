@@ -47,8 +47,6 @@ export const PermsValidatorHook = (
         for (const permission of settings.permissions) {
             if (!message.channel.permissionsOf(id).has(permission)) {
                 const item = ROLE_PERMISSIONS.get(
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
                     Constants.Permissions[permission]
                 );
                 if (item) missingPerms.push(item);
