@@ -2,10 +2,6 @@
     "name": "utilly",
     "version": "1.0.0",
     "description": "A discord bot",
-    "private": true,
-    "workspaces": [
-        "packages/*"
-    ],
     "main": "dist/bot.js",
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^4.6.0",
@@ -15,20 +11,22 @@
         "husky": "^4.3.0",
         "lerna": "^3.22.1",
         "lint-staged": "^10.5.0",
-        "prettier": "2.1.2",
+        "prettier": "^2.1.2",
         "typescript": "^4.0.5"
     },
     "scripts": {
-        "build": "npx lerna run build",
+        "build": "lerna run build",
         "start": "npm run build && npm run run",
         "heavystart": "npm run eslint:fix && npm run prettier:write && npm start ",
         "run": "node packages/core/dist/Utilly.js",
         "lint": "npm run eslint:fix && npm run prettier:write",
         "lint:check": "npm run eslint:check && npm run prettier:check",
-        "eslint:check": "npx eslint packages/**/*.ts",
-        "eslint:fix": "npx eslint packages/**/*.ts --fix",
-        "prettier:check": "npx prettier packages/**/*.ts --check",
-        "prettier:write": "npx prettier packages/**/*.ts --write"
+        "eslint:check": "eslint packages/**/*.ts",
+        "eslint:fix": "eslint packages/**/*.ts --fix",
+        "prettier:check": "prettier packages/**/*.ts --check",
+        "prettier:write": "prettier packages/**/*.ts --write",
+        "postinstall": "lerna bootstrap --hoist",
+        "clean": "lerna clean"
     },
     "author": "jtsshieh",
     "husky": {

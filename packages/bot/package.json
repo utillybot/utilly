@@ -11,7 +11,7 @@
         "@utilly/utils": "1.0.0",
         "centra": "^2.4.2",
         "eris": "github:jtsshieh/eris#utilly",
-        "prettier": "^2.1.1"
+        "prettier": "^2.1.2"
     },
     "devDependencies": {
         "@types/centra": "^2.2.0",
