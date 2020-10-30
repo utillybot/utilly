@@ -15,7 +15,7 @@
         "typescript": "^4.0.5"
     },
     "scripts": {
-        "build": "lerna run build",
+        "build": "lerna bootstrap --hoist && lerna run build",
         "start": "npm run build && npm run run",
         "heavystart": "npm run eslint:fix && npm run prettier:write && npm start ",
         "run": "node packages/core/dist/Utilly.js",
