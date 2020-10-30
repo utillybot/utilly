@@ -15,7 +15,7 @@
         "typescript": "^4.0.5"
     },
     "scripts": {
-        "build": "lerna bootstrap --hoist && lerna run build",
+        "build": "lerna run build",
         "start": "npm run build && npm run run",
         "heavystart": "npm run eslint:fix && npm run prettier:write && npm start ",
         "run": "node packages/core/dist/Utilly.js",
@@ -26,7 +26,8 @@
         "prettier:check": "prettier packages/**/*.ts --check",
         "prettier:write": "prettier packages/**/*.ts --write",
         "postinstall": "lerna bootstrap --hoist",
-        "clean": "lerna clean"
+        "clean": "lerna clean",
+        "heroku-postbuild": "lerna bootstrap --hoist && npm run build"
     },
     "author": "jtsshieh",
     "husky": {
