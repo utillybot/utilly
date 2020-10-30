@@ -15,19 +15,19 @@
         "typescript": "^4.0.5"
     },
     "scripts": {
-        "build": "lerna run build",
+        "build": "npx lerna run build",
         "start": "npm run build && npm run run",
         "heavystart": "npm run eslint:fix && npm run prettier:write && npm start ",
         "run": "node packages/core/dist/Utilly.js",
         "lint": "npm run eslint:fix && npm run prettier:write",
         "lint:check": "npm run eslint:check && npm run prettier:check",
-        "eslint:check": "eslint packages/**/*.ts",
-        "eslint:fix": "eslint packages/**/*.ts --fix",
-        "prettier:check": "prettier packages/**/*.ts --check",
-        "prettier:write": "prettier packages/**/*.ts --write",
-        "postinstall": "lerna bootstrap --hoist",
-        "clean": "lerna clean",
-        "heroku-postbuild": "lerna bootstrap --hoist && npm run build"
+        "eslint:check": "npx eslint packages/**/*.ts",
+        "eslint:fix": "npx eslint packages/**/*.ts --fix",
+        "prettier:check": "npx prettier packages/**/*.ts --check",
+        "prettier:write": "npx prettier packages/**/*.ts --write",
+        "postinstall": "npx lerna bootstrap --hoist",
+        "clean": "npx lerna clean",
+        "heroku-postbuild": "npx lerna bootstrap --hoist && npm run build"
     },
     "author": "jtsshieh",
     "husky": {
