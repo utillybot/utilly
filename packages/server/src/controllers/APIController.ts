@@ -1,20 +1,20 @@
 import { Controller, Get, Res } from 'routing-controllers';
-import type { Response } from 'express';
 import { UtillyWeb } from '../UtillyWeb';
+import type { Response } from 'koa';
 
 @Controller('/api')
 export class APIController {
     @Get('/stats')
-    getStats(@Res() res: Response): Response {
-        return res.send({
+    getStats(@Res() res: Response): void {
+        res.body = {
             guilds: UtillyWeb.bot.guilds.size,
             users: UtillyWeb.bot.users.size,
-        });
+        };
     }
 
     @Get('/commands')
-    getCommands(@Res() res: Response): Response {
-        return res.send({
+    getCommands(@Res() res: Response): void {
+        res.body = {
             commandModules: Array.from(
                 UtillyWeb.bot.commandHandler.commandModules.values()
             ).map(mod => {
@@ -26,6 +26,6 @@ export class APIController {
                     ),
                 };
             }),
-        });
+        };
     }
 }

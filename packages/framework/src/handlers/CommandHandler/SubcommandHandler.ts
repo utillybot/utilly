@@ -4,7 +4,7 @@ import type { Message } from 'eris';
 import { GuildChannel } from 'eris';
 import type { UtillyClient } from '../../UtillyClient';
 import { EmbedBuilder } from '../../utils/EmbedBuilder';
-import type { BaseCommand, CommandHelp } from './Command';
+import type { BaseCommand, CommandInfo } from './Command';
 import { CommandContext } from './Command';
 import type { CommandHook, CommandHookContext } from './CommandHook';
 import { runHooks } from '../Hook';
@@ -16,7 +16,7 @@ export abstract class Subcommand {
     /**
      * A CommandHelp object of help info for this command
      */
-    readonly help: CommandHelp;
+    readonly help: CommandInfo;
 
     /**
      * An array of command hooks that will be run prior to the execution of this command.
@@ -144,8 +144,8 @@ export class SubcommandHandler {
                 .selectOrCreate(message.channel.guild.id, ['prefix']);
         }
         const embed = new EmbedBuilder();
-        embed.setTitle(`Help for \`${parentCommand.help.name}\`'s subcommands`);
-        embed.setDescription(parentCommand.help.description);
+        embed.setTitle(`Help for \`${parentCommand.info.name}\`'s subcommands`);
+        embed.setDescription(parentCommand.info.description);
         for (const [name, subCommand] of this._subCommandMap) {
             embed.addField(
                 `\`${
@@ -154,7 +154,7 @@ export class SubcommandHandler {
                             ? guildRow.prefix[0]
                             : 'u!'
                         : 'u!'
-                }${parentCommand.help.name} ${name}${
+                }${parentCommand.info.name} ${name}${
                     subCommand.help.usage ? ' ' + subCommand.help.usage : ''
                 }\``,
                 subCommand.help.description

@@ -1,4 +1,4 @@
-import type { MessageCollectorHook } from '../MessageCollectorHook';
+import type { MessageCollectorHook } from './MessageCollectorHook';
 
 /**
  * The settings for this message validator hook

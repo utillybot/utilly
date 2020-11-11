@@ -1,9 +1,7 @@
 import type { MessageContent } from 'eris';
-import type { CommandHookContext } from '../CommandHook';
 import type { CommandHook } from '../CommandHook';
 import type { PermsValidatorHookSettings } from './PermsValidatorHook';
 import { PermsValidatorHook } from './PermsValidatorHook';
-import type { NextFunction } from '../../Hook';
 import type { Client, Message } from 'eris';
 
 /**

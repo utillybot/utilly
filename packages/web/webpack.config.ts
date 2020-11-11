@@ -32,7 +32,7 @@ const config = (env: EnvOptions): Configuration => {
         },
         output: {
             path: path.resolve(__dirname, 'dist'),
-            publicPath: '/static/',
+            publicPath: '/',
         },
         plugins: [
             new ForkTsCheckerWebpackPlugin({
@@ -46,8 +46,8 @@ const config = (env: EnvOptions): Configuration => {
             }),
             new FaviconsWebpackPlugin({
                 logo: './public/logo.png',
-                prefix: 'favicons',
-                outputPath: 'favicons',
+                prefix: 'static/favicons',
+                outputPath: 'static/favicons',
                 cache: true,
                 favicons: {
                     appName: 'Utilly',
@@ -73,7 +73,7 @@ const config = (env: EnvOptions): Configuration => {
         };
         baseConfig.devtool = 'source-map';
 
-        baseConfig.output!.filename = 'js/[name].js';
+        baseConfig.output!.filename = 'static/js/[name].js';
     } else {
         baseConfig.optimization = {
             minimize: !devMode,
@@ -85,11 +85,11 @@ const config = (env: EnvOptions): Configuration => {
 
         baseConfig.plugins?.push(
             new MiniCssExtractPlugin({
-                filename: 'css/[name].[contenthash].css',
-                chunkFilename: 'css/[id].[contenthash].css',
+                filename: 'static/css/[name].[contenthash].css',
+                chunkFilename: 'static/css/[id].[contenthash].css',
             })
         );
-        baseConfig.output!.filename = 'js/[name].[contenthash].js';
+        baseConfig.output!.filename = 'static/js/[name].[contenthash].js';
     }
 
     baseConfig.module?.rules?.push(

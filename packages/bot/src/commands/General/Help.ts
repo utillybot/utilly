@@ -6,7 +6,6 @@ import {
     BotPermsValidatorHook,
     ChannelValidatorHook,
     Command,
-    DatabaseModule,
     EmbedBuilder,
     PreHook,
 } from '@utilly/framework';
@@ -35,16 +34,9 @@ export default class Help extends BaseCommand {
             } else {
                 const item = ctx.args[0].toLowerCase();
 
-                if (
-                    Array.from(
-                        this.bot.commandHandler.commandModules.keys()
-                    ).find(module => module.toLowerCase() == item) != undefined
-                ) {
+                if (this.bot.commandHandler.commandModules.has(item)) {
                     this.handleModule(ctx.message, item, guildRow);
-                } else if (
-                    this.bot.commandHandler.commands.has(item) ||
-                    this.bot.commandHandler.aliases.has(item)
-                ) {
+                } else if (this.bot.commandHandler.triggers.has(item)) {
                     this.handleCommand(ctx.message, item, guildRow);
                 } else {
                     ctx.reply(
@@ -63,12 +55,8 @@ export default class Help extends BaseCommand {
         let disabledModules = '';
 
         for (const [, module] of this.bot.commandHandler.commandModules) {
-            if (module.parent instanceof DatabaseModule) {
-                if (!guildRow[module.parent.databaseEntry]) {
-                    disabledModules += module.info.name + '\n';
-                } else {
-                    enabledModules += module.info.name + '\n';
-                }
+            if (guildRow[module.info.name.toLowerCase()] == false) {
+                disabledModules += module.info.name + '\n';
             } else {
                 enabledModules += module.info.name + '\n';
             }
@@ -102,23 +90,26 @@ export default class Help extends BaseCommand {
 
     handleModule(message: Message, item: string, guildRow: Guild): void {
         const embed = new EmbedBuilder();
+
+        const commandModule = this.bot.commandHandler.commandModules.get(item);
+        if (!commandModule) return;
+
         embed.setTitle(
-            `Help for \`${item}\` module : ${
+            `Help for \`${commandModule.info.name}\` module : ${
                 guildRow[item] == false ? 'Disabled' : 'Enabled'
             }`
         );
         embed.setColor(guildRow[item] == false ? 0xff0000 : 0x00ff00);
-        embed.setDescription(MODULE_CONSTANTS[item]);
+        embed.setDescription(MODULE_CONSTANTS[commandModule.info.name]);
 
-        for (const [, command] of this.bot.commandHandler.commands) {
+        for (const [, command] of commandModule.commands) {
             if (command.parent == undefined)
                 throw new Error('Injection failure');
-            if (command.parent.info.name.toLowerCase() != item) continue;
             embed.addField(
                 `\`${guildRow.prefix ? guildRow.prefix[0] : 'u!'}${
-                    command.help.name
-                }${command.help.usage ? ' ' + command.help.usage : ''}\``,
-                command.help.description
+                    command.info.name
+                }${command.info.usage ? ' ' + command.info.usage : ''}\``,
+                command.info.description
             );
         }
         embed.addDefaults(message.author);
@@ -128,24 +119,23 @@ export default class Help extends BaseCommand {
     handleCommand(message: Message, item: string, guildRow: Guild): void {
         const embed = new EmbedBuilder();
 
-        let command = this.bot.commandHandler.commands.get(item);
-        if (!command) command = this.bot.commandHandler.aliases.get(item);
+        const command = this.bot.commandHandler.triggers.get(item);
         if (!command) return;
 
         if (command.parent == undefined) throw new Error('Injection failure');
 
-        embed.setTitle(`Help for \`${command.help.name}\` command`);
+        embed.setTitle(`Help for \`${command.info.name}\` command`);
 
-        embed.setDescription(command.help.description);
+        embed.setDescription(command.info.description);
         embed.addField(
             'Usage',
             `${guildRow.prefix ? guildRow.prefix[0] : 'u!'}${
-                command.help.name
-            } ${command.help.usage ?? ''}`,
+                command.info.name
+            } ${command.info.usage ?? ''}`,
             true
         );
         const aliases = [];
-        for (const alias of command.help.aliases) {
+        for (const alias of command.info.aliases) {
             aliases.push((guildRow.prefix ? guildRow.prefix[0] : 'u!') + alias);
         }
         if (aliases.length != 0)

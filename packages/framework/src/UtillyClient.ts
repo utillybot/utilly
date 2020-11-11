@@ -3,10 +3,10 @@ import type { Logger } from '@utilly/utils';
 import type { ClientOptions } from 'eris';
 import { Client } from 'eris';
 import path from 'path';
-import { CommandHandler } from './handlers/CommandHandler/CommandHandler';
-import { ModuleHandler } from './handlers/ModuleHandler/ModuleHandler';
-import { MessageCollectorHandler } from './handlers/CollectorHandlers/MessageCollector/MessageCollectorHandler';
-import { ReactionCollectorHandler } from './handlers/CollectorHandlers/ReactionCollector/ReactionCollectorHandler';
+import { CommandHandler } from './handlers/CommandHandler';
+import { ModuleHandler } from './handlers/ModuleHandler';
+import { MessageCollectorHandler } from './handlers/CollectorHandlers/MessageCollector';
+import { ReactionCollectorHandler } from './handlers/CollectorHandlers/ReactionCollector';
 
 export class UtillyClient extends Client {
     commandHandler: CommandHandler;
@@ -51,7 +51,6 @@ export class UtillyClient extends Client {
 
         await this.commandHandler.loadCommands(path.join(rootDir, 'commands'));
 
-        this.commandHandler.linkModules(this.moduleHandler.modules);
         this.commandHandler.attach();
         console.log('');
     }

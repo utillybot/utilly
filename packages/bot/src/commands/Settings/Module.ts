@@ -2,7 +2,6 @@ import { Guild, GuildRepository } from '@utilly/database';
 import type {
     CommandContext,
     CommandHookContext,
-    NextFunction,
     UtillyClient,
     CommandHook,
 } from '@utilly/framework';

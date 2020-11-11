@@ -1,15 +1,15 @@
 {
-    "name": "@utilly/utils",
-    "version": "1.0.0",
-    "description": "Utilities for Utilly",
-    "main": "dist/index.js",
-    "typings": "dist/index.d.ts",
-    "author": "jtsshieh",
-    "dependencies": {
-        "eris": "github:jtsshieh/eris#utilly",
-        "chalk": "^4.1.0"
-    },
-    "scripts": {
-        "build": "tsc"
-    }
+	"name": "@utilly/utils",
+	"version": "1.0.0",
+	"description": "Utilities for Utilly",
+	"main": "dist/index.js",
+	"typings": "dist/index.d.ts",
+	"author": "jtsshieh",
+	"dependencies": {
+		"chalk": "^4.1.0",
+		"eris": "github:jtsshieh/eris#utilly"
+	},
+	"scripts": {
+		"build": "tsc"
+	}
 }

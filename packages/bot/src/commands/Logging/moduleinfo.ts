@@ -1,19 +1,9 @@
-import type { UtillyClient } from '@utilly/framework';
-import { CommandModule, IsModuleEnabledHook } from '@utilly/framework';
-import type LoggingModule from '../../modules/Logging/LoggingModule';
+import { CommandModule, BaseCommandModule, PreHook } from '@utilly/framework';
+import { IsModuleEnabledHook } from '../../hooks/IsModuleEnabledHook';
 
-export default class LoggingCommandModule extends CommandModule {
-    parent!: LoggingModule;
-
-    constructor(bot: UtillyClient) {
-        super(bot);
-        this.info.name = 'Logging';
-        this.info.description = 'General bot commands';
-    }
-
-    moduleLinked(): void {
-        this.preHooks.push(
-            IsModuleEnabledHook({ databaseModule: this.parent })
-        );
-    }
-}
+@CommandModule({
+    name: 'Logging',
+    description: 'View info about discord entities',
+})
+@PreHook(IsModuleEnabledHook({ databaseEntry: 'logging' }))
+export default class LoggingCommandModule extends BaseCommandModule {}

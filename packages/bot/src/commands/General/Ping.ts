@@ -11,7 +11,7 @@ import type GeneralCommandModule from './moduleinfo';
 @Command({ name: 'ping', description: "Check's the bots' ping" })
 @PreHook(BotPermsValidatorHook({ permissions: ['embedLinks'] }))
 export default class Ping extends BaseCommand {
-    parent?: GeneralCommandModule;
+    parent!: GeneralCommandModule;
 
     async execute(ctx: CommandContext): Promise<void> {
         const ZWS = '​';

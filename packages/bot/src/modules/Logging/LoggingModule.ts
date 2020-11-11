@@ -1,7 +1,7 @@
 import type { Guild } from '@utilly/database';
 import { GuildRepository } from '@utilly/database';
-import type { EmbedBuilder, UtillyClient } from '@utilly/framework';
-import { DatabaseModule } from '@utilly/framework';
+import type { EmbedBuilder } from '@utilly/framework';
+import { Module } from '@utilly/framework';
 import type { Webhook } from 'eris';
 import Eris from 'eris';
 import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
@@ -9,12 +9,7 @@ import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
 /**
  * Base Logging Module
  */
-export default class LoggingModule extends DatabaseModule {
-    constructor(bot: UtillyClient) {
-        super(bot);
-        this.databaseEntry = 'logging';
-    }
-
+export default class LoggingModule extends Module {
     /**
      * Selects a guild row for a specific guild with a few columns selected
      * @param guildID - the guild id

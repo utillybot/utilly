@@ -1,7 +1,7 @@
 import type { UtillyClient } from '../../UtillyClient';
-import type { Module } from '../ModuleHandler/Module';
 import type { BaseCommand } from './Command';
 import type { CommandHook } from './CommandHook';
+import { loadCommandMetadata, loadPreHookMetadata } from './decorators';
 
 /**
  * Info about this command module
@@ -20,65 +20,60 @@ export interface CommandModuleInfo {
 /**
  * Lifecycle methods for this command module
  */
-export interface CommandModule {
+export interface BaseCommandModule {
     moduleLinked?(): void;
 }
 
 /**
  * A module that can hold command and is linked to a backend module
  */
-export abstract class CommandModule {
+export abstract class BaseCommandModule {
     /**
      * Info about this command module
      */
-    info: CommandModuleInfo;
-    /**
-     * The part module of this command module that will be injected later
-     */
-    parent?: Module;
+    info: CommandModuleInfo = {
+        name: '',
+        description: 'No description provided',
+    };
 
     /**
-     * A map of commands that are registered to this module
+     * A map of commands registered to this module
      */
     readonly commands: Map<string, BaseCommand> = new Map();
+
     /**
-     * A map of command aliases that are registered to this module
+     * A map of strings that will trigger that execution of a command
      */
-    readonly aliases: Map<string, BaseCommand> = new Map();
+    readonly triggers: Map<string, BaseCommand> = new Map();
 
     /**
      * A list of global pre hooks that will be run as pre hooks for any sub commands for this module
      */
-    readonly preHooks: CommandHook[];
-
-    private _bot: UtillyClient;
+    readonly preHooks: CommandHook[] = [];
 
     /**
      * Creates a new command module
-     * @param bot - the client that this module belongs to
-     * @protected
+     * @param _bot - the client that this module belongs to
      */
-    protected constructor(bot: UtillyClient) {
-        this._bot = bot;
-        this.info = {
-            name: '',
-            description: 'No description provided',
-        };
-
-        this.preHooks = [];
-    }
+    constructor(private _bot: UtillyClient) {}
 
     /**
      * Registers a command and its aliases to this module
      * @param command - the command object
      */
-    registerCommand(command: BaseCommand): void {
-        this.commands.set(command.help.name, command);
+    registerCommand(command: BaseCommand): BaseCommandModule {
+        loadCommandMetadata(command);
+        loadPreHookMetadata(command);
 
-        if (command.help.aliases != null) {
-            for (const alias of command.help.aliases) {
-                this.aliases.set(alias, command);
+        this.commands.set(command.info.name, command);
+        this.triggers.set(command.info.name, command);
+
+        if (command.info.aliases != null) {
+            for (const alias of command.info.aliases) {
+                this.triggers.set(alias, command);
             }
         }
+
+        return this;
     }
 }

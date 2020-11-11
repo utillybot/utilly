@@ -16,10 +16,10 @@ interface OrHookSettings {
  * @param settings - the settings for this hook
  */
 export const OrHook = (settings: OrHookSettings): CommandHook => {
-    return ({ bot, message, args }, next): void => {
+    return (ctx, next): void => {
         let hit = false;
         for (const hook of settings.hooks) {
-            hook({ bot: bot, message, args }, () => (hit = true));
+            hook(ctx, () => (hit = true));
             if (hit) next();
         }
     };

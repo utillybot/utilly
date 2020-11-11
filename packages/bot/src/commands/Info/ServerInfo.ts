@@ -88,6 +88,7 @@ export default class ServerInfo extends BaseCommand {
             new Date(server.createdAt).toUTCString(),
             true
         );
+        overviewPage.setFooter('Page 1/4');
 
         const moderationPage = new EmbedBuilder();
         moderationPage.setTitle('Server Info');
@@ -104,6 +105,7 @@ export default class ServerInfo extends BaseCommand {
             '2FA Requirement For Moderation',
             server.mfaLevel == 0 ? 'Off' : 'On'
         );
+        moderationPage.setFooter('Page 2/4');
 
         /*
         embed.addField(
@@ -188,6 +190,7 @@ export default class ServerInfo extends BaseCommand {
             communityPage.addField('Description', server.description, true);
         if (server.bannerURL) communityPage.setImage(server.bannerURL);
         if (server.iconURL) communityPage.setThumbnail(server.iconURL);
+        communityPage.setFooter('Page 3/4');
 
         const otherPage = new EmbedBuilder();
         otherPage.setTitle('Server Info');
@@ -198,6 +201,8 @@ export default class ServerInfo extends BaseCommand {
             ctx.guild?.members.get(server.ownerID)?.mention || 'Not found',
             true
         );
+        otherPage.setFooter('Page 4/4');
+
         const reply = await ctx.reply({ embed: overviewPage });
 
         this.bot.reactionWaitHandler.addCollector(

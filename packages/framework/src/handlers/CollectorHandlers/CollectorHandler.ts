@@ -1,11 +1,13 @@
 import type { Hook } from '../Hook';
 import { runHooks } from '../Hook';
 import { EventListener } from '../../utils/EventListener';
+import type { Handler } from '../Handler';
 
 /**
  * An abstract handler for multiple collectors
  */
-export abstract class CollectorHandler<T extends Hook<J>, J> {
+export abstract class CollectorHandler<T extends Hook<J>, J>
+    implements Handler {
     private readonly _collectors: Array<Collector<T, J>> = [];
 
     addCollector(collector: Collector<T, J>): Collector<T, J> {
@@ -36,6 +38,8 @@ export abstract class CollectorHandler<T extends Hook<J>, J> {
     checkCollectors(ctx: J): void {
         for (const collector of this._collectors) collector.process(ctx);
     }
+
+    abstract attach(): void;
 }
 
 export interface Collector<T extends Hook<J>, J> {

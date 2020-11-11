@@ -1,7 +1,5 @@
-import type { CommandHookContext } from '../CommandHook';
 import type { CommandHook } from '../CommandHook';
 import type { MessageContent } from 'eris';
-import type { NextFunction } from '../../Hook';
 
 /**
  * Settings for the user id validator hook

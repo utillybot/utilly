@@ -25,9 +25,9 @@
         "eslint:fix": "npx eslint packages/**/*.ts --fix",
         "prettier:check": "npx prettier packages/**/*.ts --check",
         "prettier:write": "npx prettier packages/**/*.ts --write",
-        "postinstall": "npx lerna bootstrap --hoist",
+        "postinstall": "npx lerna bootstrap",
         "clean": "npx lerna clean",
-        "heroku-postbuild": "npx lerna bootstrap --hoist && npm run build"
+        "heroku-postbuild": "npx lerna bootstrap && npm run build"
     },
     "author": "jtsshieh",
     "husky": {

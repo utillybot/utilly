@@ -5,7 +5,7 @@ import type {
     ReactionCollectorHook,
     ReactionCollectorHookContext,
 } from './ReactionCollectorHook';
-import { ReactionValidatorHook } from './hooks/ReactionValidatorHook';
+import { ReactionValidatorHook } from './ReactionValidatorHook';
 
 /**
  * A handler for reaction collector

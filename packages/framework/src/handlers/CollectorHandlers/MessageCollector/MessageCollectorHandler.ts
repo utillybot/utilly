@@ -1,7 +1,6 @@
 import type { Client, Message } from 'eris';
-import type { NextFunction } from '../../Hook';
 import { CollectorHandler } from '../CollectorHandler';
-import { MessageValidatorHook } from './hooks/MessageValidatorHook';
+import { MessageValidatorHook } from './MessageValidatorHook';
 import type { MessageCollectorHookContext } from './MessageCollectorHook';
 import type { MessageCollectorHook } from './MessageCollectorHook';
 
@@ -9,6 +8,19 @@ export type MessageWaitFilter = (message: Message) => boolean;
 
 /**
  * A handler for a message collector
+ *
+ * @example
+ * ```js
+ *
+ * const listener = new MessageCollectorHandler(bot).createListener(MessageValidatorHook({
+ *     channelId: channel.id,
+ *     authorId: author.id,
+ *     allowBots: false
+ * }))
+ *
+ * const result = await listener.collectNext();
+ * const result2 = await listener.coll
+ * ```
  */
 export class MessageCollectorHandler extends CollectorHandler<
     MessageCollectorHook,

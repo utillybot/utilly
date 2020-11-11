@@ -11,7 +11,7 @@ export interface PermsValidatorHookSettings {
     /**
      * A list of permissions to validate
      */
-    permissions: string[];
+    permissions: Array<keyof Constants['Permissions']>;
     /**
      * A function return an error message if the user passed in is missing permissions
      * @param missingPerms - the permissions the user passed in is missing

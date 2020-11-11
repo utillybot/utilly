@@ -1,21 +1,15 @@
 import type { Database } from '@utilly/database';
 import type { UtillyClient } from '@utilly/framework';
 import type { Logger } from '@utilly/utils';
-import type { Express } from 'express';
+import 'reflect-metadata';
+import type { Express, NextFunction, Request, Response } from 'express';
 import express from 'express';
 import path from 'path';
-import 'reflect-metadata';
-import { createExpressServer } from 'routing-controllers';
-import { APIController } from './controllers/APIController';
-import { RemoveTrailingSlash } from './middlewares/RemoveTrailingSlash';
 
 export class UtillyWeb {
-    static database: Database;
-    static bot: UtillyClient;
-
     private _port: number;
-    private _app: Express;
     private _logger: Logger;
+    private app: Express;
 
     constructor(
         port: number,
@@ -23,47 +17,59 @@ export class UtillyWeb {
         database: Database,
         bot: UtillyClient
     ) {
-        UtillyWeb.database = database;
-        UtillyWeb.bot = bot;
-
         this._logger = logger;
         this._port = port;
-        this._app = createExpressServer({
-            controllers: [APIController],
-            middlewares: [RemoveTrailingSlash],
+        this.app = express();
+
+        this.app.use((req: Request, res: Response, next: NextFunction) => {
+            const test = /\?[^]*\//.test(req.url);
+            if (req.url.substr(-1) === '/' && req.url.length > 1 && !test)
+                return res.redirect(req.url.slice(0, -1));
+            next();
         });
-    }
 
-    listen(): void {
-        this._app.listen(this._port, () => {
-            this._logger.web(`Server is listening on port ${this._port}`);
+        const apiRouter = express.Router();
+
+        apiRouter.get('/api/stats', (req: Request, res: Response): void => {
+            res.status(200).json({
+                guilds: bot.guilds.size,
+                users: bot.users.size,
+            });
         });
-    }
 
-    load(): void {
-        this._app.disable('x-powered-by');
+        apiRouter.get('/api/commands', (req: Request, res: Response): void => {
+            res.status(200).json({
+                commandModules: Array.from(
+                    bot.commandHandler.commandModules.values()
+                ).map(mod => {
+                    return {
+                        name: mod.info.name,
+                        description: mod.info.description,
+                        commands: Array.from(mod.commands.values()).map(
+                            cmd => cmd.info
+                        ),
+                    };
+                }),
+            });
+        });
 
-        this._app.use(
+        this.app.use(apiRouter);
+
+        this.app.use(
             '/static',
             express.static(
                 path.join(process.cwd(), 'packages', 'web', 'public'),
-                {
-                    redirect: false,
-                }
+                { redirect: false }
             )
         );
-
-        this._app.use(
-            '/static',
+        this.app.use(
             express.static(
                 path.join(process.cwd(), 'packages', 'web', 'dist'),
-                {
-                    redirect: false,
-                }
+                { redirect: false, index: false }
             )
         );
 
-        this._app.get('*', (req, res) => {
+        this.app.get('*', (req, res) => {
             res.sendFile(
                 path.join(
                     process.cwd(),
@@ -74,7 +80,11 @@ export class UtillyWeb {
                 )
             );
         });
+    }
 
-        this._app._router.stack;
+    listen(): void {
+        this.app.listen(this._port, () => {
+            this._logger.web(`Server is listening on port ${this._port}`);
+        });
     }
 }

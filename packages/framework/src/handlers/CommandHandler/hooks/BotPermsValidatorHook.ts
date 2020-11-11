@@ -32,7 +32,7 @@ export const BotPermsValidatorHook = (
     settings: BotPermValidatorHookSettings
 ): CommandHook => {
     return (ctx, next): void => {
-        const newSettings: PermsValidatorHookSettings = Object.assign(
+        const newSettings = Object.assign(
             {
                 errorMessage: (missingBotPerms: string[]) =>
                     `The bot is missing the following permissions necessary to execute this command: ${missingBotPerms.join(

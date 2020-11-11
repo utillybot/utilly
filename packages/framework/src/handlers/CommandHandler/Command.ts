@@ -1,13 +1,13 @@
 import type { Guild, Member, Message, MessageContent } from 'eris';
 import { GuildChannel } from 'eris';
 import type { UtillyClient } from '../../UtillyClient';
-import type { CommandModule } from './CommandModule';
+import type { BaseCommandModule } from './CommandModule';
 import type { CommandHook } from './CommandHook';
 
 /**
  * Help information for this command
  */
-export interface CommandHelp {
+export interface CommandInfo {
     /**
      * The name of the command
      */
@@ -31,7 +31,7 @@ export interface CommandArgument {
     description: string;
     example: string;
     optional: boolean;
-    type: unknown;
+    parser: unknown;
 }
 
 /**
@@ -91,42 +91,27 @@ export abstract class BaseCommand {
     /**
      * A CommandHelp object of help info for this command
      */
-    help: CommandHelp;
+    info: CommandInfo = {
+        name: '',
+        description: 'No Description Provided',
+        usage: '',
+        aliases: [],
+    };
 
     /**
      * An array of command hooks that will be run prior to the execution of this command.
      */
-    preHooks: CommandHook[];
-
-    /**
-     * The parent module of this command
-     */
-    readonly parent?: CommandModule;
-
-    /**
-     * The client that this command belongs to
-     * @protected
-     */
-    protected bot: UtillyClient;
+    preHooks: CommandHook[] = [];
 
     /**
      * Create a new command
      * @param bot - the client that this command belongs to
      * @param parent - the parent command module of this bot
      */
-    constructor(bot: UtillyClient, parent: CommandModule) {
-        this.bot = bot;
-        this.help = {
-            name: '',
-            description: 'No Description Provided',
-            usage: '',
-            aliases: [],
-        };
-
-        this.preHooks = [];
-
-        this.parent = parent;
-    }
+    constructor(
+        protected bot: UtillyClient,
+        readonly parent?: BaseCommandModule
+    ) {}
 
     /**
      * Executes this command with the given command context

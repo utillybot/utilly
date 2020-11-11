@@ -38,7 +38,6 @@ export class Utilly {
                     'directMessageReactions',
                 ],
                 restMode: true,
-                compress: true,
             },
             this.logger,
             this.database
@@ -62,7 +61,6 @@ export class Utilly {
 
         this.bot.connect();
 
-        this.web.load();
         this.web.listen();
     }
 }
