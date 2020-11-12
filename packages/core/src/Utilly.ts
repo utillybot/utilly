@@ -2,6 +2,7 @@ import { Database } from '@utilly/database';
 import { UtillyClient } from '@utilly/framework';
 import { UtillyWeb } from '@utilly/server';
 import { Logger } from '@utilly/utils';
+import * as Sentry from '@sentry/node';
 import dotenv from 'dotenv';
 import path from 'path';
 
@@ -13,9 +14,13 @@ export class Utilly {
 
 	constructor() {
 		dotenv.config();
+
 		if (!process.env.DATABASE_URL)
 			throw new Error('DATABASE_URL env variable not present');
 		if (!process.env.TOKEN) throw new Error('TOKEN env variable not present');
+		if (!process.env.SENTRY_DSN)
+			throw new Error('SENTRY_DSN env variable not present');
+		Sentry.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 1.0 });
 
 		this.logger = new Logger({ database: false });
 		this.database = new Database(process.env.DATABASE_URL, this.logger);

@@ -1,20 +1,21 @@
 {
-    "name": "@utilly/core",
-    "version": "1.0.0",
-    "description": "The launcher for Utilly",
-    "main": "dist/index.js",
-    "typings": "dist/index.d.ts",
-    "author": "jtsshieh",
-    "dependencies": {
-        "@utilly/bot": "1.0.0",
-        "@utilly/database": "1.0.0",
-        "@utilly/framework": "1.0.0",
-        "@utilly/server": "1.0.0",
-        "@utilly/utils": "1.0.0",
-        "dotenv": "^8.2.0"
-    },
-    "scripts": {
-        "build": "tsc",
-        "start": "node dist/Utilly.js"
-    }
+	"name": "@utilly/core",
+	"version": "1.0.0",
+	"description": "The launcher for Utilly",
+	"main": "dist/index.js",
+	"typings": "dist/index.d.ts",
+	"author": "jtsshieh",
+	"dependencies": {
+		"@sentry/node": "^5.27.3",
+		"@utilly/bot": "1.0.0",
+		"@utilly/database": "1.0.0",
+		"@utilly/framework": "1.0.0",
+		"@utilly/server": "1.0.0",
+		"@utilly/utils": "1.0.0",
+		"dotenv": "^8.2.0"
+	},
+	"scripts": {
+		"build": "tsc",
+		"start": "node dist/Utilly.js"
+	}
 }

@@ -98,12 +98,28 @@ export default class Eval extends BaseCommand {
 			});
 		} catch (err) {
 			//If eval has failed setup new embed
-
+			let result = `\`\`\`${err.stack}\`\`\``;
+			if (result.toString().length > 1024) {
+				try {
+					result = `[Output](https://hasteb.in/${
+						(
+							await (
+								await centra('https://hasteb.in/documents', 'POST')
+									.body(err.stack)
+									.header('content-type', 'application/json')
+									.send()
+							).json()
+						).key
+					})`;
+				} catch {
+					result = `\`\`\`${err.stack}\`\`\``;
+				}
+			}
 			const embed = new EmbedBuilder()
 				.setAuthor('Eval Error')
 				.setDescription('Eval result')
 				.addField(':inbox_tray: Input:', `\`\`\`js\n${code}\n\`\`\``, false)
-				.addField(':outbox_tray: Output:', `\`\`\`${err.stack}\`\`\``, false)
+				.addField(':outbox_tray: Output:', result, false)
 				.setColor(0xff0000)
 				.setFooter('Eval', this.bot.user.avatarURL)
 				.setTimestamp();
