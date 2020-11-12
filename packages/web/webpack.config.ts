@@ -19,7 +19,7 @@ const config = (env: EnvOptions): Configuration => {
 	const devMode = mode == 'development';
 
 	const baseConfig: Configuration = {
-		entry: './views/index.tsx',
+		entry: './src/index.tsx',
 		mode: mode,
 		module: {
 			rules: [
@@ -74,6 +74,11 @@ const config = (env: EnvOptions): Configuration => {
 		baseConfig.devtool = 'source-map';
 
 		baseConfig.output!.filename = 'static/js/[name].js';
+
+		baseConfig.resolve!.alias = {
+			'react-dom$': 'react-dom/profiling',
+			'scheduler/tracing': 'scheduler/tracing-profiling',
+		};
 	} else {
 		baseConfig.optimization = {
 			minimize: !devMode,
@@ -101,7 +106,13 @@ const config = (env: EnvOptions): Configuration => {
 				},
 				{
 					loader: 'css-loader',
-					options: { sourceMap: devMode },
+					options: {
+						sourceMap: devMode,
+						modules: {
+							auto: true,
+							localIdentName: '[name]__[local]__[hash:base64:5]',
+						},
+					},
 				},
 				{
 					loader: 'postcss-loader',
