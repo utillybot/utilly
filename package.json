@@ -27,7 +27,7 @@
         "prettier:write": "npx prettier packages/**/*.ts --write",
         "postinstall": "npx lerna bootstrap",
         "clean": "npx lerna clean",
-        "heroku-postbuild": "npx lerna bootstrap && npm run build"
+        "heroku-postbuild": "npx lerna bootstrap --ci && npm run build"
     },
     "author": "jtsshieh",
     "husky": {
