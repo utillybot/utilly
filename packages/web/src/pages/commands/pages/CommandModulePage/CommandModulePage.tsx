@@ -2,11 +2,7 @@ import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import CommandTile from './components/CommandTile';
 import './CommandModulePage.module.scss';
-import type {
-	CommandModule,
-	CommandsResponse,
-	Resource,
-} from '../../../../API';
+import type { CommandsResponse, Resource } from '../../../../API';
 
 interface CommandModulesPageProps {
 	resource: Resource<CommandsResponse>;
@@ -17,13 +13,11 @@ const CommandModulePage = ({
 }: CommandModulesPageProps): JSX.Element => {
 	const params = useParams<{ module: string }>();
 
-	let module: CommandModule | undefined = undefined;
-	const moduleParam: string = params.module;
-	for (const mod of resource.read().commandModules) {
-		if (moduleParam.toLowerCase() == mod.name.toLowerCase()) {
-			module = mod;
-		}
-	}
+	const module = resource
+		.read()
+		.commandModules.find(
+			mod => mod.name.toLowerCase() == params.module.toLowerCase()
+		);
 
 	return (
 		<>

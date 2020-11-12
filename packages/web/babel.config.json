@@ -6,8 +6,7 @@
             {
                 "runtime": "automatic"
             }
-        ],
-        "@babel/preset-typescript"
+        ]
     ],
     "plugins": ["@babel/plugin-transform-runtime",
         ["@dr.pogodin/react-css-modules", {

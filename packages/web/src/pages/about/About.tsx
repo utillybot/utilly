@@ -1,9 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import 'regenerator-runtime/runtime';
 import './About.module.scss';
-import StatsContainer from './components/StatsContainer';
+import { fetchStats } from '../../API';
+import Stat from './components/Stat';
 
 const About = (): JSX.Element => {
+	const [guilds, setGuilds] = useState<number>();
+	const [users, setUsers] = useState<number>();
+
+	useEffect(() => {
+		const tick = async () => {
+			const stats = await fetchStats();
+			if (stats) {
+				setGuilds(stats.guilds);
+				setUsers(stats.users);
+			}
+		};
+		tick();
+		const timerID = setInterval(tick, 15 * 1000);
+		return () => {
+			clearInterval(timerID);
+		};
+	}, []);
+
 	return (
 		<div styleName="page">
 			<header>
@@ -18,7 +37,16 @@ const About = (): JSX.Element => {
 					<h3>These statistics update every 30 seconds</h3>
 				</div>
 				<div styleName="container">
-					<StatsContainer />
+					<Stat
+						statName="Guilds"
+						statValue={guilds ? guilds.toString() : 'Loading stat'}
+						units="guilds"
+					/>
+					<Stat
+						statName="Users"
+						statValue={users ? users.toString() : 'Loading stat'}
+						units="users"
+					/>{' '}
 				</div>
 			</div>
 		</div>

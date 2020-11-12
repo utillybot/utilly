@@ -1,12 +1,13 @@
 {
     "compilerOptions": {
-        "downlevelIteration": true,
         "isolatedModules": true,
-        "jsx": "react",
+        "jsx": "preserve",
         "lib": ["DOM", "DOM.Iterable", "ESNext"],
+        "module": "ESNext",
         "noEmit": true,
         "removeComments": true,
         "sourceMap": true,
+        "target": "es2020",
         "strict": true,
 
         "allowSyntheticDefaultImports": true,
@@ -14,10 +15,6 @@
 
         "moduleResolution": "node",
 
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-
-        "resolveJsonModule": true,
         "skipLibCheck": true
     },
     "include": ["src"]

@@ -28,6 +28,10 @@ export class UtillyWeb {
 			next();
 		});
 
+		this.app.use((req: Request, res: Response, next: NextFunction) => {
+			if (!req.url.endsWith('.map')) next();
+		});
+
 		const apiRouter = express.Router();
 
 		apiRouter.get('/api/stats', (req: Request, res: Response): void => {

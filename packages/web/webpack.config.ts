@@ -26,7 +26,13 @@ const config = (env: EnvOptions): Configuration => {
 				{
 					test: /\.(ts|js)x?$/,
 					exclude: /node_modules/,
-					use: ['babel-loader'],
+					use: [
+						'babel-loader',
+						{
+							loader: 'ts-loader',
+							options: { transpileOnly: true },
+						},
+					],
 				},
 			],
 		},
@@ -71,7 +77,7 @@ const config = (env: EnvOptions): Configuration => {
 			port: 4000,
 			historyApiFallback: true,
 		};
-		baseConfig.devtool = 'source-map';
+		baseConfig.devtool = 'cheap-module-eval-source-map';
 
 		baseConfig.output!.filename = 'static/js/[name].js';
 
@@ -80,9 +86,13 @@ const config = (env: EnvOptions): Configuration => {
 			'scheduler/tracing': 'scheduler/tracing-profiling',
 		};
 	} else {
+		baseConfig.devtool = 'source-map';
 		baseConfig.optimization = {
 			minimize: !devMode,
-			minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
+			minimizer: [
+				new CssMinimizerPlugin({ sourceMap: true }),
+				new TerserPlugin(),
+			],
 			splitChunks: {
 				chunks: 'all',
 			},
@@ -97,42 +107,36 @@ const config = (env: EnvOptions): Configuration => {
 		baseConfig.output!.filename = 'static/js/[name].[contenthash].js';
 	}
 
+	const styleLoader = {
+		loader: devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+	};
+	const cssLoader = {
+		loader: 'css-loader',
+		options: {
+			sourceMap: devMode,
+			modules: {
+				auto: true,
+				localIdentName: '[name]__[local]__[hash:base64:5]',
+			},
+		},
+	};
+	const postCssLoader = {
+		loader: 'postcss-loader',
+		options: { sourceMap: devMode },
+	};
+	const sassLoader = {
+		loader: 'sass-loader',
+		options: { sourceMap: devMode },
+	};
+
 	baseConfig.module?.rules?.push(
 		{
 			test: /\.s[ac]ss$/i,
-			use: [
-				{
-					loader: devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
-				},
-				{
-					loader: 'css-loader',
-					options: {
-						sourceMap: devMode,
-						modules: {
-							auto: true,
-							localIdentName: '[name]__[local]__[hash:base64:5]',
-						},
-					},
-				},
-				{
-					loader: 'postcss-loader',
-					options: { sourceMap: devMode },
-				},
-				{
-					loader: 'sass-loader',
-					options: { sourceMap: devMode },
-				},
-			],
+			use: [styleLoader, cssLoader, postCssLoader, sassLoader],
 		},
 		{
 			test: /\.css$/i,
-			use: [
-				devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
-				{
-					loader: 'css-loader',
-					options: { sourceMap: devMode },
-				},
-			],
+			use: [styleLoader, cssLoader],
 		}
 	);
 
