@@ -35,10 +35,10 @@ const CommandPage = ({ resource }: CommandPageProps): JSX.Element => {
 
 	return (
 		<div>
-			<div styleName="command-header-button">
+			<div styleName="button">
 				<Link to={`/commands${`/${module?.name}` ?? ''}`}>ᐸ Back</Link>
 			</div>
-			<div styleName="command-header-text">
+			<div styleName="text">
 				{command ? (
 					<CommandCard
 						name={command.name}

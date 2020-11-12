@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import Stat from './Stat';
 import { fetchStats } from '../../../API';
 
@@ -7,52 +7,35 @@ interface StatsContainerState {
 	users?: number;
 }
 
-class StatsContainer extends Component<unknown, StatsContainerState> {
-	timerID?: number;
+const StatsContainer = (): JSX.Element => {
+	const [stats, setStats] = useState<StatsContainerState>({});
 
-	constructor(props: unknown) {
-		super(props);
-		this.timerID = undefined;
-		this.state = {};
-		this.tick();
-	}
+	useEffect(() => {
+		const tick = async () => {
+			const stats = await fetchStats();
+			if (stats) setStats(stats);
+		};
+		tick();
+		const timerID = setInterval(tick, 15 * 1000);
+		return () => {
+			clearInterval(timerID);
+		};
+	});
 
-	componentDidMount(): void {
-		this.tick();
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		/*@ts-ignore*/
-		this.timerID = setInterval(() => this.tick(), 15 * 1000);
-	}
-
-	async tick(): Promise<void> {
-		const stats = await fetchStats();
-		if (stats) this.setState(stats);
-	}
-
-	componentWillUnmount(): void {
-		clearInterval(this.timerID);
-	}
-
-	render(): JSX.Element {
-		return (
-			<React.Fragment>
-				<Stat
-					statName="Guilds"
-					statValue={
-						this.state.guilds ? this.state.guilds.toString() : 'Loading stat'
-					}
-					units="guilds"
-				/>
-				<Stat
-					statName="Users"
-					statValue={
-						this.state.users ? this.state.users.toString() : 'Loading stat'
-					}
-					units="users"
-				/>
-			</React.Fragment>
-		);
-	}
-}
+	return (
+		<>
+			<Stat
+				statName="Guilds"
+				statValue={stats.guilds ? stats.guilds.toString() : 'Loading stat'}
+				units="guilds"
+			/>
+			<Stat
+				statName="Users"
+				statValue={stats.users ? stats.users.toString() : 'Loading stat'}
+				units="users"
+			/>
+		</>
+	);
+};
 
 export default StatsContainer;

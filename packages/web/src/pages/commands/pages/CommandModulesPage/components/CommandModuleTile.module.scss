@@ -1,24 +1,12 @@
-a {
+.module {
 	text-decoration: none;
-
-	.command-module {
-		height: calc(100% - 30px);
-		background-color: #404040;
-		padding: 5px;
-		margin: 10px;
-
-		h1 {
-			color: white;
-		}
-
-		p {
-			color: white;
-		}
-	}
+	height: calc(100% - 30px);
+	background-color: #404040;
+	padding: 5px;
+	margin: 10px;
+	color: white;
 }
 
-a:hover {
-	.command-module {
-		background-color: #606060;
-	}
+.module:hover {
+	background-color: #606060;
 }

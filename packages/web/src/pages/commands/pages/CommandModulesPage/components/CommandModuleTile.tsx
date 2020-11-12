@@ -12,11 +12,12 @@ const CommandModuleTile = ({
 }: CommandModuleTileProps): JSX.Element => {
 	const match = useRouteMatch();
 	return (
-		<Link to={`${match.url}/${commandModule.name.toLowerCase()}`}>
-			<div styleName="command-module">
-				<h1>{commandModule.name}</h1>
-				<p>{commandModule.description}</p>
-			</div>
+		<Link
+			to={`${match.url}/${commandModule.name.toLowerCase()}`}
+			styleName="module"
+		>
+			<h1>{commandModule.name}</h1>
+			<p>{commandModule.description}</p>
 		</Link>
 	);
 };

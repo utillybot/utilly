@@ -26,7 +26,7 @@ const CommandModulePage = ({
 	}
 
 	return (
-		<React.Fragment>
+		<>
 			<div styleName="header">
 				<div styleName="button">
 					<Link to="/commands">ᐸ Back</Link>
@@ -44,7 +44,7 @@ const CommandModulePage = ({
 					<h1>Command Module not found</h1>
 				)}
 			</div>
-		</React.Fragment>
+		</>
 	);
 };
 

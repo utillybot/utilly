@@ -10,11 +10,9 @@ interface CommandTileProps {
 const CommandTile = ({ command }: CommandTileProps): JSX.Element => {
 	const match = useRouteMatch();
 	return (
-		<Link to={`${match.url}/${command.name}`}>
-			<div styleName="command">
-				<h1>u!{command.name}</h1>
-				<p>{command.description}</p>
-			</div>
+		<Link to={`${match.url}/${command.name}`} styleName="command">
+			<h1>u!{command.name}</h1>
+			<p>{command.description}</p>
 		</Link>
 	);
 };
