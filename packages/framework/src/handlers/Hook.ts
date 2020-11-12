@@ -28,15 +28,15 @@ export type Hook<T> = (ctx: T, next: NextFunction) => void | Promise<void>;
  * @param hooks - the hooks to run
  */
 export const runHooks = async <T extends Hook<J>, J>(
-    ctx: J,
-    hooks: T[]
+	ctx: J,
+	hooks: T[]
 ): Promise<boolean> => {
-    let i = 0;
-    const next = async () => {
-        const hook = hooks[i++];
-        if (hook) await hook(ctx, next);
-    };
-    await next();
+	let i = 0;
+	const next = async () => {
+		const hook = hooks[i++];
+		if (hook) await hook(ctx, next);
+	};
+	await next();
 
-    return i == hooks.length + 1;
+	return i == hooks.length + 1;
 };

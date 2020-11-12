@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import './Commands.sass';
+import './Commands.scss';
 import { Switch, Route } from 'react-router-dom';
 import CommandModulesPage from './pages/CommandModulesPage/CommandModulesPage';
 import CommandModulePage from './pages/CommandModulePage/CommandModulePage';

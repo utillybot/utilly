@@ -1,5 +1,5 @@
 import React from 'react';
-import './CommandCard.sass';
+import './CommandCard.scss';
 import type { Command } from '../../../../../API';
 
 const CommandCard = ({

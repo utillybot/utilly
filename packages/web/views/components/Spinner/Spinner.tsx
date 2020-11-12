@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import './Spinner.sass';
+import './Spinner.scss';
 
 const Spinner = (): JSX.Element => {
     return (

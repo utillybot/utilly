@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import CommandCard from './components/CommandCard';
-import './CommandPage.sass';
+import './CommandPage.scss';
 import type {
     Command,
     CommandModule,

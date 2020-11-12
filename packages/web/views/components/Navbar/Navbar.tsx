@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import type { RouteComponentProps } from 'react-router-dom';
 import { Link, withRouter } from 'react-router-dom';
 import { ROUTE_CONSTANTS } from '../../ROUTE_CONSTANTS';
-import './Navbar.sass';
+import './Navbar.scss';
 
 interface NavbarState {
     collapsed: boolean;

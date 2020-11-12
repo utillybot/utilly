@@ -1,6 +1,6 @@
 import React from 'react';
 import 'regenerator-runtime/runtime';
-import './About.sass';
+import './About.scss';
 import StatsContainer from './components/StatsContainer';
 
 const About = (): JSX.Element => {

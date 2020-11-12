@@ -1,5 +1,5 @@
 import React from 'react';
-import './CommandModuleTile.sass';
+import './CommandModuleTile.scss';
 import { useRouteMatch, Link } from 'react-router-dom';
 import type { CommandModule } from '../../../../../API';
 

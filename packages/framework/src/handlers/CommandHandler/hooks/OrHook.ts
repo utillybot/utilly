@@ -4,10 +4,10 @@ import type { CommandHook } from '../CommandHook';
  * Settings for the or hook
  */
 interface OrHookSettings {
-    /**
-     * An array of hooks to check for
-     */
-    hooks: CommandHook[];
+	/**
+	 * An array of hooks to check for
+	 */
+	hooks: CommandHook[];
 }
 
 /**
@@ -16,11 +16,11 @@ interface OrHookSettings {
  * @param settings - the settings for this hook
  */
 export const OrHook = (settings: OrHookSettings): CommandHook => {
-    return (ctx, next): void => {
-        let hit = false;
-        for (const hook of settings.hooks) {
-            hook(ctx, () => (hit = true));
-            if (hit) next();
-        }
-    };
+	return (ctx, next): void => {
+		let hit = false;
+		for (const hook of settings.hooks) {
+			hook(ctx, () => (hit = true));
+			if (hit) next();
+		}
+	};
 };

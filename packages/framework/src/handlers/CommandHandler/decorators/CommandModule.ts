@@ -3,44 +3,41 @@ import { CommandModuleSymbol } from './types';
 import type { BaseCommandModule } from '../CommandModule';
 
 export function CommandModule(help?: CommandModuleMetadata) {
-    return <
-        T extends BaseCommandModule,
-        TFunction extends new (...args: any[]) => T
-    >(
-        target: TFunction
-    ): void => {
-        let commandModuleMetadata:
-            | CommandModuleMetadata
-            | undefined = Reflect.getMetadata(
-            CommandModuleSymbol,
-            target.prototype
-        );
+	return <
+		T extends BaseCommandModule,
+		TFunction extends new (...args: any[]) => T
+	>(
+		target: TFunction
+	): void => {
+		let commandModuleMetadata:
+			| CommandModuleMetadata
+			| undefined = Reflect.getMetadata(CommandModuleSymbol, target.prototype);
 
-        if (!commandModuleMetadata) commandModuleMetadata = {};
+		if (!commandModuleMetadata) commandModuleMetadata = {};
 
-        commandModuleMetadata = Object.assign(commandModuleMetadata, help);
+		commandModuleMetadata = Object.assign(commandModuleMetadata, help);
 
-        Reflect.defineMetadata(
-            CommandModuleSymbol,
-            commandModuleMetadata,
-            target.prototype
-        );
-    };
+		Reflect.defineMetadata(
+			CommandModuleSymbol,
+			commandModuleMetadata,
+			target.prototype
+		);
+	};
 }
 
 export const loadCommandModuleMetadata = (
-    commandModule: BaseCommandModule
+	commandModule: BaseCommandModule
 ): void => {
-    const commandModuleMetadata:
-        | CommandModuleMetadata
-        | undefined = Reflect.getOwnMetadata(
-        CommandModuleSymbol,
-        Object.getPrototypeOf(commandModule)
-    );
+	const commandModuleMetadata:
+		| CommandModuleMetadata
+		| undefined = Reflect.getOwnMetadata(
+		CommandModuleSymbol,
+		Object.getPrototypeOf(commandModule)
+	);
 
-    if (commandModuleMetadata)
-        commandModule.info = Object.assign(
-            commandModule.info,
-            commandModuleMetadata
-        );
+	if (commandModuleMetadata)
+		commandModule.info = Object.assign(
+			commandModule.info,
+			commandModuleMetadata
+		);
 };

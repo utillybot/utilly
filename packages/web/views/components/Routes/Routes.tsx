@@ -2,7 +2,7 @@ import React, { Suspense, Component } from 'react';
 import type { RouteComponentProps } from 'react-router-dom';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { ROUTE_CONSTANTS } from '../../ROUTE_CONSTANTS';
-import './Routes.sass';
+import './Routes.scss';
 import Spinner from '../Spinner/Spinner';
 
 class Routes extends Component<RouteComponentProps> {

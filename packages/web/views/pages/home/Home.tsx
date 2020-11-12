@@ -1,5 +1,5 @@
 import React from 'react';
-import './Home.sass';
+import './Home.scss';
 
 const Home = (): JSX.Element => {
     return (

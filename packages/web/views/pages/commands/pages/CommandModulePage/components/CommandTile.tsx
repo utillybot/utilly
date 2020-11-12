@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
-import './CommandTile.sass';
+import './CommandTile.scss';
 import type { Command } from '../../../../../API';
 
 interface CommandTileProps {

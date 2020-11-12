@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import CommandTile from './components/CommandTile';
-import './CommandModulePage.sass';
+import './CommandModulePage.scss';
 import type {
     CommandModule,
     CommandsResponse,

@@ -1,3 +1,3 @@
 export interface Handler {
-    attach(): void;
+	attach(): void;
 }

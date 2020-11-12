@@ -23,88 +23,88 @@ export type MessageWaitFilter = (message: Message) => boolean;
  * ```
  */
 export class MessageCollectorHandler extends CollectorHandler<
-    MessageCollectorHook,
-    MessageCollectorHookContext
+	MessageCollectorHook,
+	MessageCollectorHookContext
 > {
-    private readonly _bot: Client;
+	private readonly _bot: Client;
 
-    /**
-     * Creates a new reaction collector handler
-     * @param bot - the client associated with this collector
-     */
-    constructor(bot: Client) {
-        super();
-        this._bot = bot;
-    }
+	/**
+	 * Creates a new reaction collector handler
+	 * @param bot - the client associated with this collector
+	 */
+	constructor(bot: Client) {
+		super();
+		this._bot = bot;
+	}
 
-    /**
-     * Attaches this collector handler to the client to start listening for messages
-     */
-    attach(): void {
-        this._bot.on('messageCreate', this._messageCreate.bind(this));
-    }
+	/**
+	 * Attaches this collector handler to the client to start listening for messages
+	 */
+	attach(): void {
+		this._bot.on('messageCreate', this._messageCreate.bind(this));
+	}
 
-    /**
-     * Old method to add a new listener. Returns a promise that will resolve with the message collected.
-     * @param channelId  - the channel to listen to messages in
-     * @param authorId - the person to listen to messages
-     * @param filter - a filter accepting a message and returning a boolean
-     * @param timeout - the timeout in seconds until this listener expires
-     */
-    async addListener(
-        channelId: string,
-        authorId: string,
-        filter: MessageWaitFilter = () => true,
-        timeout = 30
-    ): Promise<Message> {
-        return new Promise((resolve, reject) => {
-            const collector = this.createListener([
-                MessageValidatorHook({
-                    channelId,
-                    authorId,
-                    allowBots: false,
-                }),
-                MessageFilterHook({ checkMessage: filter }),
-            ]);
-            const timer = setTimeout(() => {
-                collector.end('time');
-                reject();
-            }, timeout * 1000);
+	/**
+	 * Old method to add a new listener. Returns a promise that will resolve with the message collected.
+	 * @param channelId  - the channel to listen to messages in
+	 * @param authorId - the person to listen to messages
+	 * @param filter - a filter accepting a message and returning a boolean
+	 * @param timeout - the timeout in seconds until this listener expires
+	 */
+	async addListener(
+		channelId: string,
+		authorId: string,
+		filter: MessageWaitFilter = () => true,
+		timeout = 30
+	): Promise<Message> {
+		return new Promise((resolve, reject) => {
+			const collector = this.createListener([
+				MessageValidatorHook({
+					channelId,
+					authorId,
+					allowBots: false,
+				}),
+				MessageFilterHook({ checkMessage: filter }),
+			]);
+			const timer = setTimeout(() => {
+				collector.end('time');
+				reject();
+			}, timeout * 1000);
 
-            collector.on('collect', ctx => {
-                collector.end('collect');
-                resolve(ctx.message);
-            });
+			collector.on('collect', ctx => {
+				collector.end('collect');
+				resolve(ctx.message);
+			});
 
-            collector.on('end', () => {
-                clearTimeout(timer);
-            });
-        });
-    }
+			collector.on('end', () => {
+				clearTimeout(timer);
+			});
+		});
+	}
 
-    private async _messageCreate(message: Message): Promise<void> {
-        super.checkCollectors({ bot: this._bot, message });
-    }
+	private async _messageCreate(message: Message): Promise<void> {
+		super.checkCollectors({ bot: this._bot, message });
+	}
 }
 
 /**
  * Settings for the message filter hook
  */
 export interface MessageFilterHookSettings {
-    /**
-     * A function returning whether or not the message should be collected
-     * @param message - the message to validate
-     */
-    checkMessage: (message: Message) => boolean;
+	/**
+	 * A function returning whether or not the message should be collected
+	 * @param message - the message to validate
+	 */
+	checkMessage: (message: Message) => boolean;
 }
 export const MessageFilterHook = (
-    settings: MessageFilterHookSettings
+	settings: MessageFilterHookSettings
 ): MessageCollectorHook => {
-    return (ctx, next): void => {
-        if (settings.checkMessage(ctx.message)) {
-            next();
-        } else {
-            ctx.message.delete();
-        }
-    };
+	return (ctx, next): void => {
+		if (settings.checkMessage(ctx.message)) {
+			next();
+		} else {
+			ctx.message.delete();
+		}
+	};
 };

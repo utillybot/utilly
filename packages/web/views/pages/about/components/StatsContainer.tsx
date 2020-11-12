@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Stat from './Stat';
-import './StatsContainer.sass';
+import './StatsContainer.scss';
 import { fetchStats } from '../../../API';
 
 interface StatsContainerState {

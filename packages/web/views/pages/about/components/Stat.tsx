@@ -1,5 +1,5 @@
 import React from 'react';
-import './Stat.sass';
+import './Stat.scss';
 
 interface StatsProps {
     statName: string;

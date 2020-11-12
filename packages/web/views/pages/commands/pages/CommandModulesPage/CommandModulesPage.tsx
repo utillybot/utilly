@@ -1,6 +1,6 @@
 import React from 'react';
 import CommandModuleTile from './components/CommandModuleTile';
-import './CommandModulesPage.sass';
+import './CommandModulesPage.scss';
 import type { CommandsResponse, Resource } from '../../../../API';
 
 interface CommandModulesPageProps {
