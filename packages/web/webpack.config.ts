@@ -9,6 +9,9 @@ import type { Configuration } from 'webpack';
 import FaviconsWebpackPlugin from 'favicons-webpack-plugin';
 import 'webpack-dev-server';
 
+const cssModulesIdentName = (devMode: boolean) =>
+	devMode ? '[name]__[local]' : '[hash:base64]';
+
 const config = (): Configuration => {
 	const mode =
 		process.env.NODE_ENV == 'production' ? 'production' : 'development';
@@ -32,7 +35,7 @@ const config = (): Configuration => {
 				[
 					'@dr.pogodin/react-css-modules',
 					{
-						generateScopedName: devMode ? '[name]__[local]' : '[hash:base64]',
+						generateScopedName: cssModulesIdentName(devMode),
 						filetypes: {
 							'.scss': {
 								syntax: 'postcss-scss',
@@ -76,7 +79,7 @@ const config = (): Configuration => {
 				template: 'index.html',
 			}),
 			new FaviconsWebpackPlugin({
-				logo: './public/logo.png',
+				logo: './src/assets/logo.png',
 				prefix: 'static/favicons',
 				outputPath: 'static/favicons',
 				cache: true,
@@ -141,7 +144,7 @@ const config = (): Configuration => {
 			sourceMap: devMode,
 			modules: {
 				auto: true,
-				localIdentName: devMode ? '[name]__[local]' : '[hash:base64]',
+				localIdentName: cssModulesIdentName(devMode),
 			},
 		},
 	};
@@ -162,6 +165,17 @@ const config = (): Configuration => {
 		{
 			test: /\.css$/i,
 			use: [styleLoader, cssLoader],
+		},
+		{
+			test: /\.(jpg|png|gif|svg|pdf|ico)$/,
+			use: [
+				{
+					loader: 'file-loader',
+					options: {
+						name: 'static/assets/[name].[ext]?[contenthash]',
+					},
+				},
+			],
 		}
 	);
 
