@@ -1,4 +1,3 @@
-import type { CommandInfo } from '../Command';
 import type { CommandMetadata } from './types';
 import { CommandSymbol } from './types';
 import type { BaseCommand } from '../Command';

@@ -54,7 +54,8 @@ export class Utilly {
 		);
 
 		this.bot.on('error', (error: Error) => {
-			this.logger.error(error.message + error.stack);
+			Sentry.captureException(error);
+			this.logger.error(error.stack ?? error.message);
 		});
 	}
 
