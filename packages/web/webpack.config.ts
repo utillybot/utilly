@@ -9,14 +9,45 @@ import type { Configuration } from 'webpack';
 import FaviconsWebpackPlugin from 'favicons-webpack-plugin';
 import 'webpack-dev-server';
 
-interface EnvOptions {
-	mode: 'production' | 'development';
-}
-
-const config = (env: EnvOptions): Configuration => {
-	const mode = env.mode == 'production' ? 'production' : 'development';
+const config = (): Configuration => {
+	const mode =
+		process.env.NODE_ENV == 'production' ? 'production' : 'development';
 
 	const devMode = mode == 'development';
+
+	const babelLoader = {
+		loader: 'babel-loader',
+		options: {
+			presets: [
+				'@babel/env',
+				[
+					'@babel/preset-react',
+					{
+						runtime: 'automatic',
+					},
+				],
+			],
+			plugins: [
+				'@babel/plugin-transform-runtime',
+				[
+					'@dr.pogodin/react-css-modules',
+					{
+						generateScopedName: devMode ? '[name]__[local]' : '[hash:base64]',
+						filetypes: {
+							'.scss': {
+								syntax: 'postcss-scss',
+							},
+						},
+					},
+				],
+			],
+		},
+	};
+
+	const tsLoader = {
+		loader: 'ts-loader',
+		options: { transpileOnly: true },
+	};
 
 	const baseConfig: Configuration = {
 		entry: './src/index.tsx',
@@ -26,13 +57,7 @@ const config = (env: EnvOptions): Configuration => {
 				{
 					test: /\.(ts|js)x?$/,
 					exclude: /node_modules/,
-					use: [
-						'babel-loader',
-						{
-							loader: 'ts-loader',
-							options: { transpileOnly: true },
-						},
-					],
+					use: [babelLoader, tsLoader],
 				},
 			],
 		},
@@ -116,7 +141,7 @@ const config = (env: EnvOptions): Configuration => {
 			sourceMap: devMode,
 			modules: {
 				auto: true,
-				localIdentName: '[name]__[local]__[hash:base64:5]',
+				localIdentName: devMode ? '[name]__[local]' : '[hash:base64]',
 			},
 		},
 	};

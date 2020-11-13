@@ -1,5 +1,5 @@
 {
-    "extends": ["plugin:react/recommended", "../../.eslintrc.json"],
+    "extends": ["plugin:react/recommended", "../../.eslintrc"],
     "plugins": ["react-hooks"],
     "rules": {
         "react-hooks/rules-of-hooks": "error",

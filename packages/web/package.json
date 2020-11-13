@@ -40,6 +40,8 @@
         "sass": "^1.29.0",
         "sass-loader": "^10.1.0",
         "style-loader": "^2.0.0",
+        "stylelint": "^13.7.2",
+        "stylelint-config-standard": "^20.0.0",
         "terser-webpack-plugin": "^4.2.1",
         "tsconfig-paths": "^3.9.0",
         "ts-loader": "^8.0.11",
@@ -49,8 +51,9 @@
         "webpack-dev-server": "^3.11.0"
     },
     "scripts": {
-        "dev": "cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack-dev-server --env mode=development",
-        "dev-build": "cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack  --env mode=development",
-        "build": "cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack --env mode=production"
+        "dev": "cross-env NODE_ENV=development TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack serve",
+        "dev-build": "cross-env NODE_ENV=development TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack ",
+        "build": "cross-env NODE_ENV=production TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack",
+        "lint": "npx stylelint src/**/*.scss"
     }
 }
