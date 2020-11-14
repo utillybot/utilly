@@ -1,5 +1,4 @@
 .page {
-	height: 100vh;
 	text-align: center;
 	background-color: #282828;
 	display: flex;
@@ -10,7 +9,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		height: 35vh;
+		height: 35%;
 
 		h1 {
 			color: white;
@@ -18,7 +17,6 @@
 	}
 
 	.stats {
-		height: 65vh;
 		width: 100%;
 		text-align: center;
 
@@ -39,6 +37,5 @@
 			align-items: center;
 			justify-content: center;
 		}
-
 	}
 }

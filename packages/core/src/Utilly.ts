@@ -20,7 +20,11 @@ export class Utilly {
 		if (!process.env.TOKEN) throw new Error('TOKEN env variable not present');
 		if (!process.env.SENTRY_DSN)
 			throw new Error('SENTRY_DSN env variable not present');
-		Sentry.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 1.0 });
+		Sentry.init({
+			dsn: process.env.SENTRY_DSN,
+			tracesSampleRate: 1.0,
+			environment: process.env.NODE_ENV,
+		});
 
 		this.logger = new Logger({ database: false });
 		this.database = new Database(process.env.DATABASE_URL, this.logger);

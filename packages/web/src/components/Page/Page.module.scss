@@ -1,0 +1,8 @@
+.page {
+	width: 100%;
+	flex: 1;
+
+	@media screen and (max-width: 768px) {
+		padding-top: calc(100% - (98% - 40px))
+	}
+}

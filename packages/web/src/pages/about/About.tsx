@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import 'regenerator-runtime/runtime';
-import './About.module.scss';
+import styles from './About.module.scss';
 import { fetchStats } from '../../API';
 import Stat from './components/Stat';
+import Page from '../../components/Page/Page';
 
 const About = (): JSX.Element => {
 	const [guilds, setGuilds] = useState<number>();
 	const [users, setUsers] = useState<number>();
 
+	const tick = async () => {
+		const stats = await fetchStats();
+		if (stats) {
+			setGuilds(stats.guilds);
+			setUsers(stats.users);
+		}
+	};
+
 	useEffect(() => {
-		const tick = async () => {
-			const stats = await fetchStats();
-			if (stats) {
-				setGuilds(stats.guilds);
-				setUsers(stats.users);
-			}
-		};
 		tick();
 		const timerID = setInterval(tick, 15 * 1000);
 		return () => {
@@ -24,19 +25,19 @@ const About = (): JSX.Element => {
 	}, []);
 
 	return (
-		<div styleName="page">
+		<Page className={styles.page}>
 			<header>
 				<h1>
 					Utilly is a modular bot that contains many tools for server owners,
 					while also being customizable.
 				</h1>
 			</header>
-			<div styleName="stats">
-				<div styleName="header">
+			<div className={styles.stats}>
+				<div className={styles.header}>
 					<h2>Statistics</h2>
 					<h3>These statistics update every 30 seconds</h3>
 				</div>
-				<div styleName="container">
+				<div className={styles.container}>
 					<Stat
 						statName="Guilds"
 						statValue={guilds ? guilds.toString() : 'Loading stat'}
@@ -49,7 +50,7 @@ const About = (): JSX.Element => {
 					/>{' '}
 				</div>
 			</div>
-		</div>
+		</Page>
 	);
 };
 

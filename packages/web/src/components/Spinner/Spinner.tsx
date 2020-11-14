@@ -1,12 +1,11 @@
 import React from 'react';
-import './Spinner.module.scss';
+import styles from './Spinner.module.scss';
 
 const Spinner = (): JSX.Element => {
 	return (
 		<>
-			<div styleName="container">
-				<h1>Loading...</h1>
-				<div styleName="spinner" />
+			<div className={styles.container}>
+				<div className={styles.spinner} />
 			</div>
 		</>
 	);

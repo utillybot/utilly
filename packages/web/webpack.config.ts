@@ -30,20 +30,7 @@ const config = (): Configuration => {
 					},
 				],
 			],
-			plugins: [
-				'@babel/plugin-transform-runtime',
-				[
-					'@dr.pogodin/react-css-modules',
-					{
-						generateScopedName: cssModulesIdentName(devMode),
-						filetypes: {
-							'.scss': {
-								syntax: 'postcss-scss',
-							},
-						},
-					},
-				],
-			],
+			plugins: ['@babel/plugin-transform-runtime'],
 		},
 	};
 

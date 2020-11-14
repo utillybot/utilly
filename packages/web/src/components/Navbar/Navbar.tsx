@@ -1,24 +1,13 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import type { Location } from 'history';
 import type { RouteData } from '../../ROUTE_CONSTANTS';
 import { ROUTE_CONSTANTS } from '../../ROUTE_CONSTANTS';
-import './Navbar.module.scss';
-
-const generateSVG = (
-	x: number,
-	y: number,
-	l: number,
-	isCollapsed: string
-): JSX.Element => {
-	return (
-		<path
-			key={`${x},${y} ${l}`}
-			styleName={`hamburger-line ${isCollapsed}`}
-			d={`M ${x},${y} h${l}`}
-		/>
-	);
-};
+import styles from './Navbar.module.scss';
+import NavbarHeader from './components/NavbarHeader';
+import NavbarLinks from './components/NavbarLinks';
+import NavbarSignIn from './components/NavbarSignIn';
+import { cn } from '../../helpers';
 
 const matchPage = (pageRoute: RouteData, location: Location) => {
 	return pageRoute.exact == undefined || pageRoute.exact
@@ -28,58 +17,57 @@ const matchPage = (pageRoute: RouteData, location: Location) => {
 
 const Navbar = (): JSX.Element => {
 	const [collapsed, setCollapsed] = useState(true);
+	const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
 	const location = useLocation();
 
-	const navbarElements: JSX.Element[] = [];
-	const isCollapsed = collapsed ? 'collapsed' : 'open';
+	const updateMedia = () => {
+		setIsMobile(window.innerWidth < 768);
+	};
+
+	useEffect(() => {
+		window.addEventListener('resize', updateMedia);
+		return () => window.removeEventListener('resize', updateMedia);
+	});
+
+	const linksData: Array<RouteData & { selected: boolean }> = [];
 
 	let currentPage;
 
 	for (const pageRoute of ROUTE_CONSTANTS) {
-		const matched = matchPage(pageRoute, location);
-		if (matched) currentPage = pageRoute;
-		navbarElements.push(
-			<Link
-				key={pageRoute.name}
-				to={pageRoute.path}
-				styleName={`item ${matched ? 'selected' : ''}`}
-			>
-				{pageRoute.name}
-			</Link>
+		const selected = matchPage(pageRoute, location);
+		if (selected) currentPage = pageRoute;
+		linksData.push(Object.assign({ selected }, pageRoute));
+	}
+	if (isMobile) {
+		return (
+			<nav className={styles.mobile}>
+				<NavbarHeader
+					collapsedState={[collapsed, setCollapsed]}
+					currentPage={currentPage}
+					isMobile={isMobile}
+				/>
+				<div
+					className={cn(styles.collapsable, collapsed ? styles.collapsed : '')}
+				>
+					<NavbarLinks links={linksData} />
+					<NavbarSignIn />
+				</div>
+			</nav>
+		);
+	} else {
+		return (
+			<nav>
+				<NavbarLinks links={linksData} />
+				<NavbarHeader
+					collapsedState={[collapsed, setCollapsed]}
+					currentPage={currentPage}
+					isMobile={isMobile}
+				/>
+				<NavbarSignIn />
+			</nav>
 		);
 	}
-
-	return (
-		<nav>
-			<div styleName="container header">
-				<div styleName="current">
-					<h1>{currentPage?.name}</h1>
-				</div>
-				<div
-					styleName="hamburger-container"
-					onClick={() => setCollapsed(!collapsed)}
-				>
-					<button styleName="hamburger" aria-label="Toggle Navigation">
-						<svg viewBox="0 0 10 10" width="40">
-							{[
-								[1, 2, 8],
-								[1, 5, 8],
-								[1, 8, 8],
-							].map(i => generateSVG(i[0], i[1], i[2], isCollapsed))}
-						</svg>
-					</button>
-				</div>
-			</div>
-			<div styleName={`container links collapsable ${isCollapsed}`}>
-				{navbarElements}
-			</div>
-			<div styleName={`container signin collapsable ${isCollapsed}`}>
-				<Link to="/" styleName="item">
-					Sign in with Discord
-				</Link>
-			</div>
-		</nav>
-	);
 };
 
 export default Navbar;

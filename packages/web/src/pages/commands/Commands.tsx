@@ -1,18 +1,19 @@
 import React, { Suspense } from 'react';
-import './Commands.module.scss';
+import styles from './Commands.module.scss';
 import { Switch, Route } from 'react-router-dom';
 import CommandModulesPage from './pages/CommandModulesPage/CommandModulesPage';
 import CommandModulePage from './pages/CommandModulePage/CommandModulePage';
 import CommandPage from './pages/CommandPage/CommandPage';
 import { get } from '../../API';
 import Spinner from '../../components/Spinner/Spinner';
+import Page from '../../components/Page/Page';
 
 const commandResource = get().commands;
 
 const Commands = (): JSX.Element => {
 	return (
-		<Suspense fallback={<Spinner />}>
-			<div styleName="page">
+		<Page className={styles.page}>
+			<Suspense fallback={<Spinner />}>
 				<header>
 					<h2>View all the commands for Utilly!</h2>
 				</header>
@@ -29,8 +30,8 @@ const Commands = (): JSX.Element => {
 						<CommandPage resource={commandResource} />
 					</Route>
 				</Switch>
-			</div>
-		</Suspense>
+			</Suspense>
+		</Page>
 	);
 };
 

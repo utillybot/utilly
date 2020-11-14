@@ -1,14 +1,17 @@
 .page {
 	font-size: 2em;
 	color: white;
-	height: 100%;
+	display: flex;
+	align-content: center;
+	justify-content: center;
+	height: calc(100% - (50px + 2%));
 
 	header {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		height: 100%;
+		width: 100%;
 
 		img {
 			border-radius: 100%;

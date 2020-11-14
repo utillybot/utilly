@@ -1,16 +1,17 @@
 import React from 'react';
 import logo from '../../assets/logo.png';
-import './Home.module.scss';
+import styles from './Home.module.scss';
+import Page from '../../components/Page/Page';
 
 const Home = (): JSX.Element => {
 	return (
-		<div styleName="page">
+		<Page className={styles.page}>
 			<header>
 				<img src={logo} alt="Utilly Logo" />
 				<h1>Utilly</h1>
 				<h2>The tool for the job</h2>
 			</header>
-		</div>
+		</Page>
 	);
 };
 

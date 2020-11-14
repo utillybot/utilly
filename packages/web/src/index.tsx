@@ -6,11 +6,11 @@ import Navbar from './components/Navbar/Navbar';
 import Routes from './components/Routes/Routes';
 
 ReactDOM.render(
-    <React.StrictMode>
-        <BrowserRouter>
-            <Navbar />
-            <Routes />
-        </BrowserRouter>
-    </React.StrictMode>,
-    document.getElementById('root')
+	<React.StrictMode>
+		<BrowserRouter>
+			<Navbar />
+			<Routes />
+		</BrowserRouter>
+	</React.StrictMode>,
+	document.getElementById('root')
 );

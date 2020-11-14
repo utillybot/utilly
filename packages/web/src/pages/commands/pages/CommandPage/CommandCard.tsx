@@ -1,6 +1,6 @@
 import React from 'react';
-import './CommandCard.module.scss';
-import type { Command } from '../../../../../API';
+import styles from './CommandCard.module.scss';
+import type { Command } from '../../../../API';
 
 const CommandCard = ({
 	name,
@@ -9,7 +9,7 @@ const CommandCard = ({
 	usage,
 }: Command): JSX.Element => {
 	return (
-		<div styleName="card">
+		<div className={styles.card}>
 			<h1>u!{name}</h1>
 			<h3>{description}</h3>
 			<h3>

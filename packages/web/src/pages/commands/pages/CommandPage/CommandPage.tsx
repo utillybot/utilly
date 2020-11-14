@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
-import CommandCard from './components/CommandCard';
-import './CommandPage.module.scss';
+import CommandCard from './CommandCard';
+import styles from './CommandPage.module.scss';
 import type {
 	Command,
 	CommandModule,
@@ -35,10 +35,10 @@ const CommandPage = ({ resource }: CommandPageProps): JSX.Element => {
 
 	return (
 		<div>
-			<div styleName="button">
+			<div className={styles.button}>
 				<Link to={`/commands${`/${module?.name}` ?? ''}`}>ᐸ Back</Link>
 			</div>
-			<div styleName="text">
+			<div className={styles.text}>
 				{command ? (
 					<CommandCard
 						name={command.name}

@@ -1,7 +1,6 @@
 import React, { Suspense } from 'react';
 import { Route, Switch, useLocation } from 'react-router-dom';
 import { ROUTE_CONSTANTS } from '../../ROUTE_CONSTANTS';
-import './Routes.module.scss';
 import Spinner from '../Spinner/Spinner';
 
 const Routes = (): JSX.Element => {
@@ -19,11 +18,9 @@ const Routes = (): JSX.Element => {
 		);
 	}
 	return (
-		<div styleName="page">
-			<Suspense fallback={Spinner}>
-				<Switch location={location}>{routes}</Switch>
-			</Suspense>
-		</div>
+		<Suspense fallback={Spinner}>
+			<Switch location={location}>{routes}</Switch>
+		</Suspense>
 	);
 };
 

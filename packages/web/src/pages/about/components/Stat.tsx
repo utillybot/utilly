@@ -1,5 +1,5 @@
 import React from 'react';
-import './Stat.module.scss';
+import styles from './Stat.module.scss';
 
 interface StatsProps {
 	statName: string;
@@ -9,7 +9,7 @@ interface StatsProps {
 
 const Stat = ({ statName, statValue, units }: StatsProps): JSX.Element => {
 	return (
-		<div styleName="stat">
+		<div className={styles.stat}>
 			<h1>{statName}</h1>
 			<h2>
 				{statValue} {units}

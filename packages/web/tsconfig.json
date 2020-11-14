@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "isolatedModules": true,
         "jsx": "preserve",
         "lib": ["DOM", "DOM.Iterable", "ESNext"],
         "module": "ESNext",
@@ -15,7 +14,10 @@
 
         "moduleResolution": "node",
 
-        "skipLibCheck": true
+        "skipLibCheck": true,
+
+        "plugins": [{ "name": "typescript-plugin-css-modules" }]
+
     },
     "include": ["src"]
 }

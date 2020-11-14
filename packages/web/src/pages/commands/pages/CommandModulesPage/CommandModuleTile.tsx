@@ -1,7 +1,7 @@
 import React from 'react';
-import './CommandModuleTile.module.scss';
+import styles from './CommandModuleTile.module.scss';
 import { useRouteMatch, Link } from 'react-router-dom';
-import type { CommandModule } from '../../../../../API';
+import type { CommandModule } from '../../../../API';
 
 interface CommandModuleTileProps {
 	commandModule: CommandModule;
@@ -14,7 +14,7 @@ const CommandModuleTile = ({
 	return (
 		<Link
 			to={`${match.url}/${commandModule.name.toLowerCase()}`}
-			styleName="module"
+			className={styles.module}
 		>
 			<h1>{commandModule.name}</h1>
 			<p>{commandModule.description}</p>

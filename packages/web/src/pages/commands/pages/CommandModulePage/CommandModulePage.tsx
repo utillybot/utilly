@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
-import CommandTile from './components/CommandTile';
-import './CommandModulePage.module.scss';
+import CommandTile from './CommandTile';
+import styles from './CommandModulePage.module.scss';
 import type { CommandsResponse, Resource } from '../../../../API';
 
 interface CommandModulesPageProps {
@@ -21,15 +21,15 @@ const CommandModulePage = ({
 
 	return (
 		<>
-			<div styleName="header">
-				<div styleName="button">
+			<div className={styles.header}>
+				<div className={styles.button}>
 					<Link to="/commands">ᐸ Back</Link>
 				</div>
-				<div styleName="text">
+				<div className={styles.text}>
 					{module ? <h1>{module.name} Module</h1> : ''}
 				</div>
 			</div>
-			<div styleName="container">
+			<div className={styles.container}>
 				{module ? (
 					module.commands.map(cmd => (
 						<CommandTile key={cmd.name} command={cmd} />

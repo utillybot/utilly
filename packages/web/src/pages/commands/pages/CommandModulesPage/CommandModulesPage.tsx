@@ -1,6 +1,6 @@
 import React from 'react';
-import CommandModuleTile from './components/CommandModuleTile';
-import './CommandModulesPage.module.scss';
+import CommandModuleTile from './CommandModuleTile';
+import styles from './CommandModulesPage.module.scss';
 import type { CommandsResponse, Resource } from '../../../../API';
 
 interface CommandModulesPageProps {
@@ -12,18 +12,10 @@ const CommandModulesPage = ({
 }: CommandModulesPageProps): JSX.Element => {
 	const response = resource.read();
 	return (
-		<div
-			styleName={`container ${
-				response.commandModules.length == 0 ? 'loading' : ''
-			}`}
-		>
-			{response.commandModules.length == 0 ? (
-				<h1 styleName="loading">Loading...</h1>
-			) : (
-				response.commandModules.map(module => (
-					<CommandModuleTile key={module.name} commandModule={module} />
-				))
-			)}
+		<div className={styles.container}>
+			{response.commandModules.map(module => (
+				<CommandModuleTile key={module.name} commandModule={module} />
+			))}
 		</div>
 	);
 };
