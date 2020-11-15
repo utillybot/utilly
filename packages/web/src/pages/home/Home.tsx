@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../../assets/logo.png';
+import logo from '../../../assets/logo.png';
 import styles from './Home.module.scss';
 import Page from '../../components/Page/Page';
 

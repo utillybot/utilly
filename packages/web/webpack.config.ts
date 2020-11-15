@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -23,12 +24,7 @@ const config = (): Configuration => {
 		options: {
 			presets: [
 				'@babel/env',
-				[
-					'@babel/preset-react',
-					{
-						runtime: 'automatic',
-					},
-				],
+				['@babel/preset-react', { runtime: 'automatic' }],
 			],
 			plugins: ['@babel/plugin-transform-runtime'],
 		},
@@ -56,17 +52,16 @@ const config = (): Configuration => {
 			publicPath: '/',
 		},
 		plugins: [
+			new CopyWebpackPlugin({
+				patterns: [{ from: './public' }],
+			}),
 			new ForkTsCheckerWebpackPlugin({
 				async: false,
-				eslint: {
-					files: './**/*.{ts,tsx,js,jsx}',
-				},
+				eslint: { files: './**/*.{ts,tsx,js,jsx}' },
 			}),
-			new HtmlWebpackPlugin({
-				template: 'index.html',
-			}),
+			new HtmlWebpackPlugin({ template: 'index.html' }),
 			new FaviconsWebpackPlugin({
-				logo: './src/assets/logo.png',
+				logo: './assets/logo.png',
 				prefix: 'static/favicons',
 				outputPath: 'static/favicons',
 				cache: true,

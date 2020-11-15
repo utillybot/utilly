@@ -58,12 +58,6 @@ export class UtillyWeb {
 		this.app.use(apiRouter);
 
 		this.app.use(
-			'/static',
-			express.static(path.join(process.cwd(), 'packages', 'web', 'public'), {
-				redirect: false,
-			})
-		);
-		this.app.use(
 			express.static(path.join(process.cwd(), 'packages', 'web', 'dist'), {
 				redirect: false,
 				index: false,
