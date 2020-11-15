@@ -11,9 +11,6 @@ import type { Configuration } from 'webpack';
 import FaviconsWebpackPlugin from 'favicons-webpack-plugin';
 import 'webpack-dev-server';
 
-const cssModulesIdentName = (devMode: boolean) =>
-	devMode ? '[name]__[local]' : '[hash:base64]';
-
 const config = (): Configuration => {
 	const mode =
 		process.env.NODE_ENV == 'production' ? 'production' : 'development';
@@ -136,7 +133,7 @@ const config = (): Configuration => {
 			sourceMap: true,
 			modules: {
 				auto: true,
-				localIdentName: cssModulesIdentName(devMode),
+				localIdentName: devMode ? '[name]__[local]' : '[hash:base64]',
 				exportLocalsConvention: 'camelCaseOnly',
 			},
 		},
