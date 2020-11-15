@@ -17,7 +17,7 @@ import { EVENT_CONSTANTS, EVENT_NAMES } from '../../constants/EventConstants';
 import type LoggingCommandModule from './moduleinfo';
 
 @Command({
-	name: 'logsettings',
+	name: 'Logsettings',
 	description: 'Modify settings for the logging plugin',
 })
 @PreHook(ChannelValidatorHook({ channel: ['guild'] }))

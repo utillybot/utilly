@@ -20,7 +20,7 @@ import prettier from 'prettier';
 import type GeneralCommandModule from './moduleinfo';
 
 @Command({
-	name: 'embed',
+	name: 'Embed',
 	description: 'Create, edit, or view the contents of an embed.',
 	usage: '(create/edit/view) (message id)',
 })

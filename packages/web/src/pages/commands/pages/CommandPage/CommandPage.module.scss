@@ -2,12 +2,15 @@
 	color: white;
 	display: flex;
 	justify-content: center;
-	padding-top: 20px;
 }
 
-.button {
+
+.header {
+	text-align: center;
+	color: white;
+	display: flex;
+
 	a {
-		display: block;
 		color: white;
 		background-color: #404040;
 		text-decoration: none;
@@ -16,5 +19,17 @@
 
 	a:hover {
 		background-color: #606060;
+	}
+
+	.text {
+		flex: 1;
+		margin-right: calc(100% / 3);
+	}
+
+	.button {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 }

@@ -39,7 +39,7 @@ export abstract class BaseCommandModule {
 	/**
 	 * A map of commands registered to this module
 	 */
-	readonly commands: Map<string, BaseCommand> = new Map();
+	readonly commands: Set<BaseCommand> = new Set();
 
 	/**
 	 * A map of strings that will trigger that execution of a command
@@ -65,12 +65,12 @@ export abstract class BaseCommandModule {
 		loadCommandMetadata(command);
 		loadPreHookMetadata(command);
 
-		this.commands.set(command.info.name, command);
-		this.triggers.set(command.info.name, command);
+		this.commands.add(command);
+		this.triggers.set(command.info.name.toLowerCase(), command);
 
-		if (command.info.aliases != null) {
-			for (const alias of command.info.aliases) {
-				this.triggers.set(alias, command);
+		if (command.info.triggers != null) {
+			for (const alias of command.info.triggers) {
+				this.triggers.set(alias.toLowerCase(), command);
 			}
 		}
 

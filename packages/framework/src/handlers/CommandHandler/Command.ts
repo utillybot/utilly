@@ -9,7 +9,7 @@ import type { CommandHook } from './CommandHook';
  */
 export interface CommandInfo {
 	/**
-	 * The name of the command
+	 * The name of the command. A lowercased version will be used as a trigger
 	 */
 	name: string;
 	/**
@@ -21,9 +21,9 @@ export interface CommandInfo {
 	 */
 	usage: string;
 	/**
-	 * An array of aliases for this command
+	 * An array of triggers to trigger the execution of this command. The lowercased name is automatically included
 	 */
-	aliases: string[];
+	triggers: string[];
 }
 
 export interface CommandArgument {
@@ -95,7 +95,7 @@ export abstract class BaseCommand {
 		name: '',
 		description: 'No Description Provided',
 		usage: '',
-		aliases: [],
+		triggers: [],
 	};
 
 	/**

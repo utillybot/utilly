@@ -14,10 +14,10 @@ import { MODULE_CONSTANTS, MODULES } from '../../constants/ModuleConstants';
 import type GeneralCommandModule from './moduleinfo';
 
 @Command({
-	name: 'help',
+	name: 'Help',
 	description: 'View all the modules, or commands in a specific module',
 	usage: '(command/module)',
-	aliases: ['commands', 'h'],
+	triggers: ['commands', 'h'],
 })
 @PreHook(ChannelValidatorHook({ channel: ['guild'] }))
 @PreHook(BotPermsValidatorHook({ permissions: ['embedLinks'] }))
@@ -102,10 +102,12 @@ export default class Help extends BaseCommand {
 		embed.setColor(guildRow[item] == false ? 0xff0000 : 0x00ff00);
 		embed.setDescription(MODULE_CONSTANTS[commandModule.info.name]);
 
-		for (const [, command] of commandModule.commands) {
+		for (const command of commandModule.commands) {
 			if (command.parent == undefined) throw new Error('Injection failure');
 			embed.addField(
-				`\`${guildRow.prefix ? guildRow.prefix[0] : 'u!'}${command.info.name}${
+				`\`${
+					guildRow.prefix ? guildRow.prefix[0] : 'u!'
+				}${command.info.name.toLowerCase()}${
 					command.info.usage ? ' ' + command.info.usage : ''
 				}\``,
 				command.info.description
@@ -128,17 +130,17 @@ export default class Help extends BaseCommand {
 		embed.setDescription(command.info.description);
 		embed.addField(
 			'Usage',
-			`${guildRow.prefix ? guildRow.prefix[0] : 'u!'}${command.info.name} ${
-				command.info.usage ?? ''
-			}`,
+			`${
+				guildRow.prefix ? guildRow.prefix[0] : 'u!'
+			}${command.info.name.toLowerCase()} ${command.info.usage ?? ''}`,
 			true
 		);
-		const aliases = [];
-		for (const alias of command.info.aliases) {
-			aliases.push((guildRow.prefix ? guildRow.prefix[0] : 'u!') + alias);
+		const triggers = [];
+		for (const alias of command.info.triggers) {
+			triggers.push((guildRow.prefix ? guildRow.prefix[0] : 'u!') + alias);
 		}
-		if (aliases.length != 0)
-			embed.addField('Aliases', aliases.join(', '), true);
+		if (triggers.length != 0)
+			embed.addField('Aliases', triggers.join(', '), true);
 
 		embed.addField(
 			'Parent Module',

@@ -61,6 +61,10 @@ export class CommandHandler implements Handler {
 			commandModule.info.name.toLowerCase(),
 			commandModule
 		);
+
+		for (const [trigger, cmd] of commandModule.triggers) {
+			this.triggers.set(trigger, cmd);
+		}
 		return this;
 	}
 
@@ -92,9 +96,6 @@ export class CommandHandler implements Handler {
 				).default(this._bot, moduleObj);
 
 				moduleObj.registerCommand(commandObj);
-				for (const [trigger, triggerCommand] of moduleObj.triggers) {
-					this.triggers.set(trigger, triggerCommand);
-				}
 				this._logger.handler(
 					`    Finished Loading Command "${commandObj.info.name}".`
 				);

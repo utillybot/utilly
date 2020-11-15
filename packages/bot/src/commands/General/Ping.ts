@@ -8,7 +8,7 @@ import {
 } from '@utilly/framework';
 import type GeneralCommandModule from './moduleinfo';
 
-@Command({ name: 'ping', description: "Check's the bots' ping" })
+@Command({ name: 'Ping', description: "Check's the bots' ping" })
 @PreHook(BotPermsValidatorHook({ permissions: ['embedLinks'] }))
 export default class Ping extends BaseCommand {
 	parent!: GeneralCommandModule;

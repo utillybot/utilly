@@ -21,7 +21,7 @@ import { MODULE_CONSTANTS, MODULES } from '../../constants/ModuleConstants';
 import type SettingsCommandModule from './moduleinfo';
 
 @Command({
-	name: 'module',
+	name: 'Module',
 	description: 'Enable, disable, or view info about a module.',
 	usage: '(enable, disable, toggle, info) (module name)',
 })

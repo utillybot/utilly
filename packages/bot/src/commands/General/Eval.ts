@@ -11,7 +11,7 @@ import prettier from 'prettier';
 import type GeneralCommandModule from './moduleinfo';
 
 @Command({
-	name: 'eval',
+	name: 'Eval',
 	description: 'View all the modules, or commands in a specific module',
 	usage: '(command/module)',
 })

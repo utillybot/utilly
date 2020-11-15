@@ -9,7 +9,7 @@ import {
 import type GeneralCommandModule from './moduleinfo';
 
 @Command({
-	name: 'privacy',
+	name: 'Privacy',
 	description: "Shows the bots' privacy policy",
 })
 @PreHook(BotPermsValidatorHook({ permissions: ['embedLinks'] }))

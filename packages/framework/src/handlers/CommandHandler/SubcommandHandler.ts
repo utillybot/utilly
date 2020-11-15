@@ -39,7 +39,7 @@ export abstract class Subcommand {
 			name: '',
 			description: 'No Description Provided',
 			usage: '',
-			aliases: [],
+			triggers: [],
 		};
 
 		this.preHooks = [];

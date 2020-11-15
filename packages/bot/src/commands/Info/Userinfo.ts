@@ -10,9 +10,9 @@ import type { Member, User } from 'eris';
 import type InfoCommandModule from './moduleinfo';
 
 @Command({
-	name: 'userinfo',
+	name: 'Userinfo',
 	description: 'View information about yourself',
-	aliases: ['uinfo'],
+	triggers: ['uinfo'],
 })
 @PreHook(BotPermsValidatorHook({ permissions: ['embedLinks'] }))
 export default class Userinfo extends BaseCommand {

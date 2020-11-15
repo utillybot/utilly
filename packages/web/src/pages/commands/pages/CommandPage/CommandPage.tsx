@@ -34,11 +34,16 @@ const CommandPage = ({ resource }: CommandPageProps): JSX.Element => {
 	}
 
 	return (
-		<div>
-			<div className={styles.button}>
-				<Link to={`/commands${`/${module?.name?.toLowerCase()}` ?? ''}`}>
-					ᐸ Back
-				</Link>
+		<>
+			<div className={styles.header}>
+				<div className={styles.button}>
+					<Link to={`/commands${`/${module?.name?.toLowerCase()}` ?? ''}`}>
+						ᐸ Back
+					</Link>
+				</div>
+				<div className={styles.text}>
+					{module ? <h1>{command?.name ?? ''} Command</h1> : ''}
+				</div>
 			</div>
 			<div className={styles.text}>
 				{command ? (
@@ -46,13 +51,13 @@ const CommandPage = ({ resource }: CommandPageProps): JSX.Element => {
 						name={command.name}
 						description={command.description}
 						usage={command.usage}
-						aliases={command.aliases}
+						triggers={command.triggers}
 					/>
 				) : (
 					<h1>Command not found</h1>
 				)}
 			</div>
-		</div>
+		</>
 	);
 };
 

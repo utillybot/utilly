@@ -18,9 +18,9 @@ import {
 import type InfoCommandModule from './moduleinfo';
 
 @Command({
-	name: 'serverinfo',
+	name: 'Serverinfo',
 	description: 'View information about a server',
-	aliases: ['sinfo'],
+	triggers: ['sinfo'],
 })
 @PreHook(ChannelValidatorHook({ channel: ['guild'] }))
 @PreHook(
