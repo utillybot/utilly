@@ -132,6 +132,7 @@ const config = (): Configuration => {
 			modules: {
 				auto: true,
 				localIdentName: cssModulesIdentName(devMode),
+				exportLocalsConvention: 'camelCaseOnly',
 			},
 		},
 	};

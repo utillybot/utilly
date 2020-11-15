@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 import React from 'react';
 import styles from './NavbarHamburger.module.scss';
-import { cn } from '../../../helpers';
+import { mc } from '../../../../helpers';
 
 const generateSVG = (
 	x: number,
@@ -12,7 +12,10 @@ const generateSVG = (
 	return (
 		<path
 			key={`${x},${y} ${l}`}
-			className={cn(styles.line, collapsed ? styles.collapsed : styles.open)}
+			className={mc(styles.line, {
+				[styles.collapsed]: collapsed,
+				[styles.open]: !collapsed,
+			})}
 			d={`M ${x},${y} h${l}`}
 		/>
 	);
@@ -29,7 +32,7 @@ const NavbarHamburger = ({
 	return (
 		<div
 			className={styles.container}
-			onClick={() => setCollapsed(prev => !prev)}
+			onClick={() => setCollapsed(prevState => !prevState)}
 		>
 			<button className={styles.hamburger} aria-label="Toggle Navigation">
 				<svg viewBox="0 0 10 10" width="30">
