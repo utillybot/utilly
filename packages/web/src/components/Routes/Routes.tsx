@@ -3,7 +3,7 @@ import { Route } from 'react-router-dom';
 import { ROUTE_CONSTANTS } from '../../ROUTE_CONSTANTS';
 import Spinner from '../Spinner/Spinner';
 import { CSSTransition } from 'react-transition-group';
-import styles from './Routes.module.scss';
+import styles from '../../styles/PageTransitions.module.scss';
 
 const Routes = (): JSX.Element => {
 	return (

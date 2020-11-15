@@ -14,7 +14,7 @@ interface CommandPageProps {
 }
 
 const CommandPage = ({ resource }: CommandPageProps): JSX.Element => {
-	const params = useParams<{ module: string; command: string }>();
+	const params = useParams<{ module?: string; command?: string }>();
 
 	const moduleParam = params.module;
 	const commandParam = params.command;
@@ -23,9 +23,9 @@ const CommandPage = ({ resource }: CommandPageProps): JSX.Element => {
 	let module: CommandModule | undefined = undefined;
 
 	for (const mod of resource.read().commandModules) {
-		if (moduleParam.toLowerCase() == mod.name.toLowerCase()) {
+		if (moduleParam?.toLowerCase() == mod.name.toLowerCase()) {
 			for (const cmd of mod.commands) {
-				if (commandParam.toLowerCase() == cmd.name.toLowerCase()) {
+				if (commandParam?.toLowerCase() == cmd.name.toLowerCase()) {
 					command = cmd;
 					module = mod;
 				}
@@ -36,7 +36,9 @@ const CommandPage = ({ resource }: CommandPageProps): JSX.Element => {
 	return (
 		<div>
 			<div className={styles.button}>
-				<Link to={`/commands${`/${module?.name}` ?? ''}`}>ᐸ Back</Link>
+				<Link to={`/commands${`/${module?.name?.toLowerCase()}` ?? ''}`}>
+					ᐸ Back
+				</Link>
 			</div>
 			<div className={styles.text}>
 				{command ? (

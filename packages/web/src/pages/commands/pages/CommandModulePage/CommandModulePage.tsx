@@ -11,12 +11,12 @@ interface CommandModulesPageProps {
 const CommandModulePage = ({
 	resource,
 }: CommandModulesPageProps): JSX.Element => {
-	const params = useParams<{ module: string }>();
+	const params = useParams<{ module?: string }>();
 
 	const module = resource
 		.read()
 		.commandModules.find(
-			mod => mod.name.toLowerCase() == params.module.toLowerCase()
+			mod => mod.name.toLowerCase() == params.module?.toLowerCase()
 		);
 
 	return (
