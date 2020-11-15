@@ -3,25 +3,28 @@ import styles from './About.module.scss';
 import { fetchStats } from '../../API';
 import Stat from './components/Stat';
 import Page from '../../components/Page/Page';
+import * as Sentry from '@sentry/react';
 
 const About = (): JSX.Element => {
 	const [guilds, setGuilds] = useState<number>();
 	const [users, setUsers] = useState<number>();
 
 	const tick = async () => {
-		const stats = await fetchStats();
-		if (stats) {
-			setGuilds(stats.guilds);
-			setUsers(stats.users);
+		try {
+			const stats = await fetchStats();
+			if (stats) {
+				setGuilds(stats.guilds);
+				setUsers(stats.users);
+			}
+		} catch (error: unknown) {
+			Sentry.captureException(error);
 		}
 	};
 
 	useEffect(() => {
 		tick();
 		const timerID = setInterval(tick, 15 * 1000);
-		return () => {
-			clearInterval(timerID);
-		};
+		return () => clearInterval(timerID);
 	}, []);
 
 	return (
