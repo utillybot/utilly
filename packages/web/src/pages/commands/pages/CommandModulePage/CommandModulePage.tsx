@@ -1,8 +1,9 @@
 import React from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import CommandTile from './CommandTile';
 import styles from './CommandModulePage.module.scss';
 import type { CommandsResponse, Resource } from '../../../../API';
+import Button from '../../../../components/Button/Button';
 
 interface CommandModulesPageProps {
 	resource: Resource<CommandsResponse>;
@@ -23,7 +24,9 @@ const CommandModulePage = ({
 		<>
 			<div className={styles.header}>
 				<div className={styles.button}>
-					<Link to="/commands">ᐸ Back</Link>
+					<Button to="/commands" className={styles.back}>
+						ᐸ Back
+					</Button>
 				</div>
 				<div className={styles.text}>
 					{module ? <h1>{module.name} Module</h1> : ''}

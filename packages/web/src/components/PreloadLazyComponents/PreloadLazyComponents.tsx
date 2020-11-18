@@ -7,16 +7,15 @@ const PreloadLazyComponents = (): JSX.Element => {
 		const t = setTimeout(() => {
 			setActPreload(false);
 		}, 3000);
-		return () => {
-			clearTimeout(t);
-		};
+		return () => clearTimeout(t);
 	});
 
 	if (actPreload)
 		return (
 			<div hidden>
-				{ROUTE_CONSTANTS.map(Route => {
-					return <Route.page preload key={Route.path} />;
+				{ROUTE_CONSTANTS.map(route => {
+					const Page = route.page;
+					return <Page preload key={route.path} />;
 				})}
 			</div>
 		);

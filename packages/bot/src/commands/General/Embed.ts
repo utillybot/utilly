@@ -9,6 +9,8 @@ import {
 	ChannelValidatorHook,
 	Command,
 	EmbedBuilder,
+	isGuildChannel,
+	isTextChannel,
 	PreHook,
 	Subcommand,
 	SubcommandHandler,
@@ -297,7 +299,7 @@ class EmbedCreate extends Subcommand {
 			} else if (option == 'done') {
 				menu.delete();
 				previewMessage.delete();
-				if (!(message.channel instanceof GuildChannel)) return;
+				if (!isGuildChannel(message.channel)) return;
 				const optionEmbed = new EmbedBuilder();
 				optionEmbed.setTitle(
 					'Would you like to get the source or post this embed to a channel. (Type `source` or `channel`) '
@@ -345,7 +347,7 @@ class EmbedCreate extends Subcommand {
 							message.channel.id,
 							message.author.id,
 							message => {
-								if (!(message.channel instanceof GuildChannel)) return false;
+								if (!isGuildChannel(message.channel)) return false;
 								const id = message.content.match(regex);
 								if (id == null) return false;
 								return (
@@ -386,7 +388,7 @@ class EmbedCreate extends Subcommand {
 						);
 						message.channel.createMessage({ embed: noPerms });
 						return;
-					} else if (!(channel instanceof TextChannel)) {
+					} else if (!isTextChannel(channel)) {
 						const incorrectChannel = new EmbedBuilder();
 						incorrectChannel.setTitle(
 							'The channel you inputted was not a text channel'
@@ -706,7 +708,7 @@ class EmbedView extends Subcommand {
 
 		let foundMessage: Message | undefined;
 		for (const channel of ctx.guild.channels.values()) {
-			if (!(channel instanceof TextChannel)) continue;
+			if (!isTextChannel(channel)) continue;
 			try {
 				foundMessage = await channel.getMessage(ctx.args[0]);
 				// eslint-disable-next-line no-empty
@@ -765,7 +767,7 @@ class EmbedEdit extends Subcommand {
 
 		let foundMessage: Message | undefined;
 		for (const channel of ctx.guild.channels.values()) {
-			if (!(channel instanceof TextChannel)) continue;
+			if (!isTextChannel(channel)) continue;
 			try {
 				foundMessage = await channel.getMessage(ctx.args[0]);
 			} catch (ex) {

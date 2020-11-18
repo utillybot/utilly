@@ -6,11 +6,9 @@ import Page from '../../components/Page/Page';
 const Home = (): JSX.Element => {
 	return (
 		<Page className={styles.page}>
-			<header>
-				<img src={logo} alt="Utilly Logo" />
-				<h1>Utilly</h1>
-				<h2>The tool for the job</h2>
-			</header>
+			<img src={logo} alt="Utilly Logo" />
+			<h1>Utilly</h1>
+			<h2>The tool for the job</h2>
 		</Page>
 	);
 };

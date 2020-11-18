@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useLocation } from 'react-router-dom';
 import type { Location } from 'history';
 import type { RouteData } from '../../ROUTE_CONSTANTS';
 import { ROUTE_CONSTANTS } from '../../ROUTE_CONSTANTS';
-import styles from './Navbar.module.scss';
 import NavbarHeader from './components/NavbarHeader';
 import NavbarLinks from './components/NavbarLinks';
 import NavbarSignIn from './components/NavbarSignIn';
-import { mc } from '../../helpers';
 import useMatchMedia from '../../hooks/useMatchMedia';
+import CollapsableContent from '../Collapsable/CollapsableContent/CollapsableContent';
+import Collapsable from '../Collapsable/Collapsable/Collapsable';
+import { cmc } from '../../helpers';
+import styles from './Navbar.module.scss';
 
 const matchPage = (pageRoute: RouteData, location: Location) => {
 	return pageRoute.exact == undefined || pageRoute.exact
@@ -17,8 +19,7 @@ const matchPage = (pageRoute: RouteData, location: Location) => {
 };
 
 const Navbar = (): JSX.Element => {
-	const [collapsed, setCollapsed] = useState(true);
-	const isMobile = useMatchMedia('(max-width: 768px)');
+	const isDesktop = useMatchMedia(cmc(['min-width', [768, 'px']]));
 	const location = useLocation();
 
 	const linksData: Array<RouteData & { selected: boolean }> = [];
@@ -29,38 +30,33 @@ const Navbar = (): JSX.Element => {
 		if (selected) currentPage = pageRoute;
 		linksData.push(Object.assign({ selected }, pageRoute));
 	}
-	const links = <NavbarLinks links={linksData} setCollapsed={setCollapsed} />;
-	const header = (
-		<NavbarHeader
-			currentPage={currentPage}
-			collapsed={[collapsed, setCollapsed]}
-		/>
-	);
-	const signIn = <NavbarSignIn setCollapsed={setCollapsed} />;
+	const links = <NavbarLinks links={linksData} />;
+	const header = <NavbarHeader currentPage={currentPage} />;
+	const signIn = <NavbarSignIn />;
 
-	if (isMobile) {
-		return (
-			<nav className={styles.mobile}>
-				{header}
-				<div
-					className={mc(styles.collapsable, {
-						[styles.collapsed]: collapsed,
-					})}
-				>
-					{links}
-					{signIn}
-				</div>
-			</nav>
-		);
-	} else {
-		return (
-			<nav>
+	const mobileNav = (
+		<>
+			{header}
+			<Collapsable>
 				{links}
-				{header}
 				{signIn}
-			</nav>
-		);
-	}
+			</Collapsable>
+		</>
+	);
+
+	const desktopNav = (
+		<>
+			{links}
+			{header}
+			{signIn}
+		</>
+	);
+
+	return (
+		<CollapsableContent>
+			<nav className={styles.navbar}>{isDesktop ? desktopNav : mobileNav}</nav>
+		</CollapsableContent>
+	);
 };
 
 export default Navbar;

@@ -1,26 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 
-nav {
+.navbar {
 	position: sticky;
+	flex-direction: column;
 	width: 100%;
 	top: 0;
 	z-index: 1;
 	padding: 1%;
 	display: flex;
 	backdrop-filter: blur(30px);
-}
 
-.mobile {
-	flex-direction: column;
-}
-
-.collapsable {
-	overflow: hidden;
-	max-height: 140px;
-	transition: max-height 0.3s ease-in;
-}
-
-.collapsed {
-	max-height: 0;
-	transition: max-height 0.3s ease-out 0s;
+	@media screen and (min-width: 768px) {
+		flex-direction: row;
+	}
 }

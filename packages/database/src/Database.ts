@@ -25,6 +25,8 @@ export class Database {
 			entities: [Guild],
 			logging: true,
 			logger: new TypeORMLogger(this._logger),
+
+			synchronize: true,
 		});
 
 		this._logger.database('Connection has been established successfully.');

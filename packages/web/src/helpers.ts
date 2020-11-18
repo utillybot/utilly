@@ -2,19 +2,30 @@
  * Merge the provided css classes
  * @param classes - css classnames or an object mapping a classname to a boolean of whether it should be added
  */
-export const mc = (
-	...classes: Array<string | { [key: string]: boolean } | undefined>
+const mergeCssClasses = (
+	...classes: Array<string | { [key: string]: boolean | undefined } | undefined>
 ): string => {
-	const result = [];
+	let result = '';
 	for (const cssClass of classes) {
 		if (typeof cssClass === 'string') {
-			result.push(cssClass);
+			result += cssClass + ' ';
 		} else if (typeof cssClass === 'object') {
-			for (const [className, toggled] of Object.entries(cssClass)) {
-				if (toggled) result.push(className);
+			for (const className in cssClass) {
+				cssClass[className] && (result += className + ' ');
 			}
 		}
 	}
 
-	return result.join(' ');
+	return result;
 };
+
+const constructMediaQuery = (
+	query:
+		| ['min-width', [number, 'px' | 'em']]
+		| ['max-width', [number, 'px' | 'em']]
+): string => {
+	return `(${query[0]}: ${query[1].join('')})`;
+};
+
+export const mc = mergeCssClasses;
+export const cmc = constructMediaQuery;

@@ -2,10 +2,21 @@ import {
 	AttachableModule,
 	CHANNEL_PERMISSIONS,
 	EmbedBuilder,
+	isCategoryChannel,
+	isGuildChannel,
+	isTextChannel,
+	isVoiceChannel,
 } from '@utilly/framework';
 import { secondsToString } from '@utilly/utils';
-import type { AnyChannel, Guild, OldGuildChannel, OldGroupChannel } from 'eris';
-import { CategoryChannel, GuildChannel, TextChannel, VoiceChannel } from 'eris';
+import type {
+	AnyChannel,
+	Guild,
+	OldGuildChannel,
+	OldGroupChannel,
+	GuildChannel,
+	TextChannel,
+} from 'eris';
+import { CategoryChannel, VoiceChannel } from 'eris';
 import type LoggingModule from './LoggingModule';
 
 interface ChangedData {
@@ -49,7 +60,7 @@ export default class ChannelLogging extends AttachableModule {
 		newChannel: AnyChannel,
 		oldCh: OldGuildChannel | OldGroupChannel
 	): Promise<void> {
-		if (!(newChannel instanceof GuildChannel)) return;
+		if (!isGuildChannel(newChannel)) return;
 		const oldChannel = oldCh as OldGuildChannel;
 
 		//#region prep
@@ -82,7 +93,7 @@ export default class ChannelLogging extends AttachableModule {
 			});
 
 		//Prepare Embed Header and Overview changes
-		if (newChannel instanceof TextChannel) {
+		if (isTextChannel(newChannel)) {
 			embed.setTitle('Text Channel Updated');
 			embed.setDescription(`Channel: <#${newChannel.id}>`);
 
@@ -140,7 +151,7 @@ export default class ChannelLogging extends AttachableModule {
 						.map(item => `**${item.name}**: ${item.old} ➜ ${item.new}`)
 						.join('\n')
 				);
-		} else if (newChannel instanceof VoiceChannel) {
+		} else if (isVoiceChannel(newChannel)) {
 			embed.setTitle('Voice Channel Updated');
 			embed.setDescription(`Channel: ${newChannel.name}`);
 
@@ -188,7 +199,7 @@ export default class ChannelLogging extends AttachableModule {
 						.map(item => `**${item.name}**: ${item.old} ➜ ${item.new}`)
 						.join('\n')
 				);
-		} else if (newChannel instanceof CategoryChannel) {
+		} else if (isCategoryChannel(newChannel)) {
 			embed.setTitle('Category Updated');
 			embed.setDescription(`**Name**: ${newChannel.name}}`);
 		} else {
@@ -370,7 +381,7 @@ export default class ChannelLogging extends AttachableModule {
 	 * @param channel - the deleted channel
 	 */
 	private async _channelDelete(channel: AnyChannel): Promise<void> {
-		if (!(channel instanceof GuildChannel)) return;
+		if (!isGuildChannel(channel)) return;
 
 		//#region prep
 		const guildRow = await this.parentModule.selectGuildRow(
@@ -400,7 +411,7 @@ export default class ChannelLogging extends AttachableModule {
 	 * @param channel - the created channel
 	 */
 	private async _channelCreate(channel: AnyChannel): Promise<void> {
-		if (!(channel instanceof GuildChannel)) return;
+		if (!isGuildChannel(channel)) return;
 
 		//#region prep
 		const guildRow = await this.parentModule.selectGuildRow(
@@ -441,7 +452,7 @@ export default class ChannelLogging extends AttachableModule {
 
 		info += `**Name**: ${channel.name}\n`;
 		// Add embed header and info
-		if (channel instanceof TextChannel) {
+		if (isTextChannel(channel)) {
 			embed.setTitle(`Text Channel ${request}`);
 			embed.setDescription(
 				`Channel: ${
@@ -469,7 +480,7 @@ export default class ChannelLogging extends AttachableModule {
 			}
 
 			if (info != '') embed.addField('Info', info);
-		} else if (channel instanceof VoiceChannel) {
+		} else if (isVoiceChannel(channel)) {
 			embed.setTitle(`Voice Channel ${request}`);
 			embed.setDescription(`Channel: ${channel.name}`);
 			if (channel.bitrate)
@@ -488,7 +499,7 @@ export default class ChannelLogging extends AttachableModule {
 			}
 
 			if (info != '') embed.addField('Info', info);
-		} else if (channel instanceof CategoryChannel) {
+		} else if (isCategoryChannel(channel)) {
 			embed.setTitle(`Category ${request}`);
 			embed.setDescription(`**Name**: ${channel.name}`);
 			if (info != '') embed.addField('Info', info);

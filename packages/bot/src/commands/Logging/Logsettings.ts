@@ -6,6 +6,8 @@ import {
 	ChannelValidatorHook,
 	Command,
 	EmbedBuilder,
+	isGuildChannel,
+	isTextChannel,
 	PreHook,
 	UserPermsValidatorHook,
 } from '@utilly/framework';
@@ -119,7 +121,7 @@ export default class Logsettings extends BaseCommand {
 
 	//#region info
 	async handleInfo(message: Message, menu: Message): Promise<void> {
-		if (!(menu.channel instanceof GuildChannel)) return;
+		if (!isGuildChannel(menu.channel)) return;
 		let eventOptions: string[] = [];
 		for (const categoryValue of Object.values(EVENT_CONSTANTS)) {
 			eventOptions = eventOptions.concat(Object.values(categoryValue));
@@ -284,7 +286,7 @@ export default class Logsettings extends BaseCommand {
 			menu.channel.id,
 			author.id,
 			(message: Message) => {
-				if (!(message.channel instanceof GuildChannel)) return false;
+				if (!isGuildChannel(message.channel)) return false;
 				if (message.content.toLowerCase() == 'clear') return true;
 				const channel = parseChannel(message.content, message.channel.guild);
 
@@ -294,7 +296,7 @@ export default class Logsettings extends BaseCommand {
 			60
 		);
 		channelResponse.delete();
-		if (!(channelResponse.channel instanceof GuildChannel)) return;
+		if (!isGuildChannel(channelResponse.channel)) return;
 
 		// Initialize a GuildRow with the guildID
 		const guildRow = new Guild();
@@ -306,7 +308,7 @@ export default class Logsettings extends BaseCommand {
 				channelResponse.content,
 				channelResponse.channel.guild
 			);
-			if (!parsedChannel || !(parsedChannel instanceof TextChannel)) {
+			if (!parsedChannel || !isTextChannel(parsedChannel)) {
 				this.channelParseError(channelResponse, menu);
 				return;
 			}
@@ -493,7 +495,7 @@ export default class Logsettings extends BaseCommand {
 		);
 
 		channelResponse.delete();
-		if (!(channelResponse.channel instanceof GuildChannel)) return;
+		if (!isGuildChannel(channelResponse.channel)) return;
 
 		//Create a new guildRow and handle the actions for each event
 		const guildRow = new Guild();

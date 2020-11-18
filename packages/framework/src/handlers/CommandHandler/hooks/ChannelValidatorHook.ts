@@ -1,5 +1,6 @@
 import type { CommandHook } from '../CommandHook';
 import { GuildChannel, PrivateChannel } from 'eris';
+import { isGuildChannel, isPrivateChannel } from '../../../typeguards';
 
 type ChannelType = 'guild' | 'dm';
 
@@ -25,9 +26,9 @@ export const ChannelValidatorHook = (
 		for (const channel of settings.channel) {
 			if (
 				channel == 'guild'
-					? message.channel instanceof GuildChannel
+					? isGuildChannel(message.channel)
 					: channel == 'dm'
-					? message.channel instanceof PrivateChannel
+					? isPrivateChannel(message.channel)
 					: true
 			) {
 				next();

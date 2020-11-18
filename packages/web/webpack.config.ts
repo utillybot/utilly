@@ -104,6 +104,7 @@ const config = (): Configuration => {
 			splitChunks: {
 				chunks: 'all',
 			},
+			runtimeChunk: true,
 		};
 
 		baseConfig.plugins?.push(
@@ -147,6 +148,13 @@ const config = (): Configuration => {
 		options: { sourceMap: true },
 	};
 
+	const fileLoader = {
+		loader: 'file-loader',
+		options: {
+			name: 'static/assets/[name].[ext]?[contenthash]',
+		},
+	};
+
 	baseConfig.module?.rules?.push(
 		{
 			test: /\.s[ac]ss$/i,
@@ -158,14 +166,7 @@ const config = (): Configuration => {
 		},
 		{
 			test: /\.(jpg|png|gif|svg|pdf|ico)$/,
-			use: [
-				{
-					loader: 'file-loader',
-					options: {
-						name: 'static/assets/[name].[ext]?[contenthash]',
-					},
-				},
-			],
+			use: [fileLoader],
 		}
 	);
 

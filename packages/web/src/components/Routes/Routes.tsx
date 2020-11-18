@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { ROUTE_CONSTANTS } from '../../ROUTE_CONSTANTS';
 import Spinner from '../Spinner/Spinner';
 import { CSSTransition } from 'react-transition-group';

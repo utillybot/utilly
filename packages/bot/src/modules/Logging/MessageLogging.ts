@@ -1,12 +1,19 @@
-import { AttachableModule, EmbedBuilder } from '@utilly/framework';
+import {
+	AttachableModule,
+	EmbedBuilder,
+	isCachedMessage,
+	isGuildChannel,
+	isTextChannel,
+} from '@utilly/framework';
 import type {
 	Attachment,
 	Embed,
 	Guild,
 	OldMessage,
 	PossiblyUncachedMessage,
+	TextChannel,
 } from 'eris';
-import { GuildChannel, Message, TextChannel } from 'eris';
+import type { Message } from 'eris';
 import type LoggingModule from './LoggingModule';
 
 /**
@@ -91,8 +98,8 @@ export default class MessageLogging extends AttachableModule {
 		let guild: Guild | undefined = undefined;
 
 		for (const message of messages) {
-			if (!(message instanceof Message)) continue;
-			if (!(message.channel instanceof TextChannel)) continue;
+			if (!isCachedMessage(message)) continue;
+			if (!isTextChannel(message.channel)) continue;
 			cachedMessage = message;
 			guild = message.channel.guild;
 			break;
@@ -120,7 +127,7 @@ export default class MessageLogging extends AttachableModule {
 		embed.setDescription(`In channel <#${messages[0].channel.id}>`);
 		embed.setTimestamp();
 
-		this.parentModule.sendLogMessage(logChannel, embed);
+		await this.parentModule.sendLogMessage(logChannel, embed);
 	}
 
 	/**
@@ -130,8 +137,8 @@ export default class MessageLogging extends AttachableModule {
 	private async _messageDelete(
 		message: PossiblyUncachedMessage
 	): Promise<void> {
-		if (!(message instanceof Message)) return;
-		if (!(message.channel instanceof GuildChannel)) return;
+		if (!isCachedMessage(message)) return;
+		if (!isGuildChannel(message.channel)) return;
 
 		const guildRow = await this.parentModule.selectGuildRow(
 			message.channel.guild.id,
@@ -151,13 +158,13 @@ export default class MessageLogging extends AttachableModule {
 		embed.setTitle('Deleted Message');
 		embed.setDescription(`In channel <#${message.channel.id}>`);
 
-		if (message.content != '') {
+		if (message.content || message.content != '') {
 			embed.addField('Message Content', message.content, true);
 		}
 
 		embed = this._buildEmbed(embed, message);
 		embed = this._addOtherField(embed, message);
-		this.parentModule.sendLogMessage(logChannel, embed);
+		await this.parentModule.sendLogMessage(logChannel, embed);
 	}
 
 	/**
@@ -169,7 +176,7 @@ export default class MessageLogging extends AttachableModule {
 		message: Message,
 		oldMessage: OldMessage | null
 	): Promise<void> {
-		if (!(message.channel instanceof GuildChannel)) return;
+		if (!isGuildChannel(message.channel)) return;
 		if (oldMessage && oldMessage.content == message.content) return;
 		const guildRow = await this.parentModule.selectGuildRow(
 			message.channel.guild.id,
@@ -198,6 +205,6 @@ export default class MessageLogging extends AttachableModule {
 
 		embed = this._buildEmbed(embed, message);
 		if (oldMessage) embed = this._addOtherField(embed, oldMessage);
-		this.parentModule.sendLogMessage(logChannel, embed);
+		await this.parentModule.sendLogMessage(logChannel, embed);
 	}
 }

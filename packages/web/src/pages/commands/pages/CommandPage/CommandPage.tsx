@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import CommandCard from './CommandCard';
 import styles from './CommandPage.module.scss';
 import type {
@@ -8,6 +8,7 @@ import type {
 	CommandsResponse,
 	Resource,
 } from '../../../../API';
+import Button from '../../../../components/Button/Button';
 
 interface CommandPageProps {
 	resource: Resource<CommandsResponse>;
@@ -37,9 +38,12 @@ const CommandPage = ({ resource }: CommandPageProps): JSX.Element => {
 		<>
 			<div className={styles.header}>
 				<div className={styles.button}>
-					<Link to={`/commands${`/${module?.name?.toLowerCase()}` ?? ''}`}>
+					<Button
+						to={`/commands${`/${module?.name?.toLowerCase()}` ?? ''}`}
+						className={styles.back}
+					>
 						ᐸ Back
-					</Link>
+					</Button>
 				</div>
 				<div className={styles.text}>
 					{module ? <h1>{command?.name ?? ''} Command</h1> : ''}

@@ -1,9 +1,9 @@
 import type { Guild } from '@utilly/database';
 import { GuildRepository } from '@utilly/database';
 import type { EmbedBuilder } from '@utilly/framework';
-import { Module } from '@utilly/framework';
+import { isTextChannel, Module } from '@utilly/framework';
 import type { Webhook } from 'eris';
-import Eris from 'eris';
+import type Eris from 'eris';
 import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
 
 /**
@@ -38,7 +38,7 @@ export default class LoggingModule extends Module {
 
 		const logChannel = guild.channels.get(logChannelID);
 
-		if (logChannel != null && logChannel instanceof Eris.TextChannel) {
+		if (logChannel != null && isTextChannel(logChannel)) {
 			return logChannel;
 		} else {
 			return null;

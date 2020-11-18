@@ -5,13 +5,14 @@ $monsterrat-font: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', R
 	text-decoration: none;
 	color: white;
 	padding: 8px;
+	text-align: center;
+	width: 100%;
 
 	&:hover {
 		color: #b3b3b3;
 	}
 
-	@media screen and (max-width: 768px) {
-		text-align: center;
-		width: 100%;
+	@media screen and (min-width: 768px) {
+		width: auto;
 	}
 }

@@ -4,21 +4,13 @@
 	justify-content: center;
 }
 
-
 .header {
 	text-align: center;
 	color: white;
 	display: flex;
 
-	a {
-		color: white;
-		background-color: #404040;
-		text-decoration: none;
+	.back {
 		padding: 20px 30px;
-	}
-
-	a:hover {
-		background-color: #606060;
 	}
 
 	.text {
