@@ -10,7 +10,7 @@ export interface RouteData {
 	exact?: boolean;
 }
 
-export const ROUTE_CONSTANTS: RouteData[] = [
+export const routes: RouteData[] = [
 	{
 		path: '/',
 		name: 'Home',
@@ -26,7 +26,7 @@ export const ROUTE_CONSTANTS: RouteData[] = [
 	{
 		path: '/commands',
 		name: 'Commands',
-		page: React.lazy(() => import('../src/pages/commands/Commands')),
+		page: React.lazy(() => import('./pages/commands/Commands')),
 		exact: false,
 	},
 ];

@@ -28,4 +28,4 @@ const constructMediaQuery = (
 };
 
 export const mc = mergeCssClasses;
-export const cmc = constructMediaQuery;
+export const cmq = constructMediaQuery;

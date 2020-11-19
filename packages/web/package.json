@@ -19,7 +19,6 @@
         "@types/css-minimizer-webpack-plugin": "^1.1.1",
         "@types/mini-css-extract-plugin": "^1.2.1",
         "@types/react": "^16.9.56",
-        "@types/react-css-modules": "^4.6.2",
         "@types/react-dom": "^16.9.9",
         "@types/react-router-dom": "^5.1.6",
         "@types/react-transition-group": "^4.4.0",

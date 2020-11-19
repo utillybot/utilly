@@ -1,5 +1,5 @@
 import React from 'react';
-import type { RouteData } from '../../../ROUTE_CONSTANTS';
+import type { RouteData } from '../../../routes';
 import styles from './NavbarLinks.module.scss';
 import NavbarItem from './components/NavbarItem';
 import NavbarContainer from './components/NavbarContainer';

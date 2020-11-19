@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ROUTE_CONSTANTS } from '../../ROUTE_CONSTANTS';
+import { routes } from '../../routes';
 
 const PreloadLazyComponents = (): JSX.Element => {
 	const [actPreload, setActPreload] = useState(true);
@@ -13,7 +13,7 @@ const PreloadLazyComponents = (): JSX.Element => {
 	if (actPreload)
 		return (
 			<div hidden>
-				{ROUTE_CONSTANTS.map(route => {
+				{routes.map(route => {
 					const Page = route.page;
 					return <Page preload key={route.path} />;
 				})}

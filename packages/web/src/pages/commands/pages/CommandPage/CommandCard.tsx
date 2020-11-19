@@ -18,13 +18,11 @@ const CommandCard = ({
 					u!{name.toLowerCase()} {usage}
 				</code>
 			</h3>
-			{triggers.length > 0 ? (
+			{triggers.length > 0 && (
 				<h3>
 					<b>Aliases:</b>{' '}
 					<code>{triggers.map(alias => `u!${alias}`).join(', ')}</code>
 				</h3>
-			) : (
-				''
 			)}
 		</div>
 	);

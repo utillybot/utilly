@@ -1,15 +1,15 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import type { Location } from 'history';
-import type { RouteData } from '../../ROUTE_CONSTANTS';
-import { ROUTE_CONSTANTS } from '../../ROUTE_CONSTANTS';
+import type { RouteData } from '../../routes';
+import { routes } from '../../routes';
 import NavbarHeader from './components/NavbarHeader';
 import NavbarLinks from './components/NavbarLinks';
 import NavbarSignIn from './components/NavbarSignIn';
 import useMatchMedia from '../../hooks/useMatchMedia';
 import CollapsableContent from '../Collapsable/CollapsableContent/CollapsableContent';
 import Collapsable from '../Collapsable/Collapsable/Collapsable';
-import { cmc } from '../../helpers';
+import { cmq } from '../../helpers';
 import styles from './Navbar.module.scss';
 
 const matchPage = (pageRoute: RouteData, location: Location) => {
@@ -19,13 +19,13 @@ const matchPage = (pageRoute: RouteData, location: Location) => {
 };
 
 const Navbar = (): JSX.Element => {
-	const isDesktop = useMatchMedia(cmc(['min-width', [768, 'px']]));
+	const isDesktop = useMatchMedia(cmq(['min-width', [768, 'px']]));
 	const location = useLocation();
 
 	const linksData: Array<RouteData & { selected: boolean }> = [];
 	let currentPage;
 
-	for (const pageRoute of ROUTE_CONSTANTS) {
+	for (const pageRoute of routes) {
 		const selected = matchPage(pageRoute, location);
 		if (selected) currentPage = pageRoute;
 		linksData.push(Object.assign({ selected }, pageRoute));

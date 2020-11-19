@@ -1,9 +1,9 @@
 import React from 'react';
-import type { RouteData } from '../../../ROUTE_CONSTANTS';
+import type { RouteData } from '../../../routes';
 import styles from './NavbarHeader.module.scss';
 import NavbarContainer from './components/NavbarContainer';
 import useMatchMedia from '../../../hooks/useMatchMedia';
-import { cmc } from '../../../helpers';
+import { cmq } from '../../../helpers';
 import Hamburger from '../../Collapsable/Hamburger/Hamburger';
 
 interface NavbarHeaderProps {
@@ -11,7 +11,7 @@ interface NavbarHeaderProps {
 }
 
 const NavbarHeader = ({ currentPage }: NavbarHeaderProps): JSX.Element => {
-	const isDesktop = useMatchMedia(cmc(['min-width', [768, 'px']]));
+	const isDesktop = useMatchMedia(cmq(['min-width', [768, 'px']]));
 
 	return (
 		<NavbarContainer className={styles.header}>

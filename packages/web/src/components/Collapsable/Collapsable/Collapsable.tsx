@@ -9,6 +9,7 @@ const Collapsable = (
 ): JSX.Element => {
 	const { collapsed } = useCollapsed();
 	const containerRef = useRef<HTMLDivElement>(null);
+
 	return (
 		<div
 			{...props}
@@ -20,7 +21,7 @@ const Collapsable = (
 			style={
 				!collapsed
 					? { maxHeight: containerRef.current?.scrollHeight + 'px' }
-					: {}
+					: undefined
 			}
 		/>
 	);

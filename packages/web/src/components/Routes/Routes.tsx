@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import { Route } from 'react-router-dom';
-import { ROUTE_CONSTANTS } from '../../ROUTE_CONSTANTS';
+import { routes } from '../../routes';
 import Spinner from '../Spinner/Spinner';
 import { CSSTransition } from 'react-transition-group';
 import styles from '../../styles/PageTransitions.module.scss';
@@ -8,9 +8,10 @@ import PreloadLazyComponents from '../PreloadLazyComponents/PreloadLazyComponent
 
 const Routes = (): JSX.Element => {
 	return (
-		<Suspense fallback={Spinner}>
+		<Suspense fallback={<Spinner />}>
 			<PreloadLazyComponents />
-			{ROUTE_CONSTANTS.map(({ exact, name, path, page }) => (
+
+			{routes.map(({ exact, name, path, page }) => (
 				<Route exact={exact ?? true} key={name} path={path}>
 					{({ match }) => {
 						const Page = page;
