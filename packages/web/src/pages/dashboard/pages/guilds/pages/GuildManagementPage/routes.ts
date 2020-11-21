@@ -1,5 +1,5 @@
 import type { lazy } from 'react';
-import Overview from './pages/Overview/Overview';
+import Overview from './pages/overview/Overview';
 
 export interface RouteData {
 	path: string;
