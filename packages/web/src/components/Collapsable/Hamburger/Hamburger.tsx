@@ -1,6 +1,5 @@
 import { mc } from '../../../helpers';
 import styles from './Hamburger.module.scss';
-import React from 'react';
 import useCollapsed from '../../../hooks/useCollapsed';
 
 const generateSVG = (

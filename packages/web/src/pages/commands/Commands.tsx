@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import { Suspense } from 'react';
 import styles from './Commands.module.scss';
 import { Switch, Route } from 'react-router-dom';
 import CommandModulesPage from './pages/CommandModulesPage/CommandModulesPage';

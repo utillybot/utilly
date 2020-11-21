@@ -1,11 +1,10 @@
-import React from 'react';
 import { useLocation } from 'react-router-dom';
 import type { Location } from 'history';
 import type { RouteData } from '../../routes';
 import { routes } from '../../routes';
 import NavbarHeader from './components/NavbarHeader';
 import NavbarLinks from './components/NavbarLinks';
-import NavbarSignIn from './components/NavbarSignIn';
+import NavbarDashboard from './components/NavbarDashboard';
 import useMatchMedia from '../../hooks/useMatchMedia';
 import CollapsableContent from '../Collapsable/CollapsableContent/CollapsableContent';
 import Collapsable from '../Collapsable/Collapsable/Collapsable';
@@ -28,11 +27,12 @@ const Navbar = (): JSX.Element => {
 	for (const pageRoute of routes) {
 		const selected = matchPage(pageRoute, location);
 		if (selected) currentPage = pageRoute;
+		if (pageRoute.displayInNavbar == false) continue;
 		linksData.push(Object.assign({ selected }, pageRoute));
 	}
 	const links = <NavbarLinks links={linksData} />;
 	const header = <NavbarHeader currentPage={currentPage} />;
-	const signIn = <NavbarSignIn />;
+	const signIn = <NavbarDashboard />;
 
 	const mobileNav = (
 		<>

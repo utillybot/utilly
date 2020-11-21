@@ -49,7 +49,7 @@ export abstract class Subcommand {
 	 * Executes this sub command with the given command context
 	 * @param ctx - the command context this command was run in
 	 */
-	abstract async execute(ctx: CommandContext): Promise<void>;
+	abstract execute(ctx: CommandContext): Promise<void>;
 }
 
 /**

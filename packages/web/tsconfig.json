@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "jsx": "preserve",
+        "jsx": "react-jsx",
         "lib": ["DOM", "DOM.Iterable", "ESNext"],
         "module": "ESNext",
         "noEmit": true,

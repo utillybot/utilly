@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { routes } from '../../routes';
 
 const PreloadLazyComponents = (): JSX.Element => {
@@ -14,6 +14,7 @@ const PreloadLazyComponents = (): JSX.Element => {
 		return (
 			<div hidden>
 				{routes.map(route => {
+					if (route.preLoad == false) return null;
 					const Page = route.page;
 					return <Page preload key={route.path} />;
 				})}
@@ -22,4 +23,4 @@ const PreloadLazyComponents = (): JSX.Element => {
 	return <></>;
 };
 
-export default React.memo(PreloadLazyComponents);
+export default memo(PreloadLazyComponents);

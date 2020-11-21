@@ -1,7 +1,6 @@
 import type { LinkProps } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import styles from './NavbarItem.module.scss';
-import React from 'react';
 import { mc } from '../../../../helpers';
 import useCollapsed from '../../../../hooks/useCollapsed';
 

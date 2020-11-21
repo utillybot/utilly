@@ -1,6 +1,5 @@
 import type { LinkProps } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import React from 'react';
 import { mc } from '../../helpers';
 import styles from './Button.module.scss';
 

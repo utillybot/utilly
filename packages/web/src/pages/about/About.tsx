@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './About.module.scss';
 import { fetchStats } from '../../API';
 import Stat from './components/Stat';

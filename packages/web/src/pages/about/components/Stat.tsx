@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './Stat.module.scss';
 
 interface StatsProps {

@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './CommandCard.module.scss';
 import type { Command } from '../../../../API';
 

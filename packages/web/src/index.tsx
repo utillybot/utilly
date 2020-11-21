@@ -1,4 +1,4 @@
-import React from 'react';
+import { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 import './index.scss';
 import { BrowserRouter } from 'react-router-dom';
@@ -12,11 +12,11 @@ Sentry.init({
 });
 
 ReactDOM.render(
-	<React.StrictMode>
+	<StrictMode>
 		<BrowserRouter>
 			<Navbar />
 			<Routes />
 		</BrowserRouter>
-	</React.StrictMode>,
+	</StrictMode>,
 	document.getElementById('root')
 );

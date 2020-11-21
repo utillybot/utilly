@@ -1,4 +1,3 @@
-import React from 'react';
 import { useParams } from 'react-router-dom';
 import CommandTile from './CommandTile';
 import styles from './CommandModulePage.module.scss';

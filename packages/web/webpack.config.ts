@@ -20,10 +20,7 @@ const config = (): Configuration => {
 	const babelLoader = {
 		loader: 'babel-loader',
 		options: {
-			presets: [
-				'@babel/env',
-				['@babel/preset-react', { runtime: 'automatic' }],
-			],
+			presets: ['@babel/env'],
 			plugins: ['@babel/plugin-transform-runtime'],
 		},
 	};

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import styles from './CommandsErrorBoundary.module.scss';
 import * as Sentry from '@sentry/react';
 

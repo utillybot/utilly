@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './NavbarSignIn.module.scss';
 import NavbarItem from './components/NavbarItem';
 import NavbarContainer from './components/NavbarContainer';

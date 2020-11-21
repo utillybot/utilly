@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './CommandModuleTile.module.scss';
 import { useRouteMatch } from 'react-router-dom';
 import type { CommandModule } from '../../../../API';

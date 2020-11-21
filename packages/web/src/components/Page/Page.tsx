@@ -1,5 +1,4 @@
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
-import React from 'react';
 import styles from './Page.module.scss';
 import { mc } from '../../helpers';
 

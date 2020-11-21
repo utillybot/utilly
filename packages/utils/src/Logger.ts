@@ -57,9 +57,9 @@ export class Logger {
 
 	_log(header: string, msg: string): void {
 		process.stdout.write(
-			`${chalk.grey('[Utilly]')} ${chalk.bold.underline.hex(
-				this.colors[header]
-			)(header)}${' '.repeat(9 - header.length)}${msg}\n`
+			`${chalk.grey('[Utilly]')} ${chalk.bold.underline
+				.hex(this.colors[header])(header)
+				.padStart(9, ' ')}${msg}\n`
 		);
 	}
 }

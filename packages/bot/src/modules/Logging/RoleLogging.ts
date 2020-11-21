@@ -81,8 +81,8 @@ export default class RoleLogging extends AttachableModule {
 		if (role.color != oldRole.color)
 			updatedRoleInfo.push({
 				name: 'Color',
-				old: `#${oldRole.color.toString(16)}`,
-				new: `#${role.color.toString(16)}`,
+				old: `#${oldRole.color.toString(16).padStart(6, '0')}`,
+				new: `#${role.color.toString(16).padStart(6, '0')}`,
 			});
 		if (role.hoist != role.hoist)
 			updatedRoleInfo.push({
@@ -253,7 +253,7 @@ export default class RoleLogging extends AttachableModule {
 		// Prepare role info
 		embed.addField(
 			'Info',
-			`**Color**: #${role.color.toString(16)}\n` +
+			`**Color**: #${role.color.toString(16).padStart(6, '0')}\n` +
 				`**Displayed Separately**: ${role.hoist ? check : xmark}\n` +
 				`**Mentionable**: ${role.mentionable ? check : xmark}\n` +
 				`**Managed**: ${role.managed ? check : xmark}`

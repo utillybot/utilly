@@ -1,4 +1,3 @@
-import React from 'react';
 import CommandModuleTile from './CommandModuleTile';
 import styles from './CommandModulesPage.module.scss';
 import type { CommandsResponse, Resource } from '../../../../API';

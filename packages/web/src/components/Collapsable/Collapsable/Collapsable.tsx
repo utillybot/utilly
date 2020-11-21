@@ -2,7 +2,7 @@ import useCollapsed from '../../../hooks/useCollapsed';
 import styles from './Collapsable.module.scss';
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
 import { mc } from '../../../helpers';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 
 const Collapsable = (
 	props: DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>

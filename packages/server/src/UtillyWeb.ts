@@ -2,9 +2,15 @@ import type { Database } from '@utilly/database';
 import type { UtillyClient } from '@utilly/framework';
 import type { Logger } from '@utilly/utils';
 import 'reflect-metadata';
-import type { Express, NextFunction, Request, Response } from 'express';
+import type { Express } from 'express';
 import express from 'express';
-import path from 'path';
+import { apiController } from './controllers/APIController';
+import { dashboardController } from './controllers/DashboardController';
+import { reactController } from './controllers/ReactController';
+import { removeTrailingSlash } from './middlewares/removeTrailingSlash';
+import { excludeSourceMaps } from './middlewares/excludeSourceMaps';
+import cookieParser from 'cookie-parser';
+import { errorHandler } from './middlewares/errorHandler';
 
 export class UtillyWeb {
 	private _port: number;
@@ -21,54 +27,15 @@ export class UtillyWeb {
 		this._port = port;
 		this.app = express();
 
-		this.app.use((req: Request, res: Response, next: NextFunction) => {
-			const test = /\?[^]*\//.test(req.url);
-			if (req.url.substr(-1) === '/' && req.url.length > 1 && !test)
-				return res.redirect(req.url.slice(0, -1));
-			next();
-		});
+		this.app.use(cookieParser());
+		this.app.use(removeTrailingSlash);
+		this.app.use(excludeSourceMaps);
 
-		this.app.use((req: Request, res: Response, next: NextFunction) => {
-			if (!req.url.endsWith('.map')) next();
-		});
+		this.app.use('/api', apiController(bot));
+		this.app.use('/dashboard', dashboardController(bot));
+		this.app.use(reactController());
 
-		const apiRouter = express.Router();
-
-		apiRouter.get('/api/stats', (req: Request, res: Response): void => {
-			res.status(200).json({
-				guilds: bot.guilds.size,
-				users: bot.users.size,
-			});
-		});
-
-		apiRouter.get('/api/commands', (req: Request, res: Response): void => {
-			res.status(200).json({
-				commandModules: Array.from(
-					bot.commandHandler.commandModules.values()
-				).map(mod => {
-					return {
-						name: mod.info.name,
-						description: mod.info.description,
-						commands: Array.from(mod.commands.values()).map(cmd => cmd.info),
-					};
-				}),
-			});
-		});
-
-		this.app.use(apiRouter);
-
-		this.app.use(
-			express.static(path.join(process.cwd(), 'packages', 'web', 'dist'), {
-				redirect: false,
-				index: false,
-			})
-		);
-
-		this.app.get('*', (req, res) => {
-			res.sendFile(
-				path.join(process.cwd(), 'packages', 'web', 'dist', 'index.html')
-			);
-		});
+		this.app.use(errorHandler(logger));
 	}
 
 	listen(): void {

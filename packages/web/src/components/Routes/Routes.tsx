@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import { Suspense } from 'react';
 import { Route } from 'react-router-dom';
 import { routes } from '../../routes';
 import Spinner from '../Spinner/Spinner';

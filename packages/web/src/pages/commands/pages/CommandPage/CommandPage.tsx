@@ -1,4 +1,3 @@
-import React from 'react';
 import { useParams } from 'react-router-dom';
 import CommandCard from './CommandCard';
 import styles from './CommandPage.module.scss';

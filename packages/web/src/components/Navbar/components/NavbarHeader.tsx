@@ -1,4 +1,3 @@
-import React from 'react';
 import type { RouteData } from '../../../routes';
 import styles from './NavbarHeader.module.scss';
 import NavbarContainer from './components/NavbarContainer';
