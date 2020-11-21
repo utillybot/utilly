@@ -31,7 +31,7 @@ export const GuildSelectorPage = (): JSX.Element => {
 				return res.json();
 			})
 			.then(setResult);
-	}, []);
+	}, [location.pathname]);
 
 	if (result == undefined) return <Spinner />;
 

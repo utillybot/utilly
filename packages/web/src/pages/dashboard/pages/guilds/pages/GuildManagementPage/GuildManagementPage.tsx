@@ -4,9 +4,9 @@ import Page from '../../../../../../components/Page/Page';
 import { Route, useParams } from 'react-router-dom';
 import styles from './GuildManagement.module.scss';
 import { routes } from './routes';
-import { CSSTransition } from 'react-transition-group';
 import { GuildContext } from './components/GuildContext';
 import GuildManagementNavbar from './components/GuildManagementNavbar';
+import { getGuildIcon } from '../../../../helpers';
 
 interface PartialGuild {
 	id: string;
@@ -28,6 +28,9 @@ export const GuildManagementPage = (): JSX.Element => {
 				if (res.status == 401) {
 					document.cookie = `prev=${location.pathname}; path=/;`;
 					window.location.href = '/dashboard/login';
+				} else if (res.status == 404) {
+					document.cookie = `prev=${location.pathname}; path=/;`;
+					window.location.href = `/dashboard/invite?id=${params.id}`;
 				}
 				return res.json();
 			})
@@ -39,23 +42,18 @@ export const GuildManagementPage = (): JSX.Element => {
 	return (
 		<Page className={styles.page}>
 			<GuildContext.Provider value={{ guild: guild }}>
+				<header>
+					<img src={getGuildIcon(guild.id, guild.icon)} alt="Guild Icon" />
+					<h1>{guild.name}</h1>
+				</header>
 				<GuildManagementNavbar />
 				{routes.map(({ exact, name, path, page }) => (
-					<Route exact={exact ?? true} key={name} path={path}>
-						{({ match }) => {
-							const Page = page;
-							return (
-								<CSSTransition
-									in={match != null}
-									timeout={800}
-									classNames={{ ...styles }}
-									unmountOnExit
-								>
-									<Page />
-								</CSSTransition>
-							);
-						}}
-					</Route>
+					<Route
+						exact={exact ?? true}
+						key={name}
+						path={path}
+						component={page}
+					/>
 				))}
 			</GuildContext.Provider>
 		</Page>

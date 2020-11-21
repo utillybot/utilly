@@ -1,7 +1,6 @@
 .page {
 	width: 100%;
-	padding-top: calc(100% - (98% - 40px));
-	min-height: 100%;
-	position: absolute;
+	margin-top: calc(100% - (98% - 40px));
 	flex: 1;
+	overflow-y: auto;
 }

@@ -6,11 +6,7 @@ const GuildRouter = (): JSX.Element => {
 	return (
 		<>
 			<Route exact path="/dashboard/guilds" component={GuildSelectorPage} />
-			<Route
-				exact
-				path="/dashboard/guilds/:id"
-				component={GuildManagementPage}
-			/>
+			<Route path="/dashboard/guilds/:id" component={GuildManagementPage} />
 		</>
 	);
 };

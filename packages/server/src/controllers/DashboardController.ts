@@ -121,7 +121,32 @@ export const dashboardController = (bot: UtillyClient): Router => {
 			);
 		})
 
+		.get('/invite', (req, res) => {
+			if (req.query.id && typeof req.query.id == 'string') {
+				return res.redirect(
+					oAuth.generateAuthUrl({
+						guildId: req.query.id,
+						disableGuildSelect: true,
+						permissions: 573926593,
+						scope: 'bot',
+						redirectUri:
+							req.protocol + '://' + req.get('host') + '/dashboard/callback',
+					})
+				);
+			} else {
+				return res.redirect(
+					oAuth.generateAuthUrl({
+						permissions: 573926593,
+						scope: 'bot',
+						redirectUri:
+							req.protocol + '://' + req.get('host') + '/dashboard/callback',
+					})
+				);
+			}
+		})
+
 		.get('/callback', async (req, res, next) => {
+			if (req.query.error as string) return res.redirect('/dashboard/error');
 			const code: string | undefined = req.query.code as string;
 			if (!code) return res.status(400).send('No access code provided.');
 
@@ -140,7 +165,9 @@ export const dashboardController = (bot: UtillyClient): Router => {
 				return next(error);
 			}
 
-			if (response.scope != scope.join(' ')) {
+			if (response.scope == 'bot') {
+				res.redirect('/dashboard');
+			} else if (response.scope != scope.join(' ')) {
 				res.redirect('/dashboard/login');
 			} else {
 				res

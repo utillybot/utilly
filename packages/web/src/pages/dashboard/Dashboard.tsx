@@ -1,9 +1,8 @@
 import Guilds from './pages/Guilds/Guilds';
 import { Route, Redirect } from 'react-router-dom';
 import { getCookie } from '../../helpers';
-import Button from '../../components/Button/Button';
-import styles from './Dashboard.module.scss';
-import Page from '../../components/Page/Page';
+import DashboardHome from './pages/home/DashboardHome';
+import DashboardError from './pages/error/DashboardError';
 
 const Dashboard = (): JSX.Element => {
 	// prev cookie exists after oauth2 flow
@@ -11,7 +10,7 @@ const Dashboard = (): JSX.Element => {
 	if (prev != null) {
 		document.cookie =
 			'prev=; expires=Thu, 01 Jan 1970 00:00:00 UTC; max-age=0; path=/;';
-		return <Redirect to={prev} />;
+		if (location.pathname != '/dashboard/error') return <Redirect to={prev} />;
 	}
 
 	return (
@@ -19,12 +18,11 @@ const Dashboard = (): JSX.Element => {
 			<Route path="/dashboard/guilds">
 				<Guilds />
 			</Route>
+			<Route exact path="/dashboard/error">
+				<DashboardError />
+			</Route>
 			<Route exact path="/dashboard">
-				<Page>
-					<Button className={styles.button} to="/dashboard/guilds">
-						Go to Servers
-					</Button>
-				</Page>
+				<DashboardHome />
 			</Route>
 		</>
 	);

@@ -16,3 +16,21 @@ body {
 }
 
 * { box-sizing: border-box; }
+
+::-webkit-scrollbar {
+	width: 15px;
+}
+
+::-webkit-scrollbar-track {
+	background: #282828;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+	background: #404040;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+	background: #606060;
+}
