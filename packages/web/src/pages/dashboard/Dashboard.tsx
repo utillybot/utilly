@@ -1,4 +1,4 @@
-import Guilds from './pages/Guilds/Guilds';
+import Guilds from './pages/guilds/Guilds';
 import { Route, Redirect } from 'react-router-dom';
 import { getCookie } from '../../helpers';
 import DashboardHome from './pages/home/DashboardHome';
