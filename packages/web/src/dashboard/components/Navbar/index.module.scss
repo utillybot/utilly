@@ -1,0 +1,44 @@
+.navbar {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 8px;
+	width: 100%;
+
+	.navbar-section {
+		display: flex;
+		flex-direction: row;
+		flex: 1;
+	}
+
+	.back {
+		justify-content: flex-start;
+		.button {
+			padding: 10px;
+		}
+	}
+
+	.links {
+		justify-content: center;
+		.navbar-item {
+			color: white;
+			text-decoration: none;
+			padding: 10px 20px;
+
+			&:hover {
+				color: #b3b3b3;
+			}
+		}
+
+		.active {
+			color: #b3b3b3;
+		}
+	}
+	.profile {
+		justify-content: flex-end;
+		img {
+			margin-left: 20px;
+			border-radius: 50%;
+		}
+	}
+}
