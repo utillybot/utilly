@@ -2,8 +2,7 @@ import { useContext } from 'react';
 import UserContext from './index';
 
 const useUserContext = (): User | undefined => {
-	const context = useContext(UserContext);
-	return context;
+	return useContext(UserContext);
 };
 
 export default useUserContext;

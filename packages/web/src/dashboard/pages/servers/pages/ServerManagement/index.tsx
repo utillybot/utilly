@@ -19,7 +19,7 @@ interface PartialGuild {
 	permissions_new?: string;
 }
 
-const GuildManagement = (): JSX.Element => {
+const ServerManagement = (): JSX.Element => {
 	const [guild, setGuild] = useState<PartialGuild | undefined>(undefined);
 	const params = useParams<{ id: string }>();
 
@@ -54,4 +54,4 @@ const GuildManagement = (): JSX.Element => {
 	);
 };
 
-export default GuildManagement;
+export default ServerManagement;

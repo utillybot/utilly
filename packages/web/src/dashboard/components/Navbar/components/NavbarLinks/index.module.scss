@@ -1,0 +1,17 @@
+.links {
+	justify-content: center;
+
+	.item {
+		color: white;
+		text-decoration: none;
+		padding: 10px 20px;
+
+		&:hover {
+			color: #b3b3b3;
+		}
+	}
+
+	.active {
+		color: #b3b3b3;
+	}
+}

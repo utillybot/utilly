@@ -1,4 +1,4 @@
-import styles from './GuildTile.module.scss';
+import styles from './ServerTile.module.scss';
 import { mc } from '../../../../../helpers';
 import Button from '../../../../../components/Button';
 import { getGuildIcon } from '../../../../helpers';
@@ -13,16 +13,16 @@ interface PartialGuild {
 	permissions_new?: string;
 }
 
-interface GuildTileProps {
+interface ServerTileProps {
 	guild: PartialGuild;
 	inactive?: boolean;
 }
 
-const GuildTile = ({ guild, inactive }: GuildTileProps): JSX.Element => {
+const ServerTile = ({ guild, inactive }: ServerTileProps): JSX.Element => {
 	return (
 		<Button
 			className={mc(styles.tile, { [styles.inactive]: inactive })}
-			to={`/dashboard/guilds/${guild.id}`}
+			to={`/dashboard/servers/${guild.id}`}
 		>
 			<img src={getGuildIcon(guild.id, guild.icon)} alt="Guild Icon" />
 			<p>{guild.name}</p>
@@ -30,4 +30,4 @@ const GuildTile = ({ guild, inactive }: GuildTileProps): JSX.Element => {
 	);
 };
 
-export default GuildTile;
+export default ServerTile;

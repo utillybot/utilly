@@ -28,7 +28,7 @@ const Hamburger = (): JSX.Element => {
 			aria-label="Toggle Collapsable"
 			onClick={() => setCollapsed(prevState => !prevState)}
 		>
-			<svg viewBox="0 0 10 10" width="30">
+			<svg viewBox="0 0 10 10" width="30" height="30">
 				{[
 					[1, 2, 8],
 					[1, 5, 8],
