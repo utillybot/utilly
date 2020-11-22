@@ -1,9 +1,11 @@
-import type { NavbarRouteData } from '../components/Routes/types';
+import type { NavbarRouteData, RouteData } from '../components/Routes/types';
 import Home from './pages/home';
 import Servers from './pages/servers';
 import Error from './pages/error';
+import Done from './pages/Done';
+import Login from './pages/login';
 
-export const routes: NavbarRouteData[] = [
+export const protectedRoutes: NavbarRouteData[] = [
 	{
 		path: '/dashboard',
 		name: 'Home',
@@ -16,11 +18,22 @@ export const routes: NavbarRouteData[] = [
 		page: Servers,
 		exact: false,
 	},
+];
+
+export const staticRoutes: RouteData[] = [
+	{
+		path: '/dashboard/login',
+		page: Login,
+		exact: true,
+	},
 	{
 		path: '/dashboard/error',
-		name: 'Error',
 		page: Error,
 		exact: true,
-		displayInNavbar: false,
+	},
+	{
+		path: '/dashboard/done',
+		page: Done,
+		exact: true,
 	},
 ];

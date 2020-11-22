@@ -20,7 +20,10 @@ const ProfileDropdown = ({ profileRef }: ProfileDropdownProps): JSX.Element => {
 				<Button to="/dashboard/servers" onClick={() => setCollapsed(true)}>
 					My Servers
 				</Button>
-				<Button to="/dashboard/logout" onClick={() => setCollapsed(true)}>
+				<Button
+					to="/dashboard/logout"
+					onClick={() => document.location.assign('/dashboard/logout')}
+				>
 					Logout
 				</Button>
 			</Collapsable>

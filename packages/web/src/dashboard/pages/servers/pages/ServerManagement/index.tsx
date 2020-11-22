@@ -6,8 +6,8 @@ import { routes } from './routes';
 import GuildContext from './components/GuildContext';
 import Navbar from './components/Navbar';
 import { getGuildIcon } from '../../../../helpers';
-import Routes from '../../../../../components/Routes';
 import Page from '../../../../components/Page';
+import parseRoutes from '../../../../../components/Routes';
 
 interface PartialGuild {
 	id: string;
@@ -31,7 +31,7 @@ const ServerManagement = (): JSX.Element => {
 					window.location.assign('/dashboard/login');
 				} else if (res.status == 404) {
 					document.cookie = `prev=${location.pathname}; path=/;`;
-					window.location.assign('/dashboard/invite?id=${params.id}');
+					window.location.assign(`/dashboard/invite?id=${params.id}`);
 				}
 				return res.json();
 			})
@@ -48,7 +48,7 @@ const ServerManagement = (): JSX.Element => {
 					<h1>{guild.name}</h1>
 				</header>
 				<Navbar />
-				<Routes routes={routes} />
+				{parseRoutes(routes)}
 			</GuildContext.Provider>
 		</Page>
 	);

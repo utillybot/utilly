@@ -1,4 +1,4 @@
-import { routes } from '../../../../routes';
+import { protectedRoutes } from '../../../../routes';
 import { NavLink } from 'react-router-dom';
 import styles from './index.module.scss';
 import useCollapsed from '../../../../../components/Collapsable/CollapsableContext/useCollapsed';
@@ -8,7 +8,7 @@ const NavbarLinks = (): JSX.Element => {
 	const { setCollapsed } = useCollapsed();
 	return (
 		<NavbarSection className={styles.links}>
-			{routes.map(
+			{protectedRoutes.map(
 				({ path, name, exact, displayInNavbar }) =>
 					(displayInNavbar ?? true) && (
 						<NavLink

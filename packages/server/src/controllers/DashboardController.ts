@@ -110,7 +110,7 @@ export const dashboardController = (bot: UtillyClient): Router => {
 		}
 	};
 	return Router()
-		.get('/login', (req, res) => {
+		.get('/authorize', (req, res) => {
 			res.redirect(
 				oAuth.generateAuthUrl({
 					scope,
@@ -119,6 +119,23 @@ export const dashboardController = (bot: UtillyClient): Router => {
 						req.protocol + '://' + req.get('host') + '/dashboard/callback',
 				})
 			);
+		})
+		.get('/oldLogin', (req, res) => {
+			res.redirect(
+				oAuth.generateAuthUrl({
+					scope,
+					responseType: 'code',
+					redirectUri:
+						req.protocol +
+						'://' +
+						req.get('host') +
+						'/dashboard/callback?type=old',
+				})
+			);
+		})
+
+		.get('/logout', (req, res) => {
+			res.clearCookie('token').redirect('/');
 		})
 
 		.get('/invite', (req, res) => {
@@ -146,7 +163,11 @@ export const dashboardController = (bot: UtillyClient): Router => {
 		})
 
 		.get('/callback', async (req, res, next) => {
-			if (req.query.error as string) return res.redirect('/dashboard/error');
+			const old = req.query.type == 'old';
+			if (req.query.error as string)
+				return res
+					.cookie('error', req.query.error)
+					.redirect(old ? '/dashboard/error' : '/dashboard/done');
 			const code: string | undefined = req.query.code as string;
 			if (!code) return res.status(400).send('No access code provided.');
 
@@ -157,7 +178,10 @@ export const dashboardController = (bot: UtillyClient): Router => {
 					scope,
 					grantType: 'authorization_code',
 					redirectUri:
-						req.protocol + '://' + req.get('host') + '/dashboard/callback',
+						req.protocol +
+						'://' +
+						req.get('host') +
+						`/dashboard/callback${old ? '?type=old' : ''}`,
 				});
 			} catch (error) {
 				if ('code' in error && error.code == 400)
@@ -166,9 +190,9 @@ export const dashboardController = (bot: UtillyClient): Router => {
 			}
 
 			if (response.scope == 'bot') {
-				res.redirect('/dashboard');
+				res.redirect(req.cookies.prev ?? '/dashboard');
 			} else if (response.scope != scope.join(' ')) {
-				res.redirect('/dashboard/login');
+				res.redirect(old ? '/dashboard/oldLogin' : '/dashboard/authorize');
 			} else {
 				res
 					.cookie(
@@ -181,8 +205,9 @@ export const dashboardController = (bot: UtillyClient): Router => {
 							maxAge: response.expires_in * 1000,
 						}
 					)
-					.redirect(`/dashboard`);
+					.redirect(old ? '/dashboard' : '/dashboard/done');
 			}
 		})
+
 		.use('/api', checkToken, dashboardAPIController(bot, oAuth));
 };

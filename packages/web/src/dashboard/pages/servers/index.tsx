@@ -1,7 +1,7 @@
 import ServerSelector from './pages/ServerSelector';
 import ServerManagement from './pages/ServerManagement';
 import type { RouteData } from '../../../components/Routes/types';
-import Routes from '../../../components/Routes';
+import parseRoutes from '../../../components/Routes';
 
 const routes: RouteData[] = [
 	{
@@ -17,11 +17,7 @@ const routes: RouteData[] = [
 ];
 
 const Servers = (): JSX.Element => {
-	return (
-		<>
-			<Routes routes={routes} />
-		</>
-	);
+	return <>{parseRoutes(routes)}</>;
 };
 
 export default Servers;

@@ -41,20 +41,20 @@ const constructMediaQuery = (
 	return `(${query[0]}: ${query[1].join('')})`;
 };
 
-export const getCookie = (cname: string): string | null => {
-	const name = cname + '=';
-	const decodedCookie = decodeURIComponent(document.cookie);
-	const ca = decodedCookie.split(';');
-	for (let i = 0; i < ca.length; i++) {
-		let c = ca[i];
-		while (c.charAt(0) == ' ') {
-			c = c.substring(1);
+export const getCookie = (cookieKey: string): string | undefined => {
+	const cookieName = `${cookieKey}=`;
+
+	const cookieArray = document.cookie.split(';');
+
+	for (let cookie of cookieArray) {
+		while (cookie.charAt(0) == ' ') {
+			cookie = cookie.substring(1, cookie.length);
 		}
-		if (c.indexOf(name) == 0) {
-			return c.substring(name.length, c.length);
+
+		if (cookie.indexOf(cookieName) == 0) {
+			return cookie.substring(cookieName.length, cookie.length);
 		}
 	}
-	return null;
 };
 
 export const mc = mergeCSSClasses;

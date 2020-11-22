@@ -19,7 +19,7 @@ const Home = (): JSX.Element => {
 			<h1>
 				Welcome to your dashboard {user.username}#{user.discriminator}
 			</h1>
-			<Button className={styles.button} to="/dashboard/guilds">
+			<Button className={styles.button} to="/dashboard/servers">
 				Go to Servers
 			</Button>
 		</Page>
