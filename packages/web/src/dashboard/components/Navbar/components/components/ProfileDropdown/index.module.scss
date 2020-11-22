@@ -1,0 +1,22 @@
+.dropdown {
+	z-index: 3;
+	position: absolute;
+	top: var(--navbar-height);
+	display: flex;
+	flex-direction: column;
+	background-color: rgba(0, 0, 0, 0.3);
+
+	a {
+		width: 100%;
+		padding: 15px 0;
+		backdrop-filter: blur(30px);
+
+		&:hover {
+			background-color: rgba(0, 0, 0, 0.7);
+		}
+	}
+
+	@media screen and (max-width: 767px) {
+		width: 150px !important;
+	}
+}
