@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Spinner from '../../../../../components/Spinner';
 import styles from './index.module.scss';
-import GuildTile from './GuildTile';
+import ServerTile from './ServerTile';
 import { useLocation } from 'react-router-dom';
 import Page from '../../../../components/Page';
 
@@ -15,7 +15,7 @@ interface PartialGuild {
 	permissions_new?: string;
 }
 
-const GuildSelector = (): JSX.Element => {
+const ServerSelector = (): JSX.Element => {
 	const [result, setResult] = useState<
 		{ present: PartialGuild[]; notPresent: PartialGuild[] } | undefined
 	>(undefined);
@@ -44,14 +44,14 @@ const GuildSelector = (): JSX.Element => {
 			</h3>
 			<div className={styles.servers}>
 				{result.present.map(guild => (
-					<GuildTile key={guild.id} guild={guild} />
+					<ServerTile key={guild.id} guild={guild} />
 				))}
 				{result.notPresent.map(guild => (
-					<GuildTile key={guild.id} guild={guild} inactive />
+					<ServerTile key={guild.id} guild={guild} inactive />
 				))}
 			</div>
 		</Page>
 	);
 };
 
-export default GuildSelector;
+export default ServerSelector;
