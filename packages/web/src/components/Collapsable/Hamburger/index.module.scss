@@ -1,4 +1,3 @@
-
 .hamburger {
 	display: block;
 	background-color: rgba(0, 0, 0, 0);
@@ -6,10 +5,10 @@
 	cursor: pointer;
 	overflow: hidden;
 	outline: none;
-}
 
-.hamburger:hover {
-	background-color: rgba(0, 0, 0, 0.5);
+	&:hover {
+		background-color: rgba(0, 0, 0, 0.5);
+	}
 }
 
 .line {
@@ -20,26 +19,28 @@
 	stroke-linecap: round;
 }
 
-.open.line:nth-child(1) {
-	transform: translateY(0) translateX(3px) rotate(45deg);
+.open {
+	&.line:nth-child(1) {
+		transform: translateY(0) translateX(3px) rotate(45deg);
+	}
+	&.line:nth-child(2) {
+		opacity: 0;
+	}
+	&.line:nth-child(3) {
+		transform: translateY(3px) translateX(-4px) rotate(-45deg);
+	}
 }
 
-.open.line:nth-child(2) {
-	opacity: 0;
-}
+.collapsed {
+	&.line:nth-child(1) {
+		transform: translateY(0px) translateX(0px) rotate(0deg);
+	}
 
-.open.line:nth-child(3) {
-	transform: translateY(3px) translateX(-4px) rotate(-45deg);
-}
+	&.line:nth-child(2) {
+		opacity: 1;
+	}
 
-.collapsed.line:nth-child(1) {
-	transform: translateY(0px) translateX(0px) rotate(0deg);
-}
-
-.collapsed.line:nth-child(2) {
-	opacity: 1;
-}
-
-.collapsed.line:nth-child(3) {
-	transform: translateY(0px) translateX(0px) rotate(0deg);
+	&.line:nth-child(3) {
+		transform: translateY(0px) translateX(0px) rotate(0deg);
+	}
 }

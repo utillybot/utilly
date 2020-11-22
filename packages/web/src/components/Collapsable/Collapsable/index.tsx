@@ -1,7 +1,7 @@
 import useCollapsed from '../CollapsableContext/useCollapsed';
 import styles from './index.module.scss';
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
-import { mc } from '../../../helpers';
+import { mc, ms } from '../../../helpers';
 import { useRef } from 'react';
 
 const Collapsable = (
@@ -18,11 +18,12 @@ const Collapsable = (
 				[styles.collapsed]: collapsed,
 				[styles.collapsable]: true,
 			})}
-			style={
+			style={ms(
+				props.style,
 				!collapsed
 					? { maxHeight: containerRef.current?.scrollHeight + 'px' }
 					: undefined
-			}
+			)}
 		/>
 	);
 };

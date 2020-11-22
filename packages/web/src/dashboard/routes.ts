@@ -1,6 +1,6 @@
 import type { NavbarRouteData } from '../components/Routes/types';
 import Home from './pages/home';
-import Guilds from './pages/guilds';
+import Servers from './pages/servers';
 import Error from './pages/error';
 
 export const routes: NavbarRouteData[] = [
@@ -11,9 +11,9 @@ export const routes: NavbarRouteData[] = [
 		exact: true,
 	},
 	{
-		path: '/dashboard/guilds',
+		path: '/dashboard/servers',
 		name: 'Servers',
-		page: Guilds,
+		page: Servers,
 		exact: false,
 	},
 	{

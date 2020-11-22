@@ -1,8 +1,10 @@
+import type { CSSProperties } from 'react';
+
 /**
  * Merge the provided css classes
  * @param classes - css classnames or an object mapping a classname to a boolean of whether it should be added
  */
-const mergeCssClasses = (
+const mergeCSSClasses = (
 	...classes: Array<string | { [key: string]: boolean | undefined } | undefined>
 ): string => {
 	let result = '';
@@ -17,6 +19,18 @@ const mergeCssClasses = (
 	}
 
 	return result;
+};
+
+const mergeCSSStyles = (
+	...styles: Array<CSSProperties | undefined>
+): CSSProperties => {
+	let props: CSSProperties = {};
+
+	for (const style of styles) {
+		if (!style) continue;
+		props = Object.assign(props, style);
+	}
+	return props;
 };
 
 const constructMediaQuery = (
@@ -43,5 +57,6 @@ export const getCookie = (cname: string): string | null => {
 	return null;
 };
 
-export const mc = mergeCssClasses;
+export const mc = mergeCSSClasses;
+export const ms = mergeCSSStyles;
 export const cmq = constructMediaQuery;
