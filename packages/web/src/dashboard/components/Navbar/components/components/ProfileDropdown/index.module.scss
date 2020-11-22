@@ -4,16 +4,15 @@
 	top: var(--navbar-height);
 	display: flex;
 	flex-direction: column;
-	backdrop-filter: blur(30px);
 	background-color: rgba(0, 0, 0, 0.3);
 
 	a {
 		width: 100%;
 		padding: 15px 0;
-		background-color: transparent;
+		backdrop-filter: blur(30px);
 
 		&:hover {
-			background-color: rgba(0, 0, 0, 0.5);
+			background-color: rgba(0, 0, 0, 0.7);
 		}
 	}
 
