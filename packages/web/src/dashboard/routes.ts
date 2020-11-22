@@ -2,7 +2,7 @@ import type { NavbarRouteData, RouteData } from '../components/Routes/types';
 import Home from './pages/home';
 import Servers from './pages/servers';
 import Error from './pages/error';
-import Done from './pages/Done';
+import Done from './pages/done';
 import Login from './pages/login';
 
 export const protectedRoutes: NavbarRouteData[] = [
