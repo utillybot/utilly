@@ -3,21 +3,16 @@ import styles from './index.module.scss';
 import { fetchStats } from '../../API';
 import Stat from './components/Stat';
 import Page from '../../components/Page';
-import * as Sentry from '@sentry/react';
 
 const About = (): JSX.Element => {
 	const [guilds, setGuilds] = useState<number>();
 	const [users, setUsers] = useState<number>();
 
 	const tick = async () => {
-		try {
-			const stats = await fetchStats();
-			if (stats) {
-				setGuilds(stats.guilds);
-				setUsers(stats.users);
-			}
-		} catch (error: unknown) {
-			Sentry.captureException(error);
+		const stats = await fetchStats();
+		if (stats) {
+			setGuilds(stats.guilds);
+			setUsers(stats.users);
 		}
 	};
 

@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { Component } from 'react';
 import styles from './index.module.scss';
-import * as Sentry from '@sentry/react';
 
 interface CommandsErrorBoundaryState {
 	hasError: boolean;
@@ -11,10 +10,6 @@ class ErrorBoundary extends Component<unknown, CommandsErrorBoundaryState> {
 
 	static getDerivedStateFromError(): CommandsErrorBoundaryState {
 		return { hasError: true };
-	}
-
-	componentDidCatch(error: Error): void {
-		Sentry.captureException(error);
 	}
 
 	render(): JSX.Element | ReactNode {

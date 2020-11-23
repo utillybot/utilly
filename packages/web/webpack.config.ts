@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import SentryWebpackPlugin from '@sentry/webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
@@ -108,15 +107,6 @@ const config = (): Configuration => {
 			new MiniCssExtractPlugin({
 				filename: 'static/css/[name].[contenthash].css',
 				chunkFilename: 'static/css/[id].[contenthash].css',
-			}),
-			new SentryWebpackPlugin({
-				// sentry-cli configuration
-				authToken: process.env.SENTRY_AUTH_TOKEN,
-				org: 'utilly',
-				project: 'utilly-website',
-
-				// webpack specific configuration
-				include: './dist',
 			})
 		);
 		baseConfig.output!.filename = 'static/js/[name].[contenthash].js';
