@@ -57,6 +57,10 @@ export const getCookie = (cookieKey: string): string | undefined => {
 	}
 };
 
+export const deleteCookie = (cookieKey: string): void => {
+	document.cookie = `${cookieKey}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; max-age=0; path=/;`;
+};
+
 export const mc = mergeCSSClasses;
 export const ms = mergeCSSStyles;
 export const cmq = constructMediaQuery;

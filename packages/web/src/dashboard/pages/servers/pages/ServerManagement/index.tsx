@@ -8,6 +8,8 @@ import Navbar from './components/Navbar';
 import { getGuildIcon } from '../../../../helpers';
 import Page from '../../../../components/Page';
 import parseRoutes from '../../../../../components/Routes';
+import { getCookie } from '../../../../../helpers';
+import useAuthorization from '../../../../../hooks/useAuthorization';
 
 interface PartialGuild {
 	id: string;
@@ -31,7 +33,6 @@ const ServerManagement = (): JSX.Element => {
 					window.location.assign('/dashboard/login');
 				} else if (res.status == 404) {
 					document.cookie = `prev=${location.pathname}; path=/;`;
-					window.location.assign(`/dashboard/invite?id=${params.id}`);
 				}
 				return res.json();
 			})

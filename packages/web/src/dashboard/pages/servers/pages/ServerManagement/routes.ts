@@ -1,5 +1,6 @@
 import type { NavbarRouteData } from '../../../../../components/Routes/types';
-import Overview from './pages/overview/Overview';
+import Overview from './pages/overview';
+import Settings from './pages/settings';
 
 export const routes: NavbarRouteData[] = [
 	{
@@ -11,7 +12,7 @@ export const routes: NavbarRouteData[] = [
 	{
 		path: '/dashboard/servers/:id/settings',
 		name: 'Settings',
-		page: Overview,
+		page: Settings,
 		exact: true,
 	},
 	{

@@ -147,7 +147,10 @@ export const dashboardController = (bot: UtillyClient): Router => {
 						permissions: 573926593,
 						scope: 'bot',
 						redirectUri:
-							req.protocol + '://' + req.get('host') + '/dashboard/callback',
+							req.protocol +
+							'://' +
+							req.get('host') +
+							'/dashboard/guild-callback',
 					})
 				);
 			} else {
@@ -156,10 +159,22 @@ export const dashboardController = (bot: UtillyClient): Router => {
 						permissions: 573926593,
 						scope: 'bot',
 						redirectUri:
-							req.protocol + '://' + req.get('host') + '/dashboard/callback',
+							req.protocol +
+							'://' +
+							req.get('host') +
+							'/dashboard/guild-callback',
 					})
 				);
 			}
+		})
+
+		.get('/guild-callback', (req, res) => {
+			const old = req.query.type == 'old';
+			if (req.query.error as string) return res.redirect('/dashboard/done');
+
+			const url = old ? req.cookies.prev ?? '/dashboard' : '/dashboard/done';
+			if (old && req.cookies.prev) res.clearCookie('prev');
+			res.redirect(url);
 		})
 
 		.get('/callback', async (req, res, next) => {
@@ -189,12 +204,13 @@ export const dashboardController = (bot: UtillyClient): Router => {
 				return next(error);
 			}
 
-			if (response.scope == 'bot') {
-				res.redirect(req.cookies.prev ?? '/dashboard');
-			} else if (response.scope != scope.join(' ')) {
+			if (response.scope != scope.join(' ')) {
 				res.redirect(old ? '/dashboard/oldLogin' : '/dashboard/authorize');
 			} else {
+				const url = old ? req.cookies.prev ?? '/dashboard' : '/dashboard/done';
+				if (old && req.cookies.prev) res.clearCookie('prev');
 				res
+					.cookie('success', true)
 					.cookie(
 						'token',
 						await sign(response, tokenSecret, {
@@ -205,7 +221,7 @@ export const dashboardController = (bot: UtillyClient): Router => {
 							maxAge: response.expires_in * 1000,
 						}
 					)
-					.redirect(old ? '/dashboard' : '/dashboard/done');
+					.redirect(url);
 			}
 		})
 

@@ -1,18 +1,19 @@
-import useGuildContext from '../../components/GuildContext/useGuildContext';
 import { useEffect, useState } from 'react';
+import useGuildContext from '../../components/GuildContext/useGuildContext';
 import Spinner from '../../../../../../../components/Spinner';
+import styles from './index.module.scss';
 
-export interface GuildOverview {
+export interface GuildSettings {
 	prefix: string[];
 }
 
-const Overview = (): JSX.Element => {
-	const [overview, setOverview] = useState<GuildOverview | undefined>(
+const Settings = (): JSX.Element => {
+	const [settings, setSettings] = useState<GuildSettings | undefined>(
 		undefined
 	);
 	const guild = useGuildContext().guild;
 	useEffect(() => {
-		fetch(`/dashboard/api/guilds/${guild.id}/overview`)
+		fetch(`/dashboard/api/guilds/${guild.id}/settings`)
 			.then(res => {
 				if (res.status == 401) {
 					document.cookie = `prev=${location.pathname}; path=/;`;
@@ -20,20 +21,20 @@ const Overview = (): JSX.Element => {
 				}
 				return res.json();
 			})
-			.then(setOverview);
+			.then(setSettings);
 	}, [guild.id]);
 
-	if (overview == undefined) return <Spinner />;
+	if (settings == undefined) return <Spinner />;
 	return (
-		<>
+		<div className={styles.container}>
 			<h2>Prefixes:</h2>
 			<ul>
-				{overview.prefix.map(prefix => {
+				{settings.prefix.map(prefix => {
 					return <li key={prefix}>{prefix}</li>;
 				})}
 			</ul>
-		</>
+		</div>
 	);
 };
 
-export default Overview;
+export default Settings;
