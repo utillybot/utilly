@@ -1,25 +1,16 @@
-import { useEffect, useState } from 'react';
 import UserContext from '../UserContext';
 import Navbar from '../Navbar';
 import { protectedRoutes } from '../../routes';
 import parseRoutes from '../../../components/Routes';
+import useProtectedFetch from '../../hooks/useProtectedFetch';
+import type { User } from '../../types';
 
 const ProtectedDashboard = (): JSX.Element => {
-	const [user, setUser] = useState<User | undefined>(undefined);
+	const fetchResult = useProtectedFetch<User>('/dashboard/api/users');
 
-	useEffect(() => {
-		fetch('/dashboard/api/users')
-			.then(res => {
-				if (res.status == 401) {
-					document.cookie = `prev=${location.pathname}; path=/;`;
-					window.location.assign('/dashboard/login');
-				}
-				return res.json();
-			})
-			.then(setUser);
-	}, []);
+	if (!fetchResult[0]) return fetchResult[1];
 
-	if (!user) return <></>;
+	const user = fetchResult[1];
 
 	return (
 		<UserContext.Provider value={user}>

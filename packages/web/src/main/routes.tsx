@@ -1,6 +1,6 @@
 import Home from './pages/home';
 import About from './pages/about';
-import { lazy } from 'react';
+import Commands from './pages/commands';
 import type { NavbarRouteData } from '../components/Routes/types';
 
 export const routes: NavbarRouteData[] = [
@@ -19,7 +19,7 @@ export const routes: NavbarRouteData[] = [
 	{
 		path: '/commands',
 		name: 'Commands',
-		page: lazy(() => import('./pages/commands')),
+		page: Commands,
 		exact: false,
 	},
 ];

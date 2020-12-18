@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-import Spinner from '../../../../../components/Spinner';
 import { useParams } from 'react-router-dom';
 import styles from './index.module.scss';
 import { routes } from './routes';
@@ -8,38 +6,20 @@ import Navbar from './components/Navbar';
 import { getGuildIcon } from '../../../../helpers';
 import Page from '../../../../components/Page';
 import parseRoutes from '../../../../../components/Routes';
-import { getCookie } from '../../../../../helpers';
-import useAuthorization from '../../../../../hooks/useAuthorization';
-
-interface PartialGuild {
-	id: string;
-	name: string;
-	icon: string | null | undefined;
-	owner?: boolean;
-	permissions?: number;
-	features: string[];
-	permissions_new?: string;
-}
+import useProtectedFetch from '../../../../hooks/useProtectedFetch';
+import type { PartialGuild } from '../../../../types';
 
 const ServerManagement = (): JSX.Element => {
-	const [guild, setGuild] = useState<PartialGuild | undefined>(undefined);
 	const params = useParams<{ id: string }>();
 
-	useEffect(() => {
-		fetch(`/dashboard/api/guilds/${params.id}`)
-			.then(res => {
-				if (res.status == 401) {
-					document.cookie = `prev=${location.pathname}; path=/;`;
-					window.location.assign('/dashboard/login');
-				} else if (res.status == 404) {
-					document.cookie = `prev=${location.pathname}; path=/;`;
-				}
-				return res.json();
-			})
-			.then(setGuild);
-	}, [params.id]);
+	const fetchResult = useProtectedFetch<PartialGuild>(
+		`/dashboard/api/guilds/${params.id}`,
+		true
+	);
 
-	if (guild == undefined) return <Spinner />;
+	if (!fetchResult[0]) return fetchResult[1];
+
+	const guild = fetchResult[1];
 
 	return (
 		<Page className={styles.page}>

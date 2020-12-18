@@ -5,7 +5,7 @@ import GuildContext from './index';
 const useGuildContext = (): GuildContextValue => {
 	const context = useContext(GuildContext);
 	if (!context)
-		throw new Error('useCollapsed hook used outside of GuildContext');
+		throw new Error('useGuildContext hook used outside of GuildContext');
 	return context;
 };
 

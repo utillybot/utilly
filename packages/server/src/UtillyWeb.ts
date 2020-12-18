@@ -11,6 +11,8 @@ import { removeTrailingSlash } from './middlewares/removeTrailingSlash';
 import { excludeSourceMaps } from './middlewares/excludeSourceMaps';
 import cookieParser from 'cookie-parser';
 import { errorHandler } from './middlewares/errorHandler';
+import session from 'express-session';
+import pgsession from 'connect-pg-simple';
 
 export class UtillyWeb {
 	private _port: number;
@@ -23,10 +25,30 @@ export class UtillyWeb {
 		database: Database,
 		bot: UtillyClient
 	) {
+		if (!process.env.TOKEN_SECRET)
+			throw new Error('JWT Token Secret not provided');
+
 		this._logger = logger;
 		this._port = port;
 		this.app = express();
 
+		this.app.use(
+			session({
+				name: 'session',
+				secret: process.env.TOKEN_SECRET,
+				resave: true,
+				saveUninitialized: false,
+
+				store: new (pgsession(session))({
+					conObject: {
+						connectionString: process.env.DATABASE_URL,
+						ssl: {
+							rejectUnauthorized: false,
+						},
+					},
+				}),
+			})
+		);
 		this.app.use(cookieParser());
 		this.app.use(removeTrailingSlash);
 		this.app.use(excludeSourceMaps);

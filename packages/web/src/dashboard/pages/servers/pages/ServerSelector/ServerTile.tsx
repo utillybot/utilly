@@ -2,16 +2,7 @@ import styles from './ServerTile.module.scss';
 import { mc } from '../../../../../helpers';
 import Button from '../../../../../components/Button';
 import { getGuildIcon } from '../../../../helpers';
-
-interface PartialGuild {
-	id: string;
-	name: string;
-	icon: string | null | undefined;
-	owner?: boolean;
-	permissions?: number;
-	features: string[];
-	permissions_new?: string;
-}
+import type { PartialGuild } from '../../../../types';
 
 interface ServerTileProps {
 	guild: PartialGuild;

@@ -1,9 +1,9 @@
 export interface User {
-	access_token: string;
-	expires_in: number;
-	refresh_token: string;
+	accessToken: string;
+	expiresIn: number;
+	refreshToken: string;
 	scope: string;
-	token_type: string;
+	tokenType: string;
 }
 
 export interface PartialGuild {
@@ -18,4 +18,11 @@ export interface PartialGuild {
 
 export interface GuildOverview {
 	prefix: string[];
+}
+
+declare module 'express-session' {
+	interface SessionData {
+		user: User;
+		guilds: PartialGuild[];
+	}
 }

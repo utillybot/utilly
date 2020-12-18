@@ -1,4 +1,4 @@
-interface User {
+export interface User {
 	id: string;
 	username: string;
 	discriminator: string;
@@ -8,4 +8,14 @@ interface User {
 	flags?: number;
 	premium_type?: number;
 	public_flags?: number;
+}
+
+export interface PartialGuild {
+	id: string;
+	name: string;
+	icon: string | null | undefined;
+	owner?: boolean;
+	permissions?: number;
+	features: string[];
+	permissions_new?: string;
 }

@@ -1,30 +1,22 @@
-import { useEffect, useState } from 'react';
 import useGuildContext from '../../components/GuildContext/useGuildContext';
-import Spinner from '../../../../../../../components/Spinner';
 import styles from './index.module.scss';
+import useProtectedFetch from '../../../../../../hooks/useProtectedFetch';
 
 export interface GuildSettings {
 	prefix: string[];
 }
 
 const Settings = (): JSX.Element => {
-	const [settings, setSettings] = useState<GuildSettings | undefined>(
-		undefined
-	);
 	const guild = useGuildContext().guild;
-	useEffect(() => {
-		fetch(`/dashboard/api/guilds/${guild.id}/settings`)
-			.then(res => {
-				if (res.status == 401) {
-					document.cookie = `prev=${location.pathname}; path=/;`;
-					window.location.assign('/dashboard/login');
-				}
-				return res.json();
-			})
-			.then(setSettings);
-	}, [guild.id]);
+	const fetchResult = useProtectedFetch<GuildSettings>(
+		`/dashboard/api/guilds/${guild.id}/settings`,
+		true
+	);
 
-	if (settings == undefined) return <Spinner />;
+	if (!fetchResult[0]) return fetchResult[1];
+
+	const settings = fetchResult[1];
+
 	return (
 		<div className={styles.container}>
 			<h2>Prefixes:</h2>

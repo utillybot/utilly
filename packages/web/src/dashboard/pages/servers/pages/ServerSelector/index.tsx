@@ -1,39 +1,13 @@
-import { useEffect, useState } from 'react';
-import Spinner from '../../../../../components/Spinner';
 import styles from './index.module.scss';
 import ServerTile from './ServerTile';
-import { useLocation } from 'react-router-dom';
 import Page from '../../../../components/Page';
-
-interface PartialGuild {
-	id: string;
-	name: string;
-	icon: string | null | undefined;
-	owner?: boolean;
-	permissions?: number;
-	features: string[];
-	permissions_new?: string;
-}
+import Spinner from '../../../../../components/Spinner';
+import useGuildsContext from '../../components/GuildsContext/useUserContext';
 
 const ServerSelector = (): JSX.Element => {
-	const [result, setResult] = useState<
-		{ present: PartialGuild[]; notPresent: PartialGuild[] } | undefined
-	>(undefined);
-	const location = useLocation();
+	const result = useGuildsContext();
 
-	useEffect(() => {
-		fetch('/dashboard/api/guilds')
-			.then(res => {
-				if (res.status == 401) {
-					document.cookie = `prev=${location.pathname}; path=/;`;
-					window.location.assign('/dashboard/login');
-				}
-				return res.json();
-			})
-			.then(setResult);
-	}, [location.pathname]);
-
-	if (result == undefined) return <Spinner />;
+	if (!result) return <Spinner />;
 
 	return (
 		<Page className={styles.page}>
