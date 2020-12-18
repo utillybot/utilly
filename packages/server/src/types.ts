@@ -6,6 +6,20 @@ export interface User {
 	tokenType: string;
 }
 
+export interface ExtendedUser {
+	id: string;
+	username: string;
+	discriminator: string;
+	avatar: string | null | undefined;
+	mfa_enabled?: true;
+	locale?: string;
+	verified?: boolean;
+	email?: string | null | undefined;
+	flags?: number;
+	premium_type?: number;
+	public_flags?: number;
+}
+
 export interface PartialGuild {
 	id: string;
 	name: string;
@@ -23,6 +37,7 @@ export interface GuildOverview {
 declare module 'express-session' {
 	interface SessionData {
 		user: User;
+		extendedUser?: ExtendedUser;
 		guilds: PartialGuild[];
 	}
 }

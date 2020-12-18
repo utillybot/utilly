@@ -6,6 +6,9 @@ export const dashboardUsersController = (oAuth: OAuth): Router => {
 		const token = req.session.user?.accessToken;
 		if (!token) return res.sendStatus(500);
 
+		if (req.session.extendedUser != undefined)
+			return res.json(req.session.extendedUser);
+
 		try {
 			const user = await oAuth.getUser(token);
 			res.json(user);
