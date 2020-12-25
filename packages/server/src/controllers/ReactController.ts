@@ -9,12 +9,12 @@ export const reactController = (): Router => {
 
 	return Router()
 		.use(
-			express.static(path.join(base, 'dist'), {
+			express.static(base, {
 				redirect: false,
 				index: false,
 			})
 		)
 		.get('*', (req, res) => {
-			res.sendFile(path.join(base, 'dist', 'index.html'));
+			res.sendFile(path.join(base, 'index.html'));
 		});
 };
