@@ -25,8 +25,7 @@ export class UtillyWeb {
 		database: Database,
 		bot: UtillyClient
 	) {
-		if (!process.env.TOKEN_SECRET)
-			throw new Error('JWT Token Secret not provided');
+		if (!process.env.TOKEN_SECRET) throw new Error('Token Secret not provided');
 
 		this._logger = logger;
 		this._port = port;

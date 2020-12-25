@@ -1,9 +1,0 @@
-.section {
-	display: flex;
-	flex-direction: column;
-	flex: 1;
-
-	@media screen and (min-width: 768px) {
-		flex-direction: row;
-	}
-}
