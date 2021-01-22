@@ -1,4 +1,4 @@
-import { CommandModule, BaseCommandModule, PreHook } from '@utilly/framework';
+import { BaseCommandModule, CommandModule, PreHook } from '@utilly/framework';
 import { IsModuleEnabledHook } from '../../hooks/IsModuleEnabledHook';
 
 @CommandModule({

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import type { UtillyClient } from '@utilly/framework';
-import type OAuth from 'discord-oauth2';
+import { UtillyClient } from '@utilly/framework';
+import OAuth from 'discord-oauth2';
 import { dashboardGuildsController } from './DashboardGuildsController';
 import { dashboardUsersController } from './DashboardUsersController';
 

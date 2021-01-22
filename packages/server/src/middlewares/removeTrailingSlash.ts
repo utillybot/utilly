@@ -1,4 +1,4 @@
-import type { RequestHandler } from 'express';
+import { RequestHandler } from 'express';
 
 export const removeTrailingSlash: RequestHandler = (req, res, next) => {
 	const test = /\?[^]*\//.test(req.url);

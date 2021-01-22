@@ -5,11 +5,9 @@ import { Logger } from '@utilly/utils';
 import * as Sentry from '@sentry/node';
 import dotenv from 'dotenv';
 import path from 'path';
+import { GlobalStore } from '@utilly/di';
 
 export class Utilly {
-	protected logger: Logger;
-	protected database: Database;
-	protected bot: UtillyClient;
 	protected web: UtillyWeb;
 
 	constructor() {
@@ -26,49 +24,53 @@ export class Utilly {
 			environment: process.env.NODE_ENV,
 		});
 
-		this.logger = new Logger({ database: false });
-		this.database = new Database(process.env.DATABASE_URL, this.logger);
-		this.bot = new UtillyClient(
-			'Bot ' + process.env.TOKEN,
-			{
-				intents: [
-					'guilds',
-					'guildMembers',
-					'guildBans',
-					'guildEmojis',
-					'guildIntegrations',
-					'guildWebhooks',
-					'guildInvites',
-					'guildVoiceStates',
-					'guildMessages',
-					'guildMessageReactions',
-					'directMessages',
-					'directMessageReactions',
-				],
-				restMode: true,
-			},
-			this.logger,
-			this.database
+		GlobalStore.register(new Logger({ database: false }));
+		GlobalStore.register(
+			new Database(process.env.DATABASE_URL, GlobalStore.resolve(Logger))
+		);
+		GlobalStore.register(
+			new UtillyClient(
+				'Bot ' + process.env.TOKEN,
+				{
+					intents: [
+						'guilds',
+						'guildMembers',
+						'guildBans',
+						'guildEmojis',
+						'guildIntegrations',
+						'guildWebhooks',
+						'guildInvites',
+						'guildVoiceStates',
+						'guildMessages',
+						'guildMessageReactions',
+						'directMessages',
+						'directMessageReactions',
+					],
+					restMode: true,
+				},
+				GlobalStore.resolve(Logger),
+				GlobalStore.resolve(Database)
+			)
 		);
 		this.web = new UtillyWeb(
 			parseInt(process.env.PORT ?? '3006'),
-			this.logger,
-			this.database,
-			this.bot
+			GlobalStore.resolve(Logger),
+			GlobalStore.resolve(Database),
+			GlobalStore.resolve(UtillyClient)
 		);
 
-		this.bot.on('error', (error: Error) => {
+		GlobalStore.resolve(UtillyClient).bot.on('error', (error: Error) => {
 			Sentry.captureException(error);
-			this.logger.error(error.stack ?? error.message);
+			GlobalStore.resolve(Logger).error(error.stack ?? error.message);
 		});
 	}
 
 	async start(rootDir: string): Promise<void> {
-		this.database.connect();
+		await GlobalStore.resolve(Database).connect();
 
-		this.bot.loadBot(rootDir);
+		GlobalStore.resolve(UtillyClient).loadBot(rootDir);
 
-		this.bot.connect();
+		GlobalStore.resolve(UtillyClient).bot.connect();
 
 		this.web.listen();
 	}

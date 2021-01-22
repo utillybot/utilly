@@ -1,8 +1,6 @@
-import type { MessageContent, Client, Message } from 'eris';
-import { Constants } from 'eris';
-import { GuildChannel } from 'eris';
+import { Client, Constants, GuildChannel, Message, MessageContent } from 'eris';
 import { ROLE_PERMISSIONS } from '../../..';
-import type { CommandHook } from '../CommandHook';
+import { CommandHook } from '../CommandHook';
 
 /**
  * Settings for the permission validator hook

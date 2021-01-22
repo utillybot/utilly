@@ -1,5 +1,5 @@
-import type { Client, Message } from 'eris';
-import type { Hook } from '../../Hook';
+import { Client, Message } from 'eris';
+import { Hook } from '../../Hook';
 
 /**
  * An object containing the client and message when a message gets collected by the message collector

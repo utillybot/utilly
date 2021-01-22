@@ -1,31 +1,37 @@
 import {
 	AttachableModule,
 	EmbedBuilder,
+	Event,
 	isCachedMessage,
 	isGuildChannel,
 	isTextChannel,
 } from '@utilly/framework';
-import type {
+import {
 	Attachment,
+	Client,
 	Embed,
 	Guild,
+	Message,
 	OldMessage,
 	PossiblyUncachedMessage,
 	TextChannel,
 } from 'eris';
-import type { Message } from 'eris';
-import type LoggingModule from './LoggingModule';
+import LoggingModule from './LoggingModule';
+import { Injectable } from '@utilly/di';
 
 /**
  * Logging Module for Messages
  */
+@Injectable()
 export default class MessageLogging extends AttachableModule {
-	parentModule!: LoggingModule;
+	constructor(private _parent: LoggingModule) {
+		super();
+	}
 
-	attach(): void {
-		this.bot.on('messageDelete', this._messageDelete.bind(this));
-		this.bot.on('messageUpdate', this._messageUpdate.bind(this));
-		this.bot.on('messageDeleteBulk', this._messageDeleteBulk.bind(this));
+	attach(bot: Client): void {
+		bot.on('messageDelete', this._messageDelete.bind(this));
+		bot.on('messageUpdate', this._messageUpdate.bind(this));
+		bot.on('messageDeleteBulk', this._messageDeleteBulk.bind(this));
 	}
 
 	/**
@@ -91,6 +97,7 @@ export default class MessageLogging extends AttachableModule {
 	 * Handles the event where multiple messages are bulk deleted
 	 * @param messages - the messages deleted
 	 */
+	@Event()
 	private async _messageDeleteBulk(
 		messages: PossiblyUncachedMessage[]
 	): Promise<void> {
@@ -108,14 +115,14 @@ export default class MessageLogging extends AttachableModule {
 		if (cachedMessage == undefined) return;
 		if (guild == undefined) return;
 
-		const guildRow = await this.parentModule.selectGuildRow(
+		const guildRow = await this._parent.selectGuildRow(
 			guild.id,
 			'messageDeleteBulk'
 		);
 
 		if (!guildRow.logging || !guildRow.logging_messageDeleteBulkEvent) return;
 
-		const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+		const logChannel: TextChannel | null = this._parent.getLogChannel(
 			guild,
 			guildRow.logging_messageDeleteBulkChannel
 		);
@@ -127,7 +134,7 @@ export default class MessageLogging extends AttachableModule {
 		embed.setDescription(`In channel <#${messages[0].channel.id}>`);
 		embed.setTimestamp();
 
-		await this.parentModule.sendLogMessage(logChannel, embed);
+		await this._parent.sendLogMessage(logChannel, embed);
 	}
 
 	/**
@@ -140,14 +147,14 @@ export default class MessageLogging extends AttachableModule {
 		if (!isCachedMessage(message)) return;
 		if (!isGuildChannel(message.channel)) return;
 
-		const guildRow = await this.parentModule.selectGuildRow(
+		const guildRow = await this._parent.selectGuildRow(
 			message.channel.guild.id,
 			'messageDelete'
 		);
 
 		if (!guildRow.logging || !guildRow.logging_messageDeleteEvent) return;
 
-		const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+		const logChannel: TextChannel | null = this._parent.getLogChannel(
 			message.channel.guild,
 			guildRow.logging_messageDeleteChannel
 		);
@@ -164,7 +171,7 @@ export default class MessageLogging extends AttachableModule {
 
 		embed = this._buildEmbed(embed, message);
 		embed = this._addOtherField(embed, message);
-		await this.parentModule.sendLogMessage(logChannel, embed);
+		await this._parent.sendLogMessage(logChannel, embed);
 	}
 
 	/**
@@ -178,14 +185,14 @@ export default class MessageLogging extends AttachableModule {
 	): Promise<void> {
 		if (!isGuildChannel(message.channel)) return;
 		if (oldMessage && oldMessage.content == message.content) return;
-		const guildRow = await this.parentModule.selectGuildRow(
+		const guildRow = await this._parent.selectGuildRow(
 			message.channel.guild.id,
 			'messageUpdate'
 		);
 
 		if (!guildRow.logging || !guildRow.logging_messageUpdateEvent) return;
 
-		const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+		const logChannel: TextChannel | null = this._parent.getLogChannel(
 			message.channel.guild,
 			guildRow.logging_messageUpdateChannel
 		);
@@ -205,6 +212,6 @@ export default class MessageLogging extends AttachableModule {
 
 		embed = this._buildEmbed(embed, message);
 		if (oldMessage) embed = this._addOtherField(embed, oldMessage);
-		await this.parentModule.sendLogMessage(logChannel, embed);
+		await this._parent.sendLogMessage(logChannel, embed);
 	}
 }

@@ -1,6 +1,5 @@
-import type { CommandMetadata } from './types';
-import { CommandSymbol } from './types';
-import type { BaseCommand } from '../Command';
+import { CommandMetadata, CommandSymbol } from './types';
+import { BaseCommand } from '../Command';
 
 export function Command(help?: CommandMetadata) {
 	return <T extends BaseCommand, TFunction extends new (...args: any[]) => T>(

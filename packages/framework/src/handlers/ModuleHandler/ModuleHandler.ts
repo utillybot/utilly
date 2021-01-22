@@ -1,11 +1,13 @@
-import type { Logger } from '@utilly/utils';
+import { Logger } from '@utilly/utils';
 import fs from 'fs/promises';
 import path from 'path';
-import type { UtillyClient } from '../../UtillyClient';
-import type { Module } from './Module';
+import { UtillyClient } from '../../UtillyClient';
+import { Module } from './Module';
 import { AttachableModule } from './AttachableModule';
-import type { Submodule } from './Submodule';
+import { Submodule } from './Submodule';
+import { GlobalStore, Injectable } from '@utilly/di';
 
+@Injectable()
 export class ModuleHandler {
 	readonly modules: Map<string, Module>;
 
@@ -30,19 +32,18 @@ export class ModuleHandler {
 				await fs.readdir(path.join(directory, module))
 			).filter(value => value.endsWith('.js'));
 
-			const moduleObj: Module = new (
-				await import(path.join(directory, module, `${module}Module`))
-			).default(this._bot);
+			const moduleObj: Module = GlobalStore.resolve(
+				(await import(path.join(directory, module, `${module}Module`))).default
+			);
 			this._logger.handler(`  Loading Module "${module}".`);
 
 			for (const subModule of subModules) {
 				if (subModule == `${module}Module.js`) continue;
 
 				this._logger.handler(`    Loading Submodule "${subModule}".`);
-				const submoduleObj: Submodule = new (
-					await import(path.join(directory, module, subModule))
-				).default(this._bot, moduleObj);
-				submoduleObj.parentModule = moduleObj;
+				const submoduleObj: Submodule = GlobalStore.resolve(
+					(await import(path.join(directory, module, subModule))).default
+				);
 				moduleObj.registerSubModule(
 					submoduleObj.constructor.name,
 					submoduleObj
@@ -64,7 +65,7 @@ export class ModuleHandler {
 		for (const [moduleName, module] of this.modules) {
 			for (const [subModuleName, subModule] of module.subModules) {
 				if (subModule instanceof AttachableModule) {
-					subModule.attach();
+					subModule.attach(this._bot.bot);
 					this._logger.handler(
 						`Submodule "${subModuleName}" of module "${moduleName}" has been attached.`
 					);

@@ -1,5 +1,4 @@
-import type { CommandHook } from '../CommandHook';
-import { GuildChannel, PrivateChannel } from 'eris';
+import { CommandHook } from '../CommandHook';
 import { isGuildChannel, isPrivateChannel } from '../../../utils/typeguards';
 
 type ChannelType = 'guild' | 'dm';

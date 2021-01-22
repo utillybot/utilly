@@ -1,6 +1,5 @@
-import type { CommandHook } from '../CommandHook';
-import type { PreHookMetadata } from './types';
-import { PreHookSymbol } from './types';
+import { CommandHook } from '../CommandHook';
+import { PreHookMetadata, PreHookSymbol } from './types';
 
 interface PreHookObject {
 	preHooks: CommandHook[];

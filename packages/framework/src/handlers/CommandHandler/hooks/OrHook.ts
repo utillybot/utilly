@@ -1,4 +1,4 @@
-import type { CommandHook } from '../CommandHook';
+import { CommandHook } from '../CommandHook';
 
 /**
  * Settings for the or hook

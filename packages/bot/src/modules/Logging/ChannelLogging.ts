@@ -8,16 +8,17 @@ import {
 	isVoiceChannel,
 } from '@utilly/framework';
 import { secondsToString } from '@utilly/utils';
-import type {
+import {
 	AnyChannel,
+	Client,
 	Guild,
-	OldGuildChannel,
-	OldGroupChannel,
 	GuildChannel,
+	OldGroupChannel,
+	OldGuildChannel,
 	TextChannel,
 } from 'eris';
-import { CategoryChannel, VoiceChannel } from 'eris';
-import type LoggingModule from './LoggingModule';
+import LoggingModule from './LoggingModule';
+import { Injectable } from '@utilly/di';
 
 interface ChangedData {
 	name: string;
@@ -30,13 +31,16 @@ interface ChangedData {
 /**
  * Logging Module for Server Events
  */
+@Injectable()
 export default class ChannelLogging extends AttachableModule {
-	parentModule!: LoggingModule;
+	constructor(private _parent: LoggingModule) {
+		super();
+	}
 
-	attach(): void {
-		this.bot.on('channelCreate', this._channelCreate.bind(this));
-		this.bot.on('channelDelete', this._channelDelete.bind(this));
-		this.bot.on('channelUpdate', this._channelUpdate.bind(this));
+	attach(bot: Client): void {
+		bot.on('channelCreate', this._channelCreate.bind(this));
+		bot.on('channelDelete', this._channelDelete.bind(this));
+		bot.on('channelUpdate', this._channelUpdate.bind(this));
 	}
 
 	/**
@@ -64,20 +68,20 @@ export default class ChannelLogging extends AttachableModule {
 		const oldChannel = oldCh as OldGuildChannel;
 
 		//#region prep
-		const guildRow = await this.parentModule.selectGuildRow(
+		const guildRow = await this._parent.selectGuildRow(
 			newChannel.guild.id,
 			'channelUpdate'
 		);
 
 		if (!guildRow.logging || !guildRow.logging_channelUpdateEvent) return;
 
-		const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+		const logChannel: TextChannel | null = this._parent.getLogChannel(
 			newChannel.guild,
 			guildRow.logging_channelUpdateChannel
 		);
 		if (logChannel == null) return;
 
-		const { check, xmark, empty } = this.parentModule.getEmotes(logChannel);
+		const { check, xmark, empty } = this._parent.getEmotes(logChannel);
 
 		//#endregion
 
@@ -373,7 +377,7 @@ export default class ChannelLogging extends AttachableModule {
 
 		// Final additions and send message
 		embed = this._buildEmbed(embed, newChannel.guild);
-		this.parentModule.sendLogMessage(logChannel, embed);
+		this._parent.sendLogMessage(logChannel, embed);
 	}
 
 	/**
@@ -384,14 +388,14 @@ export default class ChannelLogging extends AttachableModule {
 		if (!isGuildChannel(channel)) return;
 
 		//#region prep
-		const guildRow = await this.parentModule.selectGuildRow(
+		const guildRow = await this._parent.selectGuildRow(
 			channel.guild.id,
 			'channelDelete'
 		);
 
 		if (!guildRow.logging || !guildRow.logging_channelDeleteEvent) return;
 
-		const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+		const logChannel: TextChannel | null = this._parent.getLogChannel(
 			channel.guild,
 			guildRow.logging_channelDeleteChannel
 		);
@@ -402,7 +406,7 @@ export default class ChannelLogging extends AttachableModule {
 			channel,
 			logChannel,
 			'Deleted',
-			this.parentModule.getEmotes(logChannel)
+			this._parent.getEmotes(logChannel)
 		);
 	}
 
@@ -414,14 +418,14 @@ export default class ChannelLogging extends AttachableModule {
 		if (!isGuildChannel(channel)) return;
 
 		//#region prep
-		const guildRow = await this.parentModule.selectGuildRow(
+		const guildRow = await this._parent.selectGuildRow(
 			channel.guild.id,
 			'channelCreate'
 		);
 
 		if (!guildRow.logging || !guildRow.logging_channelCreateEvent) return;
 
-		const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+		const logChannel: TextChannel | null = this._parent.getLogChannel(
 			channel.guild,
 			guildRow.logging_channelCreateChannel
 		);
@@ -433,7 +437,7 @@ export default class ChannelLogging extends AttachableModule {
 			channel,
 			logChannel,
 			'Created',
-			this.parentModule.getEmotes(logChannel)
+			this._parent.getEmotes(logChannel)
 		);
 	}
 
@@ -583,6 +587,6 @@ export default class ChannelLogging extends AttachableModule {
 
 		// Final additions and send
 		embed = this._buildEmbed(embed, channel.guild);
-		this.parentModule.sendLogMessage(logChannel, embed);
+		this._parent.sendLogMessage(logChannel, embed);
 	}
 }

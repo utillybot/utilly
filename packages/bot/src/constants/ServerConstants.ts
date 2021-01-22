@@ -1,4 +1,4 @@
-import type { Guild } from 'eris';
+import { Guild } from 'eris';
 
 export const DEFAULT_NOTIFICATION_CONSTANTS: Record<number, string> = {
 	0: 'All Messages',

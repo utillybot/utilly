@@ -1,4 +1,4 @@
-import type { Guild, GuildChannel } from 'eris';
+import { Guild, GuildChannel } from 'eris';
 
 export const parseChannel = (
 	channelString: string,

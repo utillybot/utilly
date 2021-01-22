@@ -3,21 +3,25 @@ import {
 	EmbedBuilder,
 	ROLE_PERMISSIONS,
 } from '@utilly/framework';
-import type { Guild, OldRole, Role, TextChannel } from 'eris';
-import type LoggingModule from './LoggingModule';
+import { Client, Guild, OldRole, Role, TextChannel } from 'eris';
+import LoggingModule from './LoggingModule';
+import { Injectable } from '@utilly/di';
 
 /* eslint-disable no-prototype-builtins */
 
 /**
  * Logging Module for Server Events
  */
+@Injectable()
 export default class RoleLogging extends AttachableModule {
-	parentModule!: LoggingModule;
+	constructor(private _parent: LoggingModule) {
+		super();
+	}
 
-	attach(): void {
-		this.bot.on('guildRoleCreate', this._guildRoleCreate.bind(this));
-		this.bot.on('guildRoleDelete', this._guildRoleDelete.bind(this));
-		this.bot.on('guildRoleUpdate', this._guildRoleUpdate.bind(this));
+	attach(bot: Client): void {
+		bot.on('guildRoleCreate', this._guildRoleCreate.bind(this));
+		bot.on('guildRoleDelete', this._guildRoleDelete.bind(this));
+		bot.on('guildRoleUpdate', this._guildRoleUpdate.bind(this));
 	}
 
 	/**
@@ -44,20 +48,20 @@ export default class RoleLogging extends AttachableModule {
 		oldRole: OldRole
 	): Promise<void> {
 		//#region prep
-		const guildRow = await this.parentModule.selectGuildRow(
+		const guildRow = await this._parent.selectGuildRow(
 			guild.id,
 			'guildRoleUpdate'
 		);
 
 		if (!guildRow.logging || !guildRow.logging_guildRoleUpdateEvent) return;
 
-		const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+		const logChannel: TextChannel | null = this._parent.getLogChannel(
 			guild,
 			guildRow.logging_guildRoleUpdateChannel
 		);
 		if (logChannel == null) return;
 
-		const { check, xmark } = this.parentModule.getEmotes(logChannel);
+		const { check, xmark } = this._parent.getEmotes(logChannel);
 
 		//#endregion
 
@@ -167,7 +171,7 @@ export default class RoleLogging extends AttachableModule {
 		// Final additions and send
 		if (embed.fields == undefined || embed.fields.length == 0) return;
 		embed = this._buildEmbed(embed, guild);
-		this.parentModule.sendLogMessage(logChannel, embed);
+		this._parent.sendLogMessage(logChannel, embed);
 	}
 
 	/**
@@ -177,14 +181,14 @@ export default class RoleLogging extends AttachableModule {
 	 */
 	private async _guildRoleDelete(guild: Guild, role: Role): Promise<void> {
 		//#region prep
-		const guildRow = await this.parentModule.selectGuildRow(
+		const guildRow = await this._parent.selectGuildRow(
 			guild.id,
 			'guildRoleDelete'
 		);
 
 		if (!guildRow.logging || !guildRow.logging_guildRoleDeleteEvent) return;
 
-		const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+		const logChannel: TextChannel | null = this._parent.getLogChannel(
 			guild,
 			guildRow.logging_guildRoleDeleteChannel
 		);
@@ -196,7 +200,7 @@ export default class RoleLogging extends AttachableModule {
 			role,
 			logChannel,
 			'Deleted',
-			this.parentModule.getEmotes(logChannel)
+			this._parent.getEmotes(logChannel)
 		);
 	}
 
@@ -207,14 +211,14 @@ export default class RoleLogging extends AttachableModule {
 	 */
 	private async _guildRoleCreate(guild: Guild, role: Role): Promise<void> {
 		//#region prep
-		const guildRow = await this.parentModule.selectGuildRow(
+		const guildRow = await this._parent.selectGuildRow(
 			guild.id,
 			'guildRoleCreate'
 		);
 
 		if (!guildRow.logging || !guildRow.logging_guildRoleCreateEvent) return;
 
-		const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+		const logChannel: TextChannel | null = this._parent.getLogChannel(
 			guild,
 			guildRow.logging_guildRoleCreateChannel
 		);
@@ -226,7 +230,7 @@ export default class RoleLogging extends AttachableModule {
 			role,
 			logChannel,
 			'Created',
-			this.parentModule.getEmotes(logChannel)
+			this._parent.getEmotes(logChannel)
 		);
 	}
 
@@ -291,6 +295,6 @@ export default class RoleLogging extends AttachableModule {
 
 		// Final additions and send
 		embed = this._buildEmbed(embed, guild);
-		this.parentModule.sendLogMessage(logChannel, embed);
+		this._parent.sendLogMessage(logChannel, embed);
 	}
 }

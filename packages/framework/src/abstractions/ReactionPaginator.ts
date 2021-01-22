@@ -1,11 +1,11 @@
-import type { MessageContent } from 'eris';
-import { Collector } from '../handlers/CollectorHandlers';
-import type {
+import { MessageContent } from 'eris';
+import { Collector } from '../handlers';
+import {
 	ReactionCollectorHook,
 	ReactionCollectorHookContext,
-} from '../handlers/CollectorHandlers/ReactionCollector';
-import { ReactionValidatorHook } from '../handlers/CollectorHandlers/ReactionCollector';
-import type { Message } from 'eris';
+} from '../handlers';
+import { ReactionValidatorHook } from '../handlers';
+import { Message } from 'eris';
 
 export class ReactionPaginator extends Collector<
 	ReactionCollectorHook,

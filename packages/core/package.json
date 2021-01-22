@@ -9,6 +9,7 @@
 		"@sentry/node": "^5.27.4",
 		"@utilly/bot": "1.0.0",
 		"@utilly/database": "1.0.0",
+		"@utilly/di": "1.0.0",
 		"@utilly/framework": "1.0.0",
 		"@utilly/server": "1.0.0",
 		"@utilly/utils": "1.0.0",

@@ -1,9 +1,8 @@
-import type { Database } from '@utilly/database';
-import type { UtillyClient } from '@utilly/framework';
-import type { Logger } from '@utilly/utils';
+import { Database } from '@utilly/database';
+import { UtillyClient } from '@utilly/framework';
+import { Logger } from '@utilly/utils';
 import 'reflect-metadata';
-import type { Express } from 'express';
-import express from 'express';
+import express, { Express } from 'express';
 import { apiController } from './controllers/APIController';
 import { dashboardController } from './controllers/DashboardController';
 import { reactController } from './controllers/ReactController';

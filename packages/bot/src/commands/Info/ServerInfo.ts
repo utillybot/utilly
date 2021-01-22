@@ -1,11 +1,13 @@
-import type { CommandContext } from '@utilly/framework';
 import {
 	BaseCommand,
 	BotPermsValidatorHook,
 	ChannelValidatorHook,
 	Command,
+	CommandContext,
 	EmbedBuilder,
+	isGuildChannel,
 	PreHook,
+	ReactionCollectorHandler,
 	ReactionPaginator,
 } from '@utilly/framework';
 import { secondsToString } from '@utilly/utils';
@@ -15,7 +17,6 @@ import {
 	REGIONS_CONSTANTS,
 	VERIFICATION_LEVEL_CONSTANTS,
 } from '../../constants/ServerConstants';
-import type InfoCommandModule from './moduleinfo';
 
 @Command({
 	name: 'Serverinfo',
@@ -29,11 +30,12 @@ import type InfoCommandModule from './moduleinfo';
 	})
 )
 export default class ServerInfo extends BaseCommand {
-	parent?: InfoCommandModule;
-
-	async execute(ctx: CommandContext): Promise<void> {
-		if (!ctx.guild) return;
-		const server = ctx.guild;
+	constructor(private _reactionCollector: ReactionCollectorHandler) {
+		super();
+	}
+	async execute({ message }: CommandContext): Promise<void> {
+		if (!isGuildChannel(message.channel)) return;
+		const server = message.channel.guild;
 
 		const overviewPage = new EmbedBuilder();
 		overviewPage.setTitle('Server Info');
@@ -193,15 +195,16 @@ export default class ServerInfo extends BaseCommand {
 		otherPage.addField('Member Count', server.memberCount.toString(), true);
 		otherPage.addField(
 			'Owner',
-			ctx.guild?.members.get(server.ownerID)?.mention || 'Not found',
+			message.channel.guild?.members.get(server.ownerID)?.mention ||
+				'Not found',
 			true
 		);
 		otherPage.setFooter('Page 4/4');
 
-		const reply = await ctx.reply({ embed: overviewPage });
+		const reply = await message.channel.createMessage({ embed: overviewPage });
 
-		this.bot.reactionWaitHandler.addCollector(
-			new ReactionPaginator(reply, ctx.message.author.id, [
+		this._reactionCollector.addCollector(
+			new ReactionPaginator(reply, message.author.id, [
 				{ embed: overviewPage },
 				{ embed: moderationPage },
 				{ embed: communityPage },

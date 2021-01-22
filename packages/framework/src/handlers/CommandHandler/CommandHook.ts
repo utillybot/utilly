@@ -1,6 +1,5 @@
-import type { Client, Message } from 'eris';
-import type { Hook } from '../Hook';
-import type { UtillyClient } from '../../UtillyClient';
+import { Client, Message } from 'eris';
+import { Hook } from '../Hook';
 
 /**
  * An object containing the client, message, and arguments for a command hook
@@ -9,7 +8,7 @@ export interface CommandHookContext {
 	/**
 	 * The client that this hook belongs to
 	 */
-	bot: UtillyClient;
+	bot: Client;
 	/**
 	 * The message this hook was run on
 	 */

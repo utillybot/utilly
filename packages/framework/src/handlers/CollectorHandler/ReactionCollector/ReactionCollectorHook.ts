@@ -1,5 +1,5 @@
-import type { Client, Emoji, Message } from 'eris';
-import type { Hook } from '../../Hook';
+import { Client, Emoji, Message } from 'eris';
+import { Hook } from '../../Hook';
 
 /**
  * An object containing the client, message, emoji, and reactor id for a reaction collector hook

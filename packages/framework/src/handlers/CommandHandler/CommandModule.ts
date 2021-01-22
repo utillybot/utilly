@@ -1,6 +1,5 @@
-import type { UtillyClient } from '../../UtillyClient';
-import type { BaseCommand } from './Command';
-import type { CommandHook } from './CommandHook';
+import { BaseCommand } from './Command';
+import { CommandHook } from './CommandHook';
 import { loadCommandMetadata, loadPreHookMetadata } from './decorators';
 
 /**
@@ -50,12 +49,6 @@ export abstract class BaseCommandModule {
 	 * A list of global pre hooks that will be run as pre hooks for any sub commands for this module
 	 */
 	readonly preHooks: CommandHook[] = [];
-
-	/**
-	 * Creates a new command module
-	 * @param _bot - the client that this module belongs to
-	 */
-	constructor(private _bot: UtillyClient) {}
 
 	/**
 	 * Registers a command and its aliases to this module

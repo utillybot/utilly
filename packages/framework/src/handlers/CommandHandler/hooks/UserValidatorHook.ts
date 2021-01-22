@@ -1,5 +1,5 @@
-import type { Message, MessageContent } from 'eris';
-import type { CommandHook } from '../CommandHook';
+import { Message, MessageContent } from 'eris';
+import { CommandHook } from '../CommandHook';
 
 /**
  * Settings for the user validator hook

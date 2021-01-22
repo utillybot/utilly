@@ -1,17 +1,17 @@
-import type { Guild } from '@utilly/database';
-import { GuildRepository } from '@utilly/database';
-import type { CommandContext } from '@utilly/framework';
+import { Database, Guild, GuildRepository } from '@utilly/database';
 import {
 	BaseCommand,
 	BotPermsValidatorHook,
 	ChannelValidatorHook,
 	Command,
+	CommandContext,
 	EmbedBuilder,
+	isGuildChannel,
 	PreHook,
+	UtillyClient,
 } from '@utilly/framework';
-import type { Message } from 'eris';
+import { Message } from 'eris';
 import { MODULE_CONSTANTS, MODULES } from '../../constants/ModuleConstants';
-import type GeneralCommandModule from './moduleinfo';
 
 @Command({
 	name: 'Help',
@@ -22,24 +22,26 @@ import type GeneralCommandModule from './moduleinfo';
 @PreHook(ChannelValidatorHook({ channel: ['guild'] }))
 @PreHook(BotPermsValidatorHook({ permissions: ['embedLinks'] }))
 export default class Help extends BaseCommand {
-	parent!: GeneralCommandModule;
+	constructor(private _database: Database, private _bot: UtillyClient) {
+		super();
+	}
 
-	async execute(ctx: CommandContext): Promise<void> {
-		if (ctx.guild) {
-			const guildRow = await this.bot.database.connection
+	async execute({ message, args }: CommandContext): Promise<void> {
+		if (isGuildChannel(message.channel)) {
+			const guildRow = await this._database.connection
 				.getCustomRepository(GuildRepository)
-				.selectOrCreate(ctx.guild.id, MODULES);
-			if (ctx.args.length == 0) {
-				this.handleBaseCommand(ctx.message, guildRow);
+				.selectOrCreate(message.channel.guild.id, MODULES);
+			if (args.length == 0) {
+				this.handleBaseCommand(message, guildRow);
 			} else {
-				const item = ctx.args[0].toLowerCase();
+				const item = args[0].toLowerCase();
 
-				if (this.bot.commandHandler.commandModules.has(item)) {
-					this.handleModule(ctx.message, item, guildRow);
-				} else if (this.bot.commandHandler.triggers.has(item)) {
-					this.handleCommand(ctx.message, item, guildRow);
+				if (this._bot.commandHandler.commandModules.has(item)) {
+					this.handleModule(message, item, guildRow);
+				} else if (this._bot.commandHandler.triggers.has(item)) {
+					this.handleCommand(message, item, guildRow);
 				} else {
-					ctx.reply(
+					await message.channel.createMessage(
 						'Unable to find the specified module/command. Please visit the main help page to learn the modules and commands.'
 					);
 				}
@@ -54,7 +56,7 @@ export default class Help extends BaseCommand {
 		let enabledModules = '';
 		let disabledModules = '';
 
-		for (const [, module] of this.bot.commandHandler.commandModules) {
+		for (const [, module] of this._bot.commandHandler.commandModules) {
 			if (guildRow[module.info.name.toLowerCase()] == false) {
 				disabledModules += module.info.name + '\n';
 			} else {
@@ -91,7 +93,7 @@ export default class Help extends BaseCommand {
 	handleModule(message: Message, item: string, guildRow: Guild): void {
 		const embed = new EmbedBuilder();
 
-		const commandModule = this.bot.commandHandler.commandModules.get(item);
+		const commandModule = this._bot.commandHandler.commandModules.get(item);
 		if (!commandModule) return;
 
 		embed.setTitle(
@@ -103,7 +105,6 @@ export default class Help extends BaseCommand {
 		embed.setDescription(MODULE_CONSTANTS[commandModule.info.name]);
 
 		for (const command of commandModule.commands) {
-			if (command.parent == undefined) throw new Error('Injection failure');
 			embed.addField(
 				`\`${
 					guildRow.prefix ? guildRow.prefix[0] : 'u!'
@@ -120,10 +121,8 @@ export default class Help extends BaseCommand {
 	handleCommand(message: Message, item: string, guildRow: Guild): void {
 		const embed = new EmbedBuilder();
 
-		const command = this.bot.commandHandler.triggers.get(item);
+		const command = this._bot.commandHandler.triggers.get(item);
 		if (!command) return;
-
-		if (command.parent == undefined) throw new Error('Injection failure');
 
 		embed.setTitle(`Help for \`${command.info.name}\` command`);
 
@@ -142,11 +141,16 @@ export default class Help extends BaseCommand {
 		if (triggers.length != 0)
 			embed.addField('Aliases', triggers.join(', '), true);
 
+		let parent;
+		for (const [, mod] of this._bot.commandHandler.commandModules) {
+			if (mod.triggers.has(item)) {
+				parent = mod.info.name;
+				break;
+			}
+		}
 		embed.addField(
 			'Parent Module',
-			`${command.parent.info.name} : ${
-				guildRow[item] == false ? 'Disabled' : 'Enabled'
-			}`,
+			`${parent} : ${guildRow[item] == false ? 'Disabled' : 'Enabled'}`,
 			true
 		);
 		embed.addDefaults(message.author);

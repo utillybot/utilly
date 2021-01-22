@@ -1,4 +1,4 @@
 export * from './Hook';
-export * from './CollectorHandlers';
+export * from './CollectorHandler';
 export * from './CommandHandler';
 export * from './ModuleHandler';

@@ -1,6 +1,6 @@
 import { AttachableModule, EmbedBuilder } from '@utilly/framework';
-import type LoggingModule from './LoggingModule';
-import type { Guild, OldGuild, TextChannel } from 'eris';
+import LoggingModule from './LoggingModule';
+import { Client, Guild, OldGuild, TextChannel } from 'eris';
 import {
 	DEFAULT_NOTIFICATION_CONSTANTS,
 	EXPLICIT_LEVEL_CONSTANTS_SHORT,
@@ -8,6 +8,7 @@ import {
 	VERIFICATION_LEVEL_CONSTANTS_SHORT,
 } from '../../constants/ServerConstants';
 import { secondsToString } from '@utilly/utils';
+import { Injectable } from '@utilly/di';
 
 interface ChangedData {
 	name: string;
@@ -18,11 +19,14 @@ interface ChangedData {
 /**
  * Logging Module for Server Events
  */
+@Injectable()
 export default class ServerLogging extends AttachableModule {
-	parentModule!: LoggingModule;
+	constructor(private _parent: LoggingModule) {
+		super();
+	}
 
-	attach(): void {
-		this.bot.on('guildUpdate', this._guildUpdate.bind(this));
+	attach(bot: Client): void {
+		bot.on('guildUpdate', this._guildUpdate.bind(this));
 	}
 
 	private async _guildUpdate(
@@ -30,20 +34,20 @@ export default class ServerLogging extends AttachableModule {
 		oldGuild: OldGuild
 	): Promise<void> {
 		//#region prep
-		const guildRow = await this.parentModule.selectGuildRow(
+		const guildRow = await this._parent.selectGuildRow(
 			newGuild.id,
 			'guildUpdate'
 		);
 
 		if (!guildRow.logging || !guildRow.logging_guildUpdateEvent) return;
 
-		const logChannel: TextChannel | null = this.parentModule.getLogChannel(
+		const logChannel: TextChannel | null = this._parent.getLogChannel(
 			newGuild,
 			guildRow.logging_guildUpdateChannel
 		);
 		if (logChannel == null) return;
 
-		const { check, xmark } = this.parentModule.getEmotes(logChannel);
+		const { check, xmark } = this._parent.getEmotes(logChannel);
 
 		const embed = new EmbedBuilder();
 		embed.setTitle('Server Updated');
@@ -157,6 +161,6 @@ export default class ServerLogging extends AttachableModule {
 		embed.setTimestamp();
 		embed.setAuthor(newGuild.name, undefined, newGuild.iconURL ?? undefined);
 
-		this.parentModule.sendLogMessage(logChannel, embed);
+		this._parent.sendLogMessage(logChannel, embed);
 	}
 }

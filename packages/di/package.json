@@ -1,0 +1,17 @@
+{
+  "name": "@utilly/di",
+  "version": "1.0.0",
+  "description": "The dependency injection package for Utilly",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "author": "jtsshieh",
+  "dependencies": {
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.22"
+  },
+  "scripts": {
+    "build": "tsc"
+  }
+}

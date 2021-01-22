@@ -1,4 +1,4 @@
-import type { RequestHandler } from 'express';
+import { RequestHandler } from 'express';
 
 export const excludeSourceMaps: RequestHandler = (req, res, next) => {
 	if (

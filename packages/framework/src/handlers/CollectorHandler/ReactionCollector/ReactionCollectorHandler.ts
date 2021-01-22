@@ -1,35 +1,29 @@
-import type { Client, Emoji, Member, PossiblyUncachedMessage } from 'eris';
+import { Client, Emoji, Member, PossiblyUncachedMessage } from 'eris';
 import { Message } from 'eris';
 import { CollectorHandler } from '../CollectorHandler';
-import type {
+import {
 	ReactionCollectorHook,
 	ReactionCollectorHookContext,
 } from './ReactionCollectorHook';
 import { ReactionValidatorHook } from './ReactionValidatorHook';
+import { Injectable } from '@utilly/di';
+import { UtillyClient } from '../../../UtillyClient';
 
 /**
  * A handler for reaction collector
  */
+@Injectable()
 export class ReactionCollectorHandler extends CollectorHandler<
 	ReactionCollectorHook,
 	ReactionCollectorHookContext
 > {
-	private readonly _bot: Client;
-
 	/**
 	 * Creates a new reaction collector handler
-	 * @param bot - the client associated with this collector
+	 * @param _bot - the client associated with this collector
 	 */
-	constructor(bot: Client) {
+	constructor(private readonly _bot: UtillyClient) {
 		super();
-		this._bot = bot;
-	}
-
-	/**
-	 * Attaches this collector handler to the client to start listening for reactions
-	 */
-	attach(): void {
-		this._bot.on('messageReactionAdd', this._messageReactionAdd.bind(this));
+		this._bot.bot.on('messageReactionAdd', this._messageReactionAdd.bind(this));
 	}
 
 	/**
@@ -82,7 +76,7 @@ export class ReactionCollectorHandler extends CollectorHandler<
 		if (!(message instanceof Message)) return;
 
 		super.checkCollectors({
-			bot: this._bot,
+			bot: this._bot.bot,
 			message,
 			emoji,
 			reactor: member.id,

@@ -1,4 +1,4 @@
-import type { ReactionCollectorHook } from './ReactionCollectorHook';
+import { ReactionCollectorHook } from './ReactionCollectorHook';
 
 /**
  * The settings for a reaction validator hook

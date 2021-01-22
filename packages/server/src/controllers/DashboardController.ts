@@ -1,6 +1,5 @@
-import type { RequestHandler } from 'express';
-import { Router } from 'express';
-import type { UtillyClient } from '@utilly/framework';
+import { RequestHandler, Router } from 'express';
+import { UtillyClient } from '@utilly/framework';
 import { dashboardAPIController } from './DashboardAPIController';
 import OAuthClient from 'discord-oauth2';
 

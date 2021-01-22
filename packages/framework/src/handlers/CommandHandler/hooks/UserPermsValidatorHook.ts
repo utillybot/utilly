@@ -1,8 +1,9 @@
-import type { MessageContent } from 'eris';
-import type { CommandHook } from '../CommandHook';
-import type { PermsValidatorHookSettings } from './PermsValidatorHook';
-import { PermsValidatorHook } from './PermsValidatorHook';
-import type { Client, Message } from 'eris';
+import { Client, Message, MessageContent } from 'eris';
+import { CommandHook } from '../CommandHook';
+import {
+	PermsValidatorHook,
+	PermsValidatorHookSettings,
+} from './PermsValidatorHook';
 
 /**
  * Settings for the user permission validator hook

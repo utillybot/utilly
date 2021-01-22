@@ -1,12 +1,9 @@
-import { GuildRepository } from '@utilly/database';
-import type { Logger } from '@utilly/utils';
-import type { Message } from 'eris';
-import { GuildChannel } from 'eris';
-import type { UtillyClient } from '../../UtillyClient';
+import { Database, GuildRepository } from '@utilly/database';
+import { Logger } from '@utilly/utils';
+import { Client, GuildChannel, Message } from 'eris';
 import { EmbedBuilder } from '../../utils/EmbedBuilder';
-import type { BaseCommand, CommandInfo } from './Command';
-import { CommandContext } from './Command';
-import type { CommandHook, CommandHookContext } from './CommandHook';
+import { BaseCommand, CommandContext, CommandInfo } from './Command';
+import { CommandHook, CommandHookContext } from './CommandHook';
 import { runHooks } from '../Hook';
 
 /**
@@ -24,17 +21,9 @@ export abstract class Subcommand {
 	readonly preHooks: CommandHook[];
 
 	/**
-	 * The client that this command belongs to
-	 * @protected
-	 */
-	protected bot: UtillyClient;
-
-	/**
 	 * Create a new command
-	 * @param bot - the client that this command belongs to
 	 */
-	protected constructor(bot: UtillyClient) {
-		this.bot = bot;
+	protected constructor() {
 		this.help = {
 			name: '',
 			description: 'No Description Provided',
@@ -59,26 +48,21 @@ export class SubcommandHandler {
 	/**
 	 * A list of global pre hooks that will be run as pre hooks for any sub commands registered to this handler
 	 */
-	readonly preHooks: CommandHook[];
+	readonly preHooks: CommandHook[] = [];
 
-	private _logger: Logger;
-
-	private readonly _subCommandMap: Map<string, Subcommand>;
-
-	private readonly _bot: UtillyClient;
+	private readonly _subCommandMap: Map<string, Subcommand> = new Map();
 
 	/**
 	 * Creates a new sub command handler
-	 * @param logger - the logger to use
-	 * @param bot - the UtillyClient instance
+	 * @param _logger - the logger to use
+	 * @param _bot - the UtillyClient instance
+	 * @param _database - the database to use
 	 */
-	constructor(logger: Logger, bot: UtillyClient) {
-		this._subCommandMap = new Map();
-		this._logger = logger;
-		this._bot = bot;
-
-		this.preHooks = [];
-	}
+	constructor(
+		private _logger: Logger,
+		private readonly _bot: Client,
+		private readonly _database: Database
+	) {}
 
 	/**
 	 * Handles an incoming command and translates it to a subcommand
@@ -93,7 +77,7 @@ export class SubcommandHandler {
 		const newArgs = [...ctx.args];
 		newArgs.shift();
 
-		const newCtx = new CommandContext(ctx.message, newArgs);
+		const newCtx = { bot: this._bot, message: ctx.message, args: newArgs };
 		const hookCtx: CommandHookContext = {
 			bot: this._bot,
 			message: ctx.message,
@@ -134,7 +118,7 @@ export class SubcommandHandler {
 	): Promise<EmbedBuilder> {
 		let guildRow;
 		if (message.channel instanceof GuildChannel) {
-			guildRow = await this._bot.database.connection
+			guildRow = await this._database.connection
 				.getCustomRepository(GuildRepository)
 				.selectOrCreate(message.channel.guild.id, ['prefix']);
 		}

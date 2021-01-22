@@ -1,7 +1,8 @@
-import type {
+import {
 	CategoryChannel,
 	Channel,
 	GuildChannel,
+	Message,
 	NewsChannel,
 	PossiblyUncachedMessage,
 	PrivateChannel,
@@ -9,7 +10,6 @@ import type {
 	TextChannel,
 	VoiceChannel,
 } from 'eris';
-import { Message } from 'eris';
 
 export const isGuildChannel = (channel: Channel): channel is GuildChannel => {
 	return (

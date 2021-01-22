@@ -1,6 +1,5 @@
-import type { CommandModuleMetadata } from './types';
-import { CommandModuleSymbol } from './types';
-import type { BaseCommandModule } from '../CommandModule';
+import { CommandModuleMetadata, CommandModuleSymbol } from './types';
+import { BaseCommandModule } from '../CommandModule';
 
 export function CommandModule(help?: CommandModuleMetadata) {
 	return <

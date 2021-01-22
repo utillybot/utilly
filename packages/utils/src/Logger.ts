@@ -55,7 +55,7 @@ export class Logger {
 		this._log('log', msg);
 	}
 
-	_log(header: string, msg: string): void {
+	private _log(header: string, msg: string): void {
 		process.stdout.write(
 			`${chalk.grey('[Utilly]')} ${chalk.bold.underline
 				.hex(this.colors[header])(header)

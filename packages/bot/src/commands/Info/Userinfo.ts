@@ -1,13 +1,12 @@
-import type { CommandContext } from '@utilly/framework';
 import {
 	BaseCommand,
 	BotPermsValidatorHook,
 	Command,
+	CommandContext,
 	EmbedBuilder,
 	PreHook,
 } from '@utilly/framework';
-import type { Member, User } from 'eris';
-import type InfoCommandModule from './moduleinfo';
+import { Member, User } from 'eris';
 
 @Command({
 	name: 'Userinfo',
@@ -16,14 +15,12 @@ import type InfoCommandModule from './moduleinfo';
 })
 @PreHook(BotPermsValidatorHook({ permissions: ['embedLinks'] }))
 export default class Userinfo extends BaseCommand {
-	parent?: InfoCommandModule;
-
-	async execute(ctx: CommandContext): Promise<void> {
+	async execute({ message }: CommandContext): Promise<void> {
 		let member: Member | undefined;
-		const user: User = ctx.message.author;
+		const user: User = message.author;
 
-		if (ctx.guild) {
-			member = ctx.member;
+		if (message.member) {
+			member = message.member;
 		}
 
 		const embed = new EmbedBuilder();
@@ -40,6 +37,6 @@ export default class Userinfo extends BaseCommand {
 			embed.addField('Joined At', new Date(member.joinedAt).toUTCString());
 		}
 
-		ctx.reply({ embed });
+		message.channel.createMessage({ embed });
 	}
 }

@@ -1,7 +1,6 @@
-import type { CommandHook } from '@utilly/framework';
-import { GuildChannel } from 'eris';
-import { GuildRepository } from '@utilly/database';
-import { isGuildChannel } from '@utilly/framework';
+import { CommandHook, isGuildChannel } from '@utilly/framework';
+import { Database, GuildRepository } from '@utilly/database';
+import { GlobalStore } from '@utilly/di';
 
 /**
  * Settings for the is module enabled hook
@@ -21,10 +20,10 @@ export interface IsModuleEnabledHookSettings {
 export const IsModuleEnabledHook = (
 	settings: IsModuleEnabledHookSettings
 ): CommandHook => {
-	return async ({ bot, message }, next): Promise<void> => {
+	return async ({ message }, next): Promise<void> => {
 		if (isGuildChannel(message.channel)) {
-			const guildRow = await bot.database.connection
-				.getCustomRepository(GuildRepository)
+			const guildRow = await GlobalStore.resolve(Database)
+				.connection.getCustomRepository(GuildRepository)
 				.selectOrCreate(message.channel.guild.id, [settings.databaseEntry]);
 			const enabled = guildRow[settings.databaseEntry];
 			if (enabled == true) {

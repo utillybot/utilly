@@ -1,5 +1,5 @@
-import type { Logger } from '@utilly/utils';
-import type { Logger as TypeLogger } from 'typeorm';
+import { Logger } from '@utilly/utils';
+import { Logger as TypeLogger } from 'typeorm';
 
 export class TypeORMLogger implements TypeLogger {
 	private _logger: Logger;

@@ -1,15 +1,15 @@
-import type { CommandInfo } from '../Command';
-import type { CommandModuleInfo } from '../CommandModule';
-import type { CommandHook } from '../CommandHook';
+import { CommandInfo } from '../Command';
+import { CommandModuleInfo } from '../CommandModule';
+import { CommandHook } from '../CommandHook';
 
 export type CommandMetadata = Partial<CommandInfo>;
 
-export const CommandSymbol = Symbol('Utilly Bot Command');
+export const CommandSymbol = Symbol('@utilly/framework:command');
 
 export type CommandModuleMetadata = Partial<CommandModuleInfo>;
 
-export const CommandModuleSymbol = Symbol('Utilly Bot Command Module');
+export const CommandModuleSymbol = Symbol('@utilly/framework:commandModule');
 
 export type PreHookMetadata = CommandHook[];
 
-export const PreHookSymbol = Symbol('Utilly Bot PreHook');
+export const PreHookSymbol = Symbol('@utilly/framework:preHook');

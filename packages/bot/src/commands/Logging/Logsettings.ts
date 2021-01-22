@@ -1,22 +1,22 @@
-import { Guild, GuildRepository } from '@utilly/database';
-import type { CommandContext } from '@utilly/framework';
+import { Database, Guild, GuildRepository } from '@utilly/database';
 import {
 	BaseCommand,
 	BotPermsValidatorHook,
 	ChannelValidatorHook,
 	Command,
+	CommandContext,
 	EmbedBuilder,
 	isGuildChannel,
 	isTextChannel,
+	MessageCollectorHandler,
 	PreHook,
+	ReactionCollectorHandler,
 	UserPermsValidatorHook,
 } from '@utilly/framework';
 import { parseChannel } from '@utilly/utils';
-import type { Emoji, Message, User } from 'eris';
-import { GuildChannel, TextChannel } from 'eris';
+import { Emoji, Message, User } from 'eris';
 import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
 import { EVENT_CONSTANTS, EVENT_NAMES } from '../../constants/EventConstants';
-import type LoggingCommandModule from './moduleinfo';
 
 @Command({
 	name: 'Logsettings',
@@ -36,9 +36,14 @@ import type LoggingCommandModule from './moduleinfo';
 )
 @PreHook(UserPermsValidatorHook({ permissions: ['manageGuild'] }))
 export default class Logsettings extends BaseCommand {
-	parent?: LoggingCommandModule;
-
-	async execute(ctx: CommandContext): Promise<void> {
+	constructor(
+		private _messageCollector: MessageCollectorHandler,
+		private _reactionCollector: ReactionCollectorHandler,
+		private _database: Database
+	) {
+		super();
+	}
+	async execute({ message }: CommandContext): Promise<void> {
 		const embed = new EmbedBuilder();
 		embed.setTitle('Logging Settings');
 		embed.setDescription(
@@ -57,7 +62,7 @@ export default class Logsettings extends BaseCommand {
 			'View the currently set log channel and status of each event'
 		);
 		embed.addField(`${EMOTE_CONSTANTS.cancel} Cancel`, 'Close this menu');
-		const menu = await ctx.reply({ embed });
+		const menu = await message.channel.createMessage({ embed });
 
 		menu.addReaction(`channel:${EMOTE_CONSTANTS.channelID}`);
 		menu.addReaction(`event:${EMOTE_CONSTANTS.eventID}`);
@@ -65,9 +70,9 @@ export default class Logsettings extends BaseCommand {
 		menu.addReaction(`cancel:${EMOTE_CONSTANTS.cancelID}`);
 
 		try {
-			const result = await this.bot.reactionWaitHandler.addListener(
+			const result = await this._reactionCollector.addListener(
 				menu.id,
-				ctx.message.author.id,
+				message.author.id,
 				[
 					EMOTE_CONSTANTS.channelID,
 					EMOTE_CONSTANTS.eventID,
@@ -76,7 +81,7 @@ export default class Logsettings extends BaseCommand {
 				],
 				60
 			);
-			this.handleSuccess(result, ctx.message, menu);
+			this.handleSuccess(result, message, menu);
 		} catch {
 			this.handleFailure(menu);
 		}
@@ -126,7 +131,7 @@ export default class Logsettings extends BaseCommand {
 		for (const categoryValue of Object.values(EVENT_CONSTANTS)) {
 			eventOptions = eventOptions.concat(Object.values(categoryValue));
 		}
-		const guildRow = await this.bot.database.connection
+		const guildRow = await this._database.connection
 			.getCustomRepository(GuildRepository)
 			.selectOrCreate(menu.channel.guild.id, [
 				...eventOptions.map(item => `logging_${item}Event`),
@@ -214,7 +219,7 @@ export default class Logsettings extends BaseCommand {
 		//#endregion
 
 		//#region select events
-		const selectedEventsResponse = await this.bot.messageWaitHandler.addListener(
+		const selectedEventsResponse = await this._messageCollector.addListener(
 			menu.channel.id,
 			author.id,
 			(message: Message) => {
@@ -282,7 +287,7 @@ export default class Logsettings extends BaseCommand {
 		//#endregion
 
 		//#region select channel
-		const channelResponse = await this.bot.messageWaitHandler.addListener(
+		const channelResponse = await this._messageCollector.addListener(
 			menu.channel.id,
 			author.id,
 			(message: Message) => {
@@ -327,7 +332,7 @@ export default class Logsettings extends BaseCommand {
 		}
 
 		// Update the guild
-		this.bot.database.connection
+		this._database.connection
 			.getRepository(Guild)
 			.update(channelResponse.channel.guild.id, guildRow);
 
@@ -415,7 +420,7 @@ export default class Logsettings extends BaseCommand {
 		//#endregion
 
 		//#region select events
-		const selectedEventsResponse = await this.bot.messageWaitHandler.addListener(
+		const selectedEventsResponse = await this._messageCollector.addListener(
 			menu.channel.id,
 			author.id,
 			(message: Message) => {
@@ -484,7 +489,7 @@ export default class Logsettings extends BaseCommand {
 		//#endregion
 
 		//#region select enable/disable/toggle
-		const channelResponse = await this.bot.messageWaitHandler.addListener(
+		const channelResponse = await this._messageCollector.addListener(
 			menu.channel.id,
 			author.id,
 			(m: Message) =>
@@ -509,7 +514,7 @@ export default class Logsettings extends BaseCommand {
 				guildRow[`logging_${event}Event`] = !guildRow[`logging_${event}Event`];
 		}
 
-		this.bot.database.connection
+		this._database.connection
 			.getRepository(Guild)
 			.update(channelResponse.channel.guild.id, guildRow);
 

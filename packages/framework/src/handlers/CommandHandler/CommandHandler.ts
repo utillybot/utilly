@@ -1,22 +1,20 @@
-import type { Database } from '@utilly/database';
-import { GuildRepository } from '@utilly/database';
-import type { Logger } from '@utilly/utils';
-import type { Message } from 'eris';
-import { GuildChannel } from 'eris';
+import { Database, GuildRepository } from '@utilly/database';
+import { Logger } from '@utilly/utils';
+import { Client, GuildChannel, Message } from 'eris';
 import fs from 'fs/promises';
 import path from 'path';
-import type { BaseCommand } from './Command';
-import { CommandContext } from './Command';
-import type { BaseCommandModule } from './CommandModule';
-import type { CommandHookContext } from './CommandHook';
+import { BaseCommand } from './Command';
+import { BaseCommandModule } from './CommandModule';
+import { CommandHookContext } from './CommandHook';
 import { runHooks } from '../Hook';
-import type { Handler } from '../Handler';
+import { Handler } from '../Handler';
 import { loadCommandModuleMetadata, loadPreHookMetadata } from './decorators';
-import type { UtillyClient } from '../../UtillyClient';
+import { GlobalStore, Injectable } from '@utilly/di';
 
 /**
  * A handler that will handle all incoming commands to the bot
  */
+@Injectable()
 export class CommandHandler implements Handler {
 	/**
 	 * A map of command modules registered to this handler
@@ -28,7 +26,7 @@ export class CommandHandler implements Handler {
 	 */
 	readonly triggers: Map<string, BaseCommand> = new Map();
 
-	private readonly _bot: UtillyClient;
+	private readonly _bot: Client;
 
 	private readonly _logger: Logger;
 
@@ -36,11 +34,11 @@ export class CommandHandler implements Handler {
 
 	/**
 	 * Creates a new CommandHandler
-	 * @param bot - the UtillyClient instance
+	 * @param bot - the Client instance
 	 * @param logger - the logger
 	 * @param database - the database instance
 	 */
-	constructor(bot: UtillyClient, logger: Logger, database: Database) {
+	constructor(bot: Client, logger: Logger, database: Database) {
 		this._bot = bot;
 		this._logger = logger;
 		this._database = database;
@@ -83,17 +81,17 @@ export class CommandHandler implements Handler {
 
 			this._logger.handler(`  Loading Command Module "${module}".`);
 
-			const moduleObj: BaseCommandModule = new (
-				await import(path.join(directory, module, 'moduleinfo'))
-			).default();
+			const moduleObj: BaseCommandModule = GlobalStore.resolve(
+				(await import(path.join(directory, module, 'moduleinfo'))).default
+			);
 
 			for (const command of commands) {
 				if (command == 'moduleinfo.js') continue;
 
 				this._logger.handler(`    Loading Command "${command}".`);
-				const commandObj: BaseCommand = new (
-					await import(path.join(directory, module, command))
-				).default(this._bot, moduleObj);
+				const commandObj: BaseCommand = GlobalStore.resolve(
+					(await import(path.join(directory, module, command))).default
+				);
 
 				moduleObj.registerCommand(commandObj);
 				this._logger.handler(
@@ -156,24 +154,27 @@ export class CommandHandler implements Handler {
 		const commandObj = this.triggers.get(command.toLowerCase());
 
 		if (commandObj == undefined) return;
-		if (!commandObj.parent)
-			throw new Error(
-				`Command object ${commandObj.info.name} doesn't have a parent.`
-			);
 		//#endregion
 
 		const hookCtx: CommandHookContext = { bot: this._bot, message, args };
 
-		if (
-			!(await runHooks(
-				hookCtx,
-				commandObj.parent.preHooks.concat(commandObj.preHooks)
-			))
-		)
-			return;
+		let parent;
+		for (const [, mod] of this.commandModules) {
+			if (mod.triggers.has(command.toLowerCase())) {
+				parent = mod;
+				break;
+			}
+		}
 
 		try {
-			await commandObj.execute(new CommandContext(message, args));
+			if (!parent)
+				throw new Error(`Missing parent in ${commandObj.info.name}.`);
+			if (
+				!(await runHooks(hookCtx, parent.preHooks.concat(commandObj.preHooks)))
+			)
+				return;
+
+			await commandObj.execute({ bot: this._bot, message, args });
 		} catch (e) {
 			console.error('Bot command error', e.stack);
 		}

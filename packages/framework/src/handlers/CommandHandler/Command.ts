@@ -1,8 +1,5 @@
-import type { Guild, Member, Message, MessageContent } from 'eris';
-import { GuildChannel } from 'eris';
-import type { UtillyClient } from '../../UtillyClient';
-import type { BaseCommandModule } from './CommandModule';
-import type { CommandHook } from './CommandHook';
+import { Client, Message } from 'eris';
+import { CommandHook } from './CommandHook';
 
 /**
  * Help information for this command
@@ -37,7 +34,12 @@ export interface CommandArgument {
 /**
  * The context the command was run in
  */
-export class CommandContext {
+export interface CommandContext {
+	/**
+	 * The client this command belongs to
+	 */
+	readonly bot: Client;
+
 	/**
 	 * The message of this context
 	 */
@@ -47,41 +49,6 @@ export class CommandContext {
 	 * The arguments passed into this command
 	 */
 	readonly args: string[];
-
-	/**
-	 * The guild that this command was ran in, if it was run in a guild
-	 */
-	readonly guild?: Guild;
-
-	/**
-	 * The member that ran this command, if there was one
-	 */
-	readonly member?: Member;
-
-	/**
-	 * Creates a new command context
-	 * @param message - the message that invoked this command
-	 * @param args - the arguments passed into the command
-	 */
-	constructor(message: Message, args: string[]) {
-		this.message = message;
-		this.args = args;
-
-		this.guild =
-			message.channel instanceof GuildChannel
-				? message.channel.guild
-				: undefined;
-
-		this.member = message.member ?? undefined;
-	}
-
-	/**
-	 * Replies to the user who executed this command.
-	 * @param content - the content to reply with
-	 */
-	reply(content: MessageContent): Promise<Message> {
-		return this.message.channel.createMessage(content);
-	}
 }
 
 /**
@@ -102,16 +69,6 @@ export abstract class BaseCommand {
 	 * An array of command hooks that will be run prior to the execution of this command.
 	 */
 	preHooks: CommandHook[] = [];
-
-	/**
-	 * Create a new command
-	 * @param bot - the client that this command belongs to
-	 * @param parent - the parent command module of this bot
-	 */
-	constructor(
-		protected bot: UtillyClient,
-		readonly parent?: BaseCommandModule
-	) {}
 
 	/**
 	 * Executes this command with the given command context

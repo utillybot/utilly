@@ -1,9 +1,8 @@
-import type { UtillyClient } from '@utilly/framework';
-import type { RequestHandler } from 'express';
-import { Router } from 'express';
+import { UtillyClient } from '@utilly/framework';
+import { RequestHandler, Router } from 'express';
 import { GuildRepository } from '@utilly/database';
-import type OAuth from 'discord-oauth2';
-import type { PartialGuild } from '../types';
+import OAuth from 'discord-oauth2';
+import { PartialGuild } from '../types';
 
 const guildsCache = new Map();
 
@@ -27,7 +26,7 @@ export const dashboardGuildsController = (
 				return res
 					.status(403)
 					.send('You do not have the permission to get this guild,');
-			if (!bot.guilds.has(guild.id))
+			if (!bot.bot.guilds.has(guild.id))
 				return res.status(404).send('The bot is not in this guild');
 			res.locals.guild = guild;
 			next();
@@ -47,8 +46,10 @@ export const dashboardGuildsController = (
 				});
 
 				res.json({
-					present: mappedGuilds.filter(guild => bot.guilds.has(guild.id)),
-					notPresent: mappedGuilds.filter(guild => !bot.guilds.has(guild.id)),
+					present: mappedGuilds.filter(guild => bot.bot.guilds.has(guild.id)),
+					notPresent: mappedGuilds.filter(
+						guild => !bot.bot.guilds.has(guild.id)
+					),
 				});
 			} catch (error) {
 				next(error);

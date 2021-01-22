@@ -1,25 +1,25 @@
-import type {
-	CommandContext,
-	MessageWaitFilter,
-	UtillyClient,
-} from '@utilly/framework';
 import {
 	BaseCommand,
 	BotPermsValidatorHook,
 	ChannelValidatorHook,
 	Command,
+	CommandContext,
 	EmbedBuilder,
 	isGuildChannel,
 	isTextChannel,
+	MessageCollectorHandler,
+	MessageWaitFilter,
 	PreHook,
 	Subcommand,
 	SubcommandHandler,
+	UtillyClient,
 } from '@utilly/framework';
 import centra from 'centra';
-import type { Message } from 'eris';
-import { GuildChannel, TextChannel } from 'eris';
+import { Message } from 'eris';
 import prettier from 'prettier';
-import type GeneralCommandModule from './moduleinfo';
+import { GlobalStore } from '@utilly/di';
+import { Logger } from '@utilly/utils';
+import { Database } from '@utilly/database';
 
 @Command({
 	name: 'Embed',
@@ -29,26 +29,29 @@ import type GeneralCommandModule from './moduleinfo';
 @PreHook(ChannelValidatorHook({ channel: ['guild'] }))
 @PreHook(BotPermsValidatorHook({ permissions: ['embedLinks'] }))
 export default class Embed extends BaseCommand {
-	parent!: GeneralCommandModule;
 	subCommandHandler: SubcommandHandler;
 
-	constructor(bot: UtillyClient, parent: GeneralCommandModule) {
-		super(bot, parent);
-		this.subCommandHandler = new SubcommandHandler(bot.logger, bot);
+	constructor() {
+		super();
+		this.subCommandHandler = new SubcommandHandler(
+			GlobalStore.resolve(Logger),
+			GlobalStore.resolve(UtillyClient).bot,
+			GlobalStore.resolve(Database)
+		);
 
-		this.subCommandHandler.registerSubcommand(new EmbedCreate(this.bot));
-		this.subCommandHandler.registerSubcommand(new EmbedEdit(this.bot));
-		this.subCommandHandler.registerSubcommand(new EmbedView(this.bot));
+		this.subCommandHandler.registerSubcommand(GlobalStore.resolve(EmbedCreate));
+		this.subCommandHandler.registerSubcommand(GlobalStore.resolve(EmbedEdit));
+		this.subCommandHandler.registerSubcommand(GlobalStore.resolve(EmbedView));
 	}
 
-	async execute(ctx: CommandContext): Promise<void> {
-		if (ctx.args.length == 0) {
-			await ctx.reply({
-				embed: await this.subCommandHandler.generateHelp(this, ctx.message),
+	async execute({ bot, message, args }: CommandContext): Promise<void> {
+		if (args.length == 0) {
+			await message.channel.createMessage({
+				embed: await this.subCommandHandler.generateHelp(this, message),
 			});
 		} else {
-			if (!(await this.subCommandHandler.handle(ctx))) {
-				await ctx.reply(
+			if (!(await this.subCommandHandler.handle({ bot, message, args }))) {
+				await message.channel.createMessage(
 					'You used the command incorrectly. View the help page to learn how to use this command'
 				);
 			}
@@ -62,8 +65,11 @@ export default class Embed extends BaseCommand {
 	})
 )
 class EmbedCreate extends Subcommand {
-	constructor(bot: UtillyClient) {
-		super(bot);
+	constructor(
+		private _messageCollector: MessageCollectorHandler,
+		private _bot: UtillyClient
+	) {
+		super();
 
 		this.help.name = 'create';
 		this.help.description =
@@ -71,13 +77,12 @@ class EmbedCreate extends Subcommand {
 		this.help.usage = '(embed)';
 	}
 
-	async execute(ctx: CommandContext): Promise<void> {
+	async execute({ message, args }: CommandContext): Promise<void> {
 		const preview = new EmbedBuilder();
 		try {
-			if (ctx.args.length > 0)
-				Object.assign(preview, JSON.parse(ctx.args.join(' ')));
+			if (args.length > 0) Object.assign(preview, JSON.parse(args.join(' ')));
 		} catch {
-			await ctx.reply('Could not parse your JSON.');
+			await message.channel.createMessage('Could not parse your JSON.');
 			return;
 		}
 		const options = [
@@ -98,29 +103,23 @@ class EmbedCreate extends Subcommand {
 		embed.setDescription(
 			'Please choose an option to modify: ' + options.join(', ')
 		);
-		embed.addDefaults(ctx.message.author);
+		embed.addDefaults(message.author);
 
-		const previewMessage = await ctx.reply({
+		const previewMessage = await message.channel.createMessage({
 			content: '> **`PREVIEW`**',
 			embed: preview,
 		});
 
-		const menu = await ctx.reply({ embed });
+		const menu = await message.channel.createMessage({ embed });
 
 		try {
-			const result = await this.bot.messageWaitHandler.addListener(
-				ctx.message.channel.id,
-				ctx.message.author.id,
+			const result = await this._messageCollector.addListener(
+				message.channel.id,
+				message.author.id,
 				message => options.includes(message.content.toLowerCase()),
 				30
 			);
-			await this.handleOption(
-				result,
-				ctx.message,
-				preview,
-				menu,
-				previewMessage
-			);
+			await this.handleOption(result, message, preview, menu, previewMessage);
 		} catch {
 			await this.handleFailure(menu, previewMessage);
 		}
@@ -168,7 +167,7 @@ class EmbedCreate extends Subcommand {
 		await menu.edit({ embed });
 
 		try {
-			const result = await this.bot.messageWaitHandler.addListener(
+			const result = await this._messageCollector.addListener(
 				message.channel.id,
 				message.author.id,
 				message => options.includes(message.content.toLowerCase()),
@@ -217,7 +216,7 @@ class EmbedCreate extends Subcommand {
 
 				menu = await menu.edit({ embed });
 
-				const result = await this.bot.messageWaitHandler.addListener(
+				const result = await this._messageCollector.addListener(
 					message.channel.id,
 					message.author.id,
 					filter,
@@ -260,7 +259,7 @@ class EmbedCreate extends Subcommand {
 					'Would you like to set the footer **`text`** or footer **`icon URL`**? (type `text` or `icon URL`)'
 				);
 				menu = await menu.edit({ embed });
-				const result = await this.bot.messageWaitHandler.addListener(
+				const result = await this._messageCollector.addListener(
 					message.channel.id,
 					message.author.id,
 					message =>
@@ -275,7 +274,7 @@ class EmbedCreate extends Subcommand {
 					'Would you like to set the author **`name`**, author **`URL`**, or author **`icon URL`**? (type `name`, `URL`, or `icon URL`)'
 				);
 				menu = await menu.edit({ embed });
-				const result = await this.bot.messageWaitHandler.addListener(
+				const result = await this._messageCollector.addListener(
 					message.channel.id,
 					message.author.id,
 					message =>
@@ -288,7 +287,7 @@ class EmbedCreate extends Subcommand {
 				const embed = new EmbedBuilder();
 				embed.setTitle('Would you like to add or delete a field?');
 				menu = await menu.edit({ embed });
-				const result = await this.bot.messageWaitHandler.addListener(
+				const result = await this._messageCollector.addListener(
 					message.channel.id,
 					message.author.id,
 					message => ['add', 'delete'].includes(message.content.toLowerCase()),
@@ -307,7 +306,7 @@ class EmbedCreate extends Subcommand {
 
 				message.channel.createMessage({ embed: optionEmbed });
 
-				const option = await this.bot.messageWaitHandler.addListener(
+				const option = await this._messageCollector.addListener(
 					message.channel.id,
 					message.author.id,
 					message => {
@@ -343,7 +342,7 @@ class EmbedCreate extends Subcommand {
 					const regex = /\d{18}/;
 
 					const result = (
-						await this.bot.messageWaitHandler.addListener(
+						await this._messageCollector.addListener(
 							message.channel.id,
 							message.author.id,
 							message => {
@@ -376,7 +375,7 @@ class EmbedCreate extends Subcommand {
 						message.channel.createMessage({ embed: noPerms });
 						return;
 					} else if (
-						!channel?.permissionsOf(this.bot.user.id).has('sendMessages')
+						!channel?.permissionsOf(this._bot.bot.user.id).has('sendMessages')
 					) {
 						const noPerms = new EmbedBuilder();
 						noPerms.setTitle(
@@ -446,7 +445,7 @@ class EmbedCreate extends Subcommand {
 			embed.setDescription('The length limit is 2048 characters.');
 			menu = await menu.edit({ embed });
 			try {
-				const text = await this.bot.messageWaitHandler.addListener(
+				const text = await this._messageCollector.addListener(
 					message.channel.id,
 					message.author.id,
 					(message: Message) => message.content.length < 2048,
@@ -469,7 +468,7 @@ class EmbedCreate extends Subcommand {
 			);
 			menu = await menu.edit({ embed });
 			try {
-				const url = await this.bot.messageWaitHandler.addListener(
+				const url = await this._messageCollector.addListener(
 					message.channel.id,
 					message.author.id,
 					undefined,
@@ -506,7 +505,7 @@ class EmbedCreate extends Subcommand {
 
 			menu = await menu.edit({ embed });
 			try {
-				const name = await this.bot.messageWaitHandler.addListener(
+				const name = await this._messageCollector.addListener(
 					message.channel.id,
 					message.author.id,
 					(message: Message) => message.content.length < 256,
@@ -530,7 +529,7 @@ class EmbedCreate extends Subcommand {
 			);
 			menu = await menu.edit({ embed });
 			try {
-				const iconURL = await this.bot.messageWaitHandler.addListener(
+				const iconURL = await this._messageCollector.addListener(
 					message.channel.id,
 					message.author.id,
 					undefined,
@@ -553,7 +552,7 @@ class EmbedCreate extends Subcommand {
 			);
 			menu = await menu.edit({ embed });
 			try {
-				const url = await this.bot.messageWaitHandler.addListener(
+				const url = await this._messageCollector.addListener(
 					message.channel.id,
 					message.author.id,
 					undefined,
@@ -601,7 +600,7 @@ class EmbedCreate extends Subcommand {
 					nameEmbed.setDescription('The length limit is 256 characters.');
 					menu = await menu.edit({ embed: nameEmbed });
 
-					const name = await this.bot.messageWaitHandler.addListener(
+					const name = await this._messageCollector.addListener(
 						message.channel.id,
 						message.author.id,
 						(message: Message) => message.content.length < 256,
@@ -615,7 +614,7 @@ class EmbedCreate extends Subcommand {
 					nameEmbed.setDescription('The length limit is 1024 characters.');
 					menu = await menu.edit({ embed: valueEmbed });
 
-					const value = await this.bot.messageWaitHandler.addListener(
+					const value = await this._messageCollector.addListener(
 						message.channel.id,
 						message.author.id,
 						(message: Message) => message.content.length < 1024,
@@ -629,7 +628,7 @@ class EmbedCreate extends Subcommand {
 						'Finally, do you want this field to be inline or no (type `yes` or `no`. default is `no`)'
 					);
 					menu = await menu.edit({ embed: inlineEmbed });
-					const inline = await this.bot.messageWaitHandler.addListener(
+					const inline = await this._messageCollector.addListener(
 						message.channel.id,
 						message.author.id,
 						(message: Message) => ['yes', 'no'].includes(message.content),
@@ -655,7 +654,7 @@ class EmbedCreate extends Subcommand {
 			);
 			menu = await menu.edit({ embed: nameEmbed });
 			try {
-				const deleteIndex = await this.bot.messageWaitHandler.addListener(
+				const deleteIndex = await this._messageCollector.addListener(
 					message.channel.id,
 					message.author.id,
 					(message: Message) =>
@@ -695,46 +694,46 @@ class EmbedCreate extends Subcommand {
 
 @PreHook(BotPermsValidatorHook({ permissions: ['readMessageHistory'] }))
 class EmbedView extends Subcommand {
-	constructor(bot: UtillyClient) {
-		super(bot);
+	constructor() {
+		super();
 
 		this.help.name = 'view';
 		this.help.description = 'View the code behind and embed that was sent.';
 		this.help.usage = '(message id)';
 	}
 
-	async execute(ctx: CommandContext): Promise<void> {
-		if (!ctx.guild) return;
+	async execute({ message, args }: CommandContext): Promise<void> {
+		if (!isGuildChannel(message.channel)) return;
 
 		let foundMessage: Message | undefined;
-		for (const channel of ctx.guild.channels.values()) {
+		for (const channel of message.channel.guild.channels.values()) {
 			if (!isTextChannel(channel)) continue;
 			try {
-				foundMessage = await channel.getMessage(ctx.args[0]);
+				foundMessage = await channel.getMessage(args[0]);
 				// eslint-disable-next-line no-empty
 			} catch (ex) {}
 		}
 
 		if (!foundMessage) {
 			const embed = new EmbedBuilder();
-			embed.addDefaults(ctx.message.author);
+			embed.addDefaults(message.author);
 			embed.setTitle(
 				`Error: The specified message was not found in this server.`
 			);
 			embed.setColor(0xff0000);
-			ctx.reply({ embed });
+			message.channel.createMessage({ embed });
 			return;
 		} else if (foundMessage.embeds.length == 0) {
 			const embed = new EmbedBuilder();
-			embed.addDefaults(ctx.message.author);
+			embed.addDefaults(message.author);
 			embed.setTitle(`Error: The specified message did not have an embed.`);
 			embed.setColor(0xff0000);
-			ctx.reply({ embed });
+			message.channel.createMessage({ embed });
 			return;
 		}
 
 		const embed = new EmbedBuilder();
-		embed.addDefaults(ctx.message.author);
+		embed.addDefaults(message.author);
 		embed.setTitle(`Here is the embed:`);
 		const result = await (
 			await centra('https://hasteb.in/documents', 'POST')
@@ -748,76 +747,76 @@ class EmbedView extends Subcommand {
 		).json();
 		embed.setDescription(`Embed Link: https://hasteb.in/${result.key}`);
 		embed.setColor(0x00ff00);
-		await ctx.reply({ embed });
+		await message.channel.createMessage({ embed });
 	}
 }
 
 @PreHook(BotPermsValidatorHook({ permissions: ['readMessageHistory'] }))
 class EmbedEdit extends Subcommand {
-	constructor(bot: UtillyClient) {
-		super(bot);
+	constructor(private _bot: UtillyClient) {
+		super();
 
 		this.help.name = 'edit';
 		this.help.description = 'Edits an embed that the bot sent.';
 		this.help.usage = '(message id) (embed)';
 	}
 
-	async execute(ctx: CommandContext): Promise<void> {
-		if (!ctx.guild) return;
+	async execute({ message, args }: CommandContext): Promise<void> {
+		if (!isGuildChannel(message.channel)) return;
 
 		let foundMessage: Message | undefined;
-		for (const channel of ctx.guild.channels.values()) {
+		for (const channel of message.channel.guild.channels.values()) {
 			if (!isTextChannel(channel)) continue;
 			try {
-				foundMessage = await channel.getMessage(ctx.args[0]);
+				foundMessage = await channel.getMessage(args[0]);
 			} catch (ex) {
 				continue;
 			}
 
-			if (foundMessage.author.id != this.bot.user.id) {
+			if (foundMessage.author.id != this._bot.bot.user.id) {
 				const embed = new EmbedBuilder();
-				embed.addDefaults(ctx.message.author);
+				embed.addDefaults(message.author);
 				embed.setTitle(
 					`Error: The specified message is not written by the bot`
 				);
 				embed.setColor(0xff0000);
-				ctx.reply({ embed });
+				message.channel.createMessage({ embed });
 				return;
 			}
 		}
 
 		if (!foundMessage) {
 			const embed = new EmbedBuilder();
-			embed.addDefaults(ctx.message.author);
+			embed.addDefaults(message.author);
 			embed.setTitle(
 				`Error: The specified message was not found in this server.`
 			);
 			embed.setColor(0xff0000);
-			ctx.reply({ embed });
+			message.channel.createMessage({ embed });
 			return;
 		} else if (foundMessage.embeds.length == 0) {
 			const embed = new EmbedBuilder();
-			embed.addDefaults(ctx.message.author);
+			embed.addDefaults(message.author);
 			embed.setTitle(`Error: The specified message did not have an embed.`);
 			embed.setColor(0xff0000);
-			ctx.reply({ embed });
+			message.channel.createMessage({ embed });
 			return;
 		}
-		ctx.args.shift();
+		args.shift();
 		let embedObj;
 		try {
-			embedObj = JSON.parse(ctx.args.join(' '));
+			embedObj = JSON.parse(args.join(' '));
 		} catch (ex) {
 			const embed = new EmbedBuilder();
-			embed.addDefaults(ctx.message.author);
+			embed.addDefaults(message.author);
 			embed.setTitle(`Error: There was an error parsing your input.`);
 			embed.setColor(0xff0000);
-			ctx.reply({ embed });
+			message.channel.createMessage({ embed });
 			return;
 		}
 
 		foundMessage.edit({ embed: embedObj });
 
-		await ctx.reply('Done!');
+		await message.channel.createMessage('Done!');
 	}
 }

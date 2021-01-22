@@ -1,14 +1,13 @@
-import type { CommandContext } from '@utilly/framework';
 import {
 	BaseCommand,
 	Command,
+	CommandContext,
 	EmbedBuilder,
 	PreHook,
 	UserIdValidatorHook,
 } from '@utilly/framework';
 import centra from 'centra';
 import prettier from 'prettier';
-import type GeneralCommandModule from './moduleinfo';
 
 @Command({
 	name: 'Eval',
@@ -17,17 +16,15 @@ import type GeneralCommandModule from './moduleinfo';
 })
 @PreHook(UserIdValidatorHook({ allowedIds: ['236279900728721409'] }))
 export default class Eval extends BaseCommand {
-	parent!: GeneralCommandModule;
-
-	async execute(ctx: CommandContext): Promise<void> {
+	async execute({ bot, message, args }: CommandContext): Promise<void> {
 		let code = '';
 
-		if (ctx.args[0] == 'async') {
-			ctx.args.shift();
+		if (args[0] == 'async') {
+			args.shift();
 
-			code = `(async() => {${ctx.args.join(' ')}})()`;
+			code = `(async() => {${args.join(' ')}})()`;
 		} else {
-			code = ctx.args.join(' ');
+			code = args.join(' ');
 		}
 
 		code = prettier.format(code);
@@ -44,7 +41,7 @@ export default class Eval extends BaseCommand {
 					.replace(/@/g, '@' + String.fromCharCode(8203))
 					.replace(
 						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-						this.bot.token!,
+						bot.token!,
 						"Utilly's Token"
 					);
 			};
@@ -62,7 +59,7 @@ export default class Eval extends BaseCommand {
 				.setDescription('Eval result')
 				.addField(':inbox_tray: Input:', `\`\`\`js\n${code}\n\`\`\``, false)
 				.setColor(0x00afff)
-				.setFooter('Eval', this.bot.user.avatarURL)
+				.setFooter('Eval', bot.user.avatarURL)
 				.setTimestamp();
 
 			if (evaled.toString().length > 1024) {
@@ -93,7 +90,7 @@ export default class Eval extends BaseCommand {
 			}
 
 			//Send the embed
-			ctx.reply({
+			message.channel.createMessage({
 				embed,
 			});
 		} catch (err) {
@@ -121,10 +118,10 @@ export default class Eval extends BaseCommand {
 				.addField(':inbox_tray: Input:', `\`\`\`js\n${code}\n\`\`\``, false)
 				.addField(':outbox_tray: Output:', result, false)
 				.setColor(0xff0000)
-				.setFooter('Eval', this.bot.user.avatarURL)
+				.setFooter('Eval', bot.user.avatarURL)
 				.setTimestamp();
 			//Send the embed
-			ctx.reply({
+			message.channel.createMessage({
 				embed,
 			});
 			return;

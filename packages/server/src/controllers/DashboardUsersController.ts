@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import type OAuth from 'discord-oauth2';
+import OAuth from 'discord-oauth2';
 
 export const dashboardUsersController = (oAuth: OAuth): Router => {
 	return Router().get('', async (req, res, next) => {
