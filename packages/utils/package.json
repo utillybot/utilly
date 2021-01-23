@@ -6,6 +6,7 @@
 	"typings": "dist/index.d.ts",
 	"author": "jtsshieh",
 	"dependencies": {
+		"@utilly/di": "1.0.0",
 		"chalk": "^4.1.0",
 		"eris": "github:jtsshieh/eris#utilly"
 	},

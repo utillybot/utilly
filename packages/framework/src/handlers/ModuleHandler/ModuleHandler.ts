@@ -5,20 +5,18 @@ import { UtillyClient } from '../../UtillyClient';
 import { Module } from './Module';
 import { AttachableModule } from './AttachableModule';
 import { Submodule } from './Submodule';
-import { GlobalStore, Injectable } from '@utilly/di';
+import { GlobalStore, Inject, Injectable } from '@utilly/di';
+import { Client } from 'eris';
+import { CLIENT_TOKEN } from '../../InjectionTokens';
 
 @Injectable()
 export class ModuleHandler {
-	readonly modules: Map<string, Module>;
+	readonly modules: Map<string, Module> = new Map();
 
-	private readonly _bot: UtillyClient;
-	private readonly _logger: Logger;
-
-	constructor(bot: UtillyClient, logger: Logger) {
-		this._bot = bot;
-		this._logger = logger;
-		this.modules = new Map();
-	}
+	constructor(
+		@Inject(CLIENT_TOKEN) private _bot: Client,
+		private _logger: Logger
+	) {}
 
 	/**
 	 * Loads modules from a directory
@@ -65,7 +63,7 @@ export class ModuleHandler {
 		for (const [moduleName, module] of this.modules) {
 			for (const [subModuleName, subModule] of module.subModules) {
 				if (subModule instanceof AttachableModule) {
-					subModule.attach(this._bot.bot);
+					subModule.attach(this._bot);
 					this._logger.handler(
 						`Submodule "${subModuleName}" of module "${moduleName}" has been attached.`
 					);

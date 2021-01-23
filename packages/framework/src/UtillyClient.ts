@@ -4,30 +4,26 @@ import { ClientOptions } from 'eris';
 import { Client } from 'eris';
 import path from 'path';
 import { CommandHandler, ModuleHandler } from './handlers';
+import { GlobalStore, Inject, Injectable } from '@utilly/di';
+import { CLIENT_TOKEN } from './InjectionTokens';
 
+@Injectable()
 export class UtillyClient {
 	commandHandler: CommandHandler;
 	moduleHandler: ModuleHandler;
-	logger: Logger;
-	database: Database;
 	bot: Client;
 
 	constructor(
-		token: string,
-		options: ClientOptions,
-		logger: Logger,
-		database: Database
+		@Inject('utilly:token') token: string,
+		@Inject('utilly:options') options: ClientOptions,
+		public logger: Logger,
+		public database: Database
 	) {
 		this.bot = new Client(token, options);
-		this.logger = logger;
-		this.database = database;
+		GlobalStore.register(this.bot, CLIENT_TOKEN);
 
-		this.moduleHandler = new ModuleHandler(this, this.logger);
-		this.commandHandler = new CommandHandler(
-			this.bot,
-			this.logger,
-			this.database
-		);
+		this.moduleHandler = GlobalStore.resolve(ModuleHandler);
+		this.commandHandler = GlobalStore.resolve(CommandHandler);
 
 		this.bot.on('ready', this.readyEvent.bind(this));
 	}

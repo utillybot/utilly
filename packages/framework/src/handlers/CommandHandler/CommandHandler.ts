@@ -9,7 +9,8 @@ import { CommandHookContext } from './CommandHook';
 import { runHooks } from '../Hook';
 import { Handler } from '../Handler';
 import { loadCommandModuleMetadata, loadPreHookMetadata } from './decorators';
-import { GlobalStore, Injectable } from '@utilly/di';
+import { GlobalStore, Inject, Injectable } from '@utilly/di';
+import { CLIENT_TOKEN } from '../../InjectionTokens';
 
 /**
  * A handler that will handle all incoming commands to the bot
@@ -26,23 +27,17 @@ export class CommandHandler implements Handler {
 	 */
 	readonly triggers: Map<string, BaseCommand> = new Map();
 
-	private readonly _bot: Client;
-
-	private readonly _logger: Logger;
-
-	private readonly _database: Database;
-
 	/**
 	 * Creates a new CommandHandler
-	 * @param bot - the Client instance
-	 * @param logger - the logger
-	 * @param database - the database instance
+	 * @param _bot - the Client instance
+	 * @param _logger - the logger
+	 * @param _database - the database instance
 	 */
-	constructor(bot: Client, logger: Logger, database: Database) {
-		this._bot = bot;
-		this._logger = logger;
-		this._database = database;
-	}
+	constructor(
+		@Inject(CLIENT_TOKEN) private _bot: Client,
+		private _logger: Logger,
+		private _database: Database
+	) {}
 
 	/**
 	 * Attaches to the client to start listening for events

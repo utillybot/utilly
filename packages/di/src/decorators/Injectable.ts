@@ -1,5 +1,5 @@
-import { InjectableToken } from '../types';
+import { InjectableKey } from './types';
 
 export const Injectable = (): ClassDecorator => target => {
-	Reflect.defineMetadata(InjectableToken, true, target.constructor);
+	Reflect.defineMetadata(InjectableKey, true, target.prototype);
 };

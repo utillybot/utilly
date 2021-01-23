@@ -5,10 +5,10 @@ import {
 	ChannelValidatorHook,
 	Command,
 	CommandContext,
+	CommandHandler,
 	EmbedBuilder,
 	isGuildChannel,
 	PreHook,
-	UtillyClient,
 } from '@utilly/framework';
 import { Message } from 'eris';
 import { MODULE_CONSTANTS, MODULES } from '../../constants/ModuleConstants';
@@ -22,7 +22,10 @@ import { MODULE_CONSTANTS, MODULES } from '../../constants/ModuleConstants';
 @PreHook(ChannelValidatorHook({ channel: ['guild'] }))
 @PreHook(BotPermsValidatorHook({ permissions: ['embedLinks'] }))
 export default class Help extends BaseCommand {
-	constructor(private _database: Database, private _bot: UtillyClient) {
+	constructor(
+		private _database: Database,
+		private _commandHandler: CommandHandler
+	) {
 		super();
 	}
 
@@ -36,9 +39,9 @@ export default class Help extends BaseCommand {
 			} else {
 				const item = args[0].toLowerCase();
 
-				if (this._bot.commandHandler.commandModules.has(item)) {
+				if (this._commandHandler.commandModules.has(item)) {
 					this.handleModule(message, item, guildRow);
-				} else if (this._bot.commandHandler.triggers.has(item)) {
+				} else if (this._commandHandler.triggers.has(item)) {
 					this.handleCommand(message, item, guildRow);
 				} else {
 					await message.channel.createMessage(
@@ -56,7 +59,7 @@ export default class Help extends BaseCommand {
 		let enabledModules = '';
 		let disabledModules = '';
 
-		for (const [, module] of this._bot.commandHandler.commandModules) {
+		for (const [, module] of this._commandHandler.commandModules) {
 			if (guildRow[module.info.name.toLowerCase()] == false) {
 				disabledModules += module.info.name + '\n';
 			} else {
@@ -93,7 +96,7 @@ export default class Help extends BaseCommand {
 	handleModule(message: Message, item: string, guildRow: Guild): void {
 		const embed = new EmbedBuilder();
 
-		const commandModule = this._bot.commandHandler.commandModules.get(item);
+		const commandModule = this._commandHandler.commandModules.get(item);
 		if (!commandModule) return;
 
 		embed.setTitle(
@@ -121,7 +124,7 @@ export default class Help extends BaseCommand {
 	handleCommand(message: Message, item: string, guildRow: Guild): void {
 		const embed = new EmbedBuilder();
 
-		const command = this._bot.commandHandler.triggers.get(item);
+		const command = this._commandHandler.triggers.get(item);
 		if (!command) return;
 
 		embed.setTitle(`Help for \`${command.info.name}\` command`);
@@ -142,7 +145,7 @@ export default class Help extends BaseCommand {
 			embed.addField('Aliases', triggers.join(', '), true);
 
 		let parent;
-		for (const [, mod] of this._bot.commandHandler.commandModules) {
+		for (const [, mod] of this._commandHandler.commandModules) {
 			if (mod.triggers.has(item)) {
 				parent = mod.info.name;
 				break;

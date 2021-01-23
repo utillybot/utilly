@@ -1,8 +1,8 @@
-export interface Type<T> {
+import { InjectionToken } from './InjectionToken';
+
+export interface Type<T extends object> {
 	new (...args: any[]): T;
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type Token = string | Type<any> | Function;
-
-export const InjectableToken = Symbol('@utilly/di:injectable');
+export type Token = Type<any> | InjectionToken | string;

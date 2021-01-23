@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { Inject, Injectable } from '../../di';
 
 interface LoggerOptions {
 	database?: boolean;
@@ -7,11 +8,12 @@ interface LoggerOptions {
 	gateway?: boolean;
 }
 
+@Injectable()
 export class Logger {
 	options: LoggerOptions;
 	colors: Record<string, string>;
 
-	constructor(options?: LoggerOptions) {
+	constructor(@Inject('utilly:logger_settings') options?: LoggerOptions) {
 		this.options = Object.assign(
 			{
 				database: true,

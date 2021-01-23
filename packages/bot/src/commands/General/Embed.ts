@@ -2,6 +2,7 @@ import {
 	BaseCommand,
 	BotPermsValidatorHook,
 	ChannelValidatorHook,
+	CLIENT_TOKEN,
 	Command,
 	CommandContext,
 	EmbedBuilder,
@@ -15,9 +16,9 @@ import {
 	UtillyClient,
 } from '@utilly/framework';
 import centra from 'centra';
-import { Message } from 'eris';
+import { Client, Message } from 'eris';
 import prettier from 'prettier';
-import { GlobalStore } from '@utilly/di';
+import { GlobalStore, Inject } from '@utilly/di';
 import { Logger } from '@utilly/utils';
 import { Database } from '@utilly/database';
 
@@ -67,7 +68,7 @@ export default class Embed extends BaseCommand {
 class EmbedCreate extends Subcommand {
 	constructor(
 		private _messageCollector: MessageCollectorHandler,
-		private _bot: UtillyClient
+		@Inject(CLIENT_TOKEN) private _bot: Client
 	) {
 		super();
 
@@ -375,7 +376,7 @@ class EmbedCreate extends Subcommand {
 						message.channel.createMessage({ embed: noPerms });
 						return;
 					} else if (
-						!channel?.permissionsOf(this._bot.bot.user.id).has('sendMessages')
+						!channel?.permissionsOf(this._bot.user.id).has('sendMessages')
 					) {
 						const noPerms = new EmbedBuilder();
 						noPerms.setTitle(
@@ -753,7 +754,7 @@ class EmbedView extends Subcommand {
 
 @PreHook(BotPermsValidatorHook({ permissions: ['readMessageHistory'] }))
 class EmbedEdit extends Subcommand {
-	constructor(private _bot: UtillyClient) {
+	constructor(@Inject(CLIENT_TOKEN) private _bot: Client) {
 		super();
 
 		this.help.name = 'edit';
@@ -773,7 +774,7 @@ class EmbedEdit extends Subcommand {
 				continue;
 			}
 
-			if (foundMessage.author.id != this._bot.bot.user.id) {
+			if (foundMessage.author.id != this._bot.user.id) {
 				const embed = new EmbedBuilder();
 				embed.addDefaults(message.author);
 				embed.setTitle(

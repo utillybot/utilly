@@ -2,16 +2,15 @@ import { Logger } from '@utilly/utils';
 import { Connection, createConnection } from 'typeorm';
 import { Guild } from './entities/Guild';
 import { TypeORMLogger } from './TypeORMLogger';
+import { Inject } from '@utilly/di';
 
 export class Database {
 	connection!: Connection;
-	private _logger: Logger;
-	private _databaseUrl: string;
 
-	constructor(databaseUrl: string, logger: Logger) {
-		this._logger = logger;
-		this._databaseUrl = databaseUrl;
-	}
+	constructor(
+		@Inject('utilly:database_url') private readonly _databaseUrl: string,
+		private readonly _logger: Logger
+	) {}
 
 	async connect(): Promise<void> {
 		this.connection = await createConnection({

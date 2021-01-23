@@ -1,5 +1,5 @@
 import { Database } from '@utilly/database';
-import { UtillyClient } from '@utilly/framework';
+import { CLIENT_TOKEN, UtillyClient } from '@utilly/framework';
 import { UtillyWeb } from '@utilly/server';
 import { Logger } from '@utilly/utils';
 import * as Sentry from '@sentry/node';
@@ -24,41 +24,38 @@ export class Utilly {
 			environment: process.env.NODE_ENV,
 		});
 
-		GlobalStore.register(new Logger({ database: false }));
+		GlobalStore.register(process.env.DATABASE_URL, 'utilly:database_url');
+		GlobalStore.register({ database: false }, 'utilly:logger_settings');
+		GlobalStore.register('Bot ' + process.env.TOKEN, 'utilly:token');
 		GlobalStore.register(
-			new Database(process.env.DATABASE_URL, GlobalStore.resolve(Logger))
+			{
+				intents: [
+					'guilds',
+					'guildMembers',
+					'guildBans',
+					'guildEmojis',
+					'guildIntegrations',
+					'guildWebhooks',
+					'guildInvites',
+					'guildVoiceStates',
+					'guildMessages',
+					'guildMessageReactions',
+					'directMessages',
+					'directMessageReactions',
+				],
+				restMode: true,
+			},
+			'utilly:options'
 		);
-		GlobalStore.register(
-			new UtillyClient(
-				'Bot ' + process.env.TOKEN,
-				{
-					intents: [
-						'guilds',
-						'guildMembers',
-						'guildBans',
-						'guildEmojis',
-						'guildIntegrations',
-						'guildWebhooks',
-						'guildInvites',
-						'guildVoiceStates',
-						'guildMessages',
-						'guildMessageReactions',
-						'directMessages',
-						'directMessageReactions',
-					],
-					restMode: true,
-				},
-				GlobalStore.resolve(Logger),
-				GlobalStore.resolve(Database)
-			)
-		);
+
 		this.web = new UtillyWeb(
 			parseInt(process.env.PORT ?? '3006'),
 			GlobalStore.resolve(Logger),
 			GlobalStore.resolve(Database),
 			GlobalStore.resolve(UtillyClient)
 		);
-
+		GlobalStore.resolve(Database);
+		GlobalStore.resolve(Logger);
 		GlobalStore.resolve(UtillyClient).bot.on('error', (error: Error) => {
 			Sentry.captureException(error);
 			GlobalStore.resolve(Logger).error(error.stack ?? error.message);
