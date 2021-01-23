@@ -5,14 +5,14 @@ import {
 } from '@utilly/framework';
 import { Client, Guild, OldRole, Role, TextChannel } from 'eris';
 import LoggingModule from './LoggingModule';
-import { Injectable } from '@utilly/di';
+import { Service } from '@utilly/di';
 
 /* eslint-disable no-prototype-builtins */
 
 /**
  * Logging Module for Server Events
  */
-@Injectable()
+@Service()
 export default class RoleLogging extends AttachableModule {
 	constructor(private _parent: LoggingModule) {
 		super();

@@ -17,7 +17,7 @@ import {
 	UtillyClient,
 } from '@utilly/framework';
 import { MODULE_CONSTANTS, MODULES } from '../../constants/ModuleConstants';
-import { GlobalStore, Injectable } from '@utilly/di';
+import { GlobalStore, Service } from '@utilly/di';
 import { Logger } from '@utilly/utils';
 
 @Command({
@@ -95,7 +95,7 @@ const ModuleSubcommandHook = (): CommandHook => {
 	};
 };
 
-@Injectable()
+@Service()
 class ModuleEnable extends Subcommand {
 	constructor(private _database: Database) {
 		super();
@@ -133,7 +133,7 @@ class ModuleEnable extends Subcommand {
 	}
 }
 
-@Injectable()
+@Service()
 class ModuleDisable extends Subcommand {
 	constructor(private _database: Database) {
 		super();
@@ -171,7 +171,7 @@ class ModuleDisable extends Subcommand {
 	}
 }
 
-@Injectable()
+@Service()
 class ModuleToggle extends Subcommand {
 	constructor(private _database: Database) {
 		super();
@@ -222,7 +222,7 @@ class ModuleToggle extends Subcommand {
 	}
 }
 
-@Injectable()
+@Service()
 class ModuleInfo extends Subcommand {
 	constructor(private _database: Database) {
 		super();

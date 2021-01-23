@@ -7,12 +7,12 @@ import {
 } from '@utilly/framework';
 import Eris, { Webhook } from 'eris';
 import { EMOTE_CONSTANTS } from '../../constants/EmoteConstants';
-import { Injectable } from '@utilly/di';
+import { Service } from '@utilly/di';
 
 /**
  * Base Logging Module
  */
-@Injectable()
+@Service()
 export default class LoggingModule extends Module {
 	constructor(private _database: Database, private _bot: UtillyClient) {
 		super();

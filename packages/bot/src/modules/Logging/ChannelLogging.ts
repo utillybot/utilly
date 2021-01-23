@@ -18,7 +18,7 @@ import {
 	TextChannel,
 } from 'eris';
 import LoggingModule from './LoggingModule';
-import { Injectable } from '@utilly/di';
+import { Service } from '@utilly/di';
 
 interface ChangedData {
 	name: string;
@@ -31,7 +31,7 @@ interface ChangedData {
 /**
  * Logging Module for Server Events
  */
-@Injectable()
+@Service()
 export default class ChannelLogging extends AttachableModule {
 	constructor(private _parent: LoggingModule) {
 		super();

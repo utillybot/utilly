@@ -17,12 +17,12 @@ import {
 	TextChannel,
 } from 'eris';
 import LoggingModule from './LoggingModule';
-import { Injectable } from '@utilly/di';
+import { Service } from '@utilly/di';
 
 /**
  * Logging Module for Messages
  */
-@Injectable()
+@Service()
 export default class MessageLogging extends AttachableModule {
 	constructor(private _parent: LoggingModule) {
 		super();

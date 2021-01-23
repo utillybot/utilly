@@ -3,7 +3,7 @@ import { CollectorHandler } from '../CollectorHandler';
 import { MessageValidatorHook } from './MessageValidatorHook';
 import { MessageCollectorHookContext } from './MessageCollectorHook';
 import { MessageCollectorHook } from './MessageCollectorHook';
-import { Injectable } from '@utilly/di';
+import { Service } from '@utilly/di';
 import { UtillyClient } from '../../../UtillyClient';
 
 export type MessageWaitFilter = (message: Message) => boolean;
@@ -24,7 +24,7 @@ export type MessageWaitFilter = (message: Message) => boolean;
  * const result2 = await listener.coll
  * ```
  */
-@Injectable()
+@Service()
 export class MessageCollectorHandler extends CollectorHandler<
 	MessageCollectorHook,
 	MessageCollectorHookContext

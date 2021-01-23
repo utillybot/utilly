@@ -5,11 +5,11 @@ import { UtillyClient } from '../../UtillyClient';
 import { Module } from './Module';
 import { AttachableModule } from './AttachableModule';
 import { Submodule } from './Submodule';
-import { GlobalStore, Inject, Injectable } from '@utilly/di';
+import { GlobalStore, Inject, Service } from '@utilly/di';
 import { Client } from 'eris';
 import { CLIENT_TOKEN } from '../../InjectionTokens';
 
-@Injectable()
+@Service()
 export class ModuleHandler {
 	readonly modules: Map<string, Module> = new Map();
 

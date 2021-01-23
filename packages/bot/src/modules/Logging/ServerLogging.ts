@@ -8,7 +8,7 @@ import {
 	VERIFICATION_LEVEL_CONSTANTS_SHORT,
 } from '../../constants/ServerConstants';
 import { secondsToString } from '@utilly/utils';
-import { Injectable } from '@utilly/di';
+import { Service } from '@utilly/di';
 
 interface ChangedData {
 	name: string;
@@ -19,7 +19,7 @@ interface ChangedData {
 /**
  * Logging Module for Server Events
  */
-@Injectable()
+@Service()
 export default class ServerLogging extends AttachableModule {
 	constructor(private _parent: LoggingModule) {
 		super();

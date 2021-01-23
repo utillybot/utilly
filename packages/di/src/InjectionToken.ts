@@ -1,3 +1,3 @@
-export class InjectionToken {
+export class InjectionToken<T> {
 	constructor(public name?: string) {}
 }

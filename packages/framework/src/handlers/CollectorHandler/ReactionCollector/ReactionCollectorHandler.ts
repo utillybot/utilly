@@ -6,13 +6,13 @@ import {
 	ReactionCollectorHookContext,
 } from './ReactionCollectorHook';
 import { ReactionValidatorHook } from './ReactionValidatorHook';
-import { Injectable } from '@utilly/di';
+import { Service } from '@utilly/di';
 import { UtillyClient } from '../../../UtillyClient';
 
 /**
  * A handler for reaction collector
  */
-@Injectable()
+@Service()
 export class ReactionCollectorHandler extends CollectorHandler<
 	ReactionCollectorHook,
 	ReactionCollectorHookContext

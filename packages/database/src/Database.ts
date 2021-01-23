@@ -2,13 +2,14 @@ import { Logger } from '@utilly/utils';
 import { Connection, createConnection } from 'typeorm';
 import { Guild } from './entities/Guild';
 import { TypeORMLogger } from './TypeORMLogger';
-import { Inject } from '@utilly/di';
+import { Service } from '@utilly/di/dist';
 
+@Service()
 export class Database {
 	connection!: Connection;
 
 	constructor(
-		@Inject('utilly:database_url') private readonly _databaseUrl: string,
+		private readonly _databaseUrl: string,
 		private readonly _logger: Logger
 	) {}
 
@@ -23,8 +24,6 @@ export class Database {
 			entities: [Guild],
 			logging: true,
 			logger: new TypeORMLogger(this._logger),
-
-			synchronize: true,
 		});
 
 		this._logger.database('Connection has been established successfully.');

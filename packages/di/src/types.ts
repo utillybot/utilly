@@ -1,8 +1,19 @@
 import { InjectionToken } from './InjectionToken';
 
-export interface Type<T extends object> {
+/**
+ * A type that has a constructor
+ */
+export interface Constructable<T> {
 	new (...args: any[]): T;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type Token = Type<any> | InjectionToken | string;
+export type ConstructableMapped<T> = {
+	[P in keyof T]: Constructable<T[P]>;
+};
+
+export type Token = Constructable<any> | InjectionToken<unknown>;
+
+export interface StoredValue {
+	type: 'instance' | 'value';
+	value: unknown;
+}

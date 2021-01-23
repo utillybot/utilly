@@ -9,13 +9,13 @@ import { CommandHookContext } from './CommandHook';
 import { runHooks } from '../Hook';
 import { Handler } from '../Handler';
 import { loadCommandModuleMetadata, loadPreHookMetadata } from './decorators';
-import { GlobalStore, Inject, Injectable } from '@utilly/di';
+import { GlobalStore, Inject, Service } from '@utilly/di';
 import { CLIENT_TOKEN } from '../../InjectionTokens';
 
 /**
  * A handler that will handle all incoming commands to the bot
  */
-@Injectable()
+@Service()
 export class CommandHandler implements Handler {
 	/**
 	 * A map of command modules registered to this handler
