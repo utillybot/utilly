@@ -7,6 +7,7 @@
 	"author": "jtsshieh",
 	"dependencies": {
 		"@sentry/node": "^5.27.4",
+		"@types/redis": "^2.8.28",
 		"@utilly/bot": "1.0.0",
 		"@utilly/database": "1.0.0",
 		"@utilly/di": "1.0.0",
@@ -14,6 +15,7 @@
 		"@utilly/server": "1.0.0",
 		"@utilly/utils": "1.0.0",
 		"eris": "^0.14.0",
+		"redis": "^3.0.2",
 		"dotenv": "^8.2.0"
 	},
 	"scripts": {

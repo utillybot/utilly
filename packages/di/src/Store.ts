@@ -108,14 +108,10 @@ class Store {
 	}
 
 	private _createInstance<T extends object>(target: Constructable<T>): T {
-		console.log('creating instance of', target);
 		const tokens: Array<Constructable<object>> =
 			Reflect.getMetadata('design:paramtypes', target) || [];
 		const injects: InjectMetadata =
 			Reflect.getOwnMetadata(InjectKey, target.prototype) || [];
-
-		console.log(tokens);
-		console.log(injects);
 
 		const params = tokens.map((token, index) => {
 			if (injects[index]) {
