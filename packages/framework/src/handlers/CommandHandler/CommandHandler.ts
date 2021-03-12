@@ -109,6 +109,7 @@ export class CommandHandler implements Handler {
 	 * @param message - the message
 	 */
 	private async _messageCreate(message: Message): Promise<void> {
+		console.log('msg create');
 		if (message.author.bot) return;
 
 		if (

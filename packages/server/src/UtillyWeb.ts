@@ -52,7 +52,7 @@ export class UtillyWeb {
 		this.app.use(excludeSourceMaps);
 
 		this.app.use('/api', apiController(bot));
-		this.app.use('/dashboard', dashboardController(bot));
+		this.app.use('/api/dashboard', dashboardController(bot));
 		this.app.use(reactController());
 
 		this.app.use(errorHandler(logger));

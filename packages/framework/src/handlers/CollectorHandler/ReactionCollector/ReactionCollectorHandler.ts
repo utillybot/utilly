@@ -6,8 +6,9 @@ import {
 	ReactionCollectorHookContext,
 } from './ReactionCollectorHook';
 import { ReactionValidatorHook } from './ReactionValidatorHook';
-import { Service } from '@utilly/di';
+import { Inject, Service } from '@utilly/di';
 import { UtillyClient } from '../../../UtillyClient';
+import { CLIENT_TOKEN } from '../../../InjectionTokens';
 
 /**
  * A handler for reaction collector
@@ -21,9 +22,9 @@ export class ReactionCollectorHandler extends CollectorHandler<
 	 * Creates a new reaction collector handler
 	 * @param _bot - the client associated with this collector
 	 */
-	constructor(private readonly _bot: UtillyClient) {
+	constructor(@Inject(CLIENT_TOKEN) private readonly _bot: Client) {
 		super();
-		this._bot.bot.on('messageReactionAdd', this._messageReactionAdd.bind(this));
+		this._bot.on('messageReactionAdd', this._messageReactionAdd.bind(this));
 	}
 
 	/**
@@ -76,7 +77,7 @@ export class ReactionCollectorHandler extends CollectorHandler<
 		if (!(message instanceof Message)) return;
 
 		super.checkCollectors({
-			bot: this._bot.bot,
+			bot: this._bot,
 			message,
 			emoji,
 			reactor: member.id,

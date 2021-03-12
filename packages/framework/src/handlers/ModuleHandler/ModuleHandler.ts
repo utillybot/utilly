@@ -1,7 +1,6 @@
 import { Logger } from '@utilly/utils';
 import fs from 'fs/promises';
 import path from 'path';
-import { UtillyClient } from '../../UtillyClient';
 import { Module } from './Module';
 import { AttachableModule } from './AttachableModule';
 import { Submodule } from './Submodule';

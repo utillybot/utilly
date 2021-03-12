@@ -7,6 +7,9 @@ export interface Constructable<T> {
 	new (...args: any[]): T;
 }
 
+/**
+ * Map a bunch of instance objects to their constructors
+ */
 export type ConstructableMapped<T> = {
 	[P in keyof T]: Constructable<T[P]>;
 };

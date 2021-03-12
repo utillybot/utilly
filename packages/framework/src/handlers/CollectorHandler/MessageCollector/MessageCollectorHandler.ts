@@ -1,10 +1,10 @@
-import { Message } from 'eris';
+import { Client, Message } from 'eris';
 import { CollectorHandler } from '../CollectorHandler';
 import { MessageValidatorHook } from './MessageValidatorHook';
 import { MessageCollectorHookContext } from './MessageCollectorHook';
 import { MessageCollectorHook } from './MessageCollectorHook';
-import { Service } from '@utilly/di';
-import { UtillyClient } from '../../../UtillyClient';
+import { Inject, Service } from '@utilly/di';
+import { CLIENT_TOKEN } from '../../../InjectionTokens';
 
 export type MessageWaitFilter = (message: Message) => boolean;
 
@@ -33,9 +33,9 @@ export class MessageCollectorHandler extends CollectorHandler<
 	 * Creates a new reaction collector handler
 	 * @param _bot - the client associated with this collector
 	 */
-	constructor(private readonly _bot: UtillyClient) {
+	constructor(@Inject(CLIENT_TOKEN) private readonly _bot: Client) {
 		super();
-		this._bot.bot.on('messageCreate', this._messageCreate.bind(this));
+		this._bot.on('messageCreate', this._messageCreate.bind(this));
 	}
 
 	/**
@@ -77,7 +77,7 @@ export class MessageCollectorHandler extends CollectorHandler<
 	}
 
 	private async _messageCreate(message: Message): Promise<void> {
-		super.checkCollectors({ bot: this._bot.bot, message });
+		super.checkCollectors({ bot: this._bot, message });
 	}
 }
 

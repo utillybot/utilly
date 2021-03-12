@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { GlobalStore } from '@utilly/di';
 import { CLIENT_TOKEN } from '@utilly/framework';
+import { Client } from 'eris';
 
 export class Utilly {
 	constructor() {
@@ -20,11 +21,7 @@ export class Utilly {
 			tracesSampleRate: 1.0,
 			environment: process.env.NODE_ENV,
 		});
-		GlobalStore.registerFactory(
-			() => new Logger({ database: false }),
-			[],
-			Logger
-		);
+		GlobalStore.registerInstance(new Logger({ database: false }));
 
 		GlobalStore.registerFactory(
 			(logger: Logger) => {
@@ -32,35 +29,28 @@ export class Utilly {
 					throw new Error('DATABASE_URL env variable not present');
 				return new Database(process.env.DATABASE_URL, logger);
 			},
-			[Logger],
-			Database
+			[Logger]
 		);
-		GlobalStore.registerFactory(
-			(logger: Logger, database: Database) =>
-				new UtillyClient(
-					'Bot ' + process.env.TOKEN,
-					{
-						intents: [
-							'guilds',
-							'guildMembers',
-							'guildBans',
-							'guildEmojis',
-							'guildIntegrations',
-							'guildWebhooks',
-							'guildInvites',
-							'guildVoiceStates',
-							'guildMessages',
-							'guildMessageReactions',
-							'directMessages',
-							'directMessageReactions',
-						],
-						restMode: true,
-					},
-					logger,
-					database
-				),
-			[Logger, Database],
-			UtillyClient
+
+		GlobalStore.registerInstance(
+			new Client('Bot ' + process.env.TOKEN, {
+				intents: [
+					'guilds',
+					'guildMembers',
+					'guildBans',
+					'guildEmojis',
+					'guildIntegrations',
+					'guildWebhooks',
+					'guildInvites',
+					'guildVoiceStates',
+					'guildMessages',
+					'guildMessageReactions',
+					'directMessages',
+					'directMessageReactions',
+				],
+				restMode: true,
+			}),
+			CLIENT_TOKEN
 		);
 
 		GlobalStore.registerFactory(
@@ -71,8 +61,7 @@ export class Utilly {
 					database,
 					bot
 				),
-			[Logger, Database, UtillyClient],
-			UtillyWeb
+			[Logger, Database, UtillyClient]
 		);
 
 		GlobalStore.get(CLIENT_TOKEN).on('error', (error: Error) => {

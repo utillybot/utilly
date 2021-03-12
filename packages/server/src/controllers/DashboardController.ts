@@ -28,7 +28,7 @@ export const dashboardController = (bot: UtillyClient): Router => {
 					scope,
 					responseType: 'code',
 					redirectUri:
-						req.protocol + '://' + req.get('host') + '/dashboard/callback',
+						req.protocol + '://' + req.get('host') + '/api/dashboard/callback',
 				})
 			);
 		})
@@ -41,7 +41,7 @@ export const dashboardController = (bot: UtillyClient): Router => {
 						req.protocol +
 						'://' +
 						req.get('host') +
-						'/dashboard/callback?type=old',
+						'/api/dashboard/callback?type=old',
 				})
 			);
 		})
@@ -68,7 +68,7 @@ export const dashboardController = (bot: UtillyClient): Router => {
 							req.protocol +
 							'://' +
 							req.get('host') +
-							'/dashboard/guild-callback',
+							'/api/dashboard/guild-callback',
 					})
 				);
 			} else {
@@ -80,7 +80,7 @@ export const dashboardController = (bot: UtillyClient): Router => {
 							req.protocol +
 							'://' +
 							req.get('host') +
-							'/dashboard/guild-callback',
+							'/api/dashboard/guild-callback',
 					})
 				);
 			}
@@ -109,7 +109,7 @@ export const dashboardController = (bot: UtillyClient): Router => {
 					scope,
 					grantType: 'authorization_code',
 					redirectUri:
-						req.protocol + '://' + req.get('host') + `/dashboard/callback`,
+						req.protocol + '://' + req.get('host') + `/api/dashboard/callback`,
 				});
 			} catch (error) {
 				if ('code' in error && error.code == 400)
@@ -134,5 +134,5 @@ export const dashboardController = (bot: UtillyClient): Router => {
 			}
 		})
 
-		.use('/api', checkToken, dashboardAPIController(bot, oAuth));
+		.use('/', checkToken, dashboardAPIController(bot, oAuth));
 };

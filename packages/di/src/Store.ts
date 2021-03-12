@@ -40,6 +40,7 @@ class Store {
 	 * @param token - the token to get
 	 */
 	public get<T>(token: InjectionToken<T>): T;
+	public get<T>(token: Constructable<T>): T;
 	public get<T>(token: Token): T;
 	public get<T>(token: Token): T {
 		const storedValue = this._store.get(token);
@@ -80,25 +81,41 @@ class Store {
 	 * @param token - the token to identify this value with
 	 */
 	public registerFactory<T extends object[], J extends ConstructableMapped<T>>(
+		factory: (...args: T) => object,
+		dependencies: J,
+		token?: Token
+	): void;
+	public registerFactory<T extends object[], J extends ConstructableMapped<T>>(
 		factory: (...args: T) => unknown,
 		dependencies: J,
 		token: Token
+	): void;
+	public registerFactory<T extends object[], J extends ConstructableMapped<T>>(
+		factory: (...args: T) => unknown | object,
+		dependencies: J,
+		token?: Token
 	): void {
 		const params = dependencies.map(dependency =>
 			this.resolve(dependency)
 		) as T;
 
-		this._store.set(token, {
+		const value = factory(...params);
+
+		this._store.set(token ?? (value as object).constructor, {
 			type: 'value',
-			value: factory(...params),
+			value: value,
 		});
 	}
 
 	private _createInstance<T extends object>(target: Constructable<T>): T {
+		console.log('creating instance of', target);
 		const tokens: Array<Constructable<object>> =
 			Reflect.getMetadata('design:paramtypes', target) || [];
 		const injects: InjectMetadata =
 			Reflect.getOwnMetadata(InjectKey, target.prototype) || [];
+
+		console.log(tokens);
+		console.log(injects);
 
 		const params = tokens.map((token, index) => {
 			if (injects[index]) {
